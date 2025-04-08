@@ -25,10 +25,12 @@ void exampleProof() {
     C3.add_literal(VeriPB::create_literal(x2, true));
     C3.add_RHS(1);
 
-    VeriPB::VarManager varMgr;
+    VeriPB::VarManagerWithVarRewriting varMgr;
     varMgr.set_number_original_variables(4);
 
-    VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t> vPL("testproof.pbp", &varMgr);
+    varMgr.store_variable_name(x1, "x1p");
+
+    VeriPB::MaxSATProoflogger<VeriPB::Lit, uint32_t, uint32_t> vPL("testproof.pbp", &varMgr);
     vPL.set_n_orig_constraints(0);
     vPL.write_proof_header();
     vPL.add_objective_literal(VeriPB::create_literal(x1, true), 1);
