@@ -1,0 +1,3 @@
+[submodule "lib/VeriPB_Prooflogger"]
+	path = lib/VeriPB_Prooflogger
+	url = git@github.com:DietVds/VeriPB_Prooflogger.git

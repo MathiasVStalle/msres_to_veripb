@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "../lib/core/VeriPbSolverTypes.h"
-#include "../lib/core/MaxSATProoflogger.h"
+#include "../lib/VeriPB_Prooflogger/core/VeriPbSolverTypes.h"
+#include "../lib/VeriPB_Prooflogger/core/MaxSATProoflogger.h"
 
 void exampleProof() {
     VeriPB::Var x1 = {.v=1, .only_known_in_proof=false}, 
