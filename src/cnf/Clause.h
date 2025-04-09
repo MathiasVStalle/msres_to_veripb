@@ -65,7 +65,7 @@ namespace cnf
              * @param other The clause to compare with.
              * @return True if the clauses are equal, false otherwise.
              */
-            bool operator==(const Clause& other);
+            bool operator==(const Clause& other) const;
 
             // TODO: Requered for the set, might be unnecessary when using unordered_set
             /**
@@ -75,7 +75,7 @@ namespace cnf
              * @return True if the current clause is less than the other clause, false otherwise.
              */
             bool operator<(const Clause& other) const {
-                return weight < other.weight;
+                return weight < other.weight || (weight == other.weight && literals < other.literals);
             }
     };
 }

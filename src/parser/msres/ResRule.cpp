@@ -46,36 +46,39 @@ namespace parser
 
             std::set<cnf::Clause> new_clauses;
 
+            // Build the first new clause
             std::set<int32_t> new_literals = mod_literals_1;
             new_literals.insert(mod_literals_2.begin(), mod_literals_2.end());
             cnf::Clause new_clause(std::min(clause_1.getWeight(), clause_2.getWeight()), new_literals);
             new_clauses.insert(new_clause);
 
+            // Build the first half of the resolution clauses
             std::set<int32_t> extention;
             for (const auto& lit : mod_literals_2) {
                 new_literals = literals_1;
-
-                std::set<int32_t> final_literals = extention;
-                final_literals.insert(-lit);
+                new_literals.insert(extention.begin(), extention.end());
+                new_literals.insert(-lit);
 
                 int weight = std::min(clause_1.getWeight(), clause_2.getWeight());
 
-                cnf::Clause new_clause(weight, final_literals);
+                cnf::Clause new_clause(weight, new_literals);
+                new_clause.print();
                 new_clauses.insert(new_clause);
 
                 extention.insert(lit);
             }
 
+            // Build the second half of the resolution clauses
             extention.clear();
             for (const auto& lit : mod_literals_1) {
                 new_literals = literals_2;
-
-                std::set<int32_t> final_literals = extention;
-                final_literals.insert(-lit);
+                new_literals.insert(extention.begin(), extention.end());
+                new_literals.insert(-lit);
 
                 int weight = std::min(clause_1.getWeight(), clause_2.getWeight());
 
-                cnf::Clause new_clause(weight, final_literals);
+                cnf::Clause new_clause(weight, new_literals);
+                new_clause.print();
                 new_clauses.insert(new_clause);
 
                 extention.insert(lit);

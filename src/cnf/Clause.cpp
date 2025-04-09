@@ -29,4 +29,8 @@ namespace cnf
         }
         std::cout << std::endl;
     }
+
+    bool Clause::operator==(const Clause& other) const {
+        return weight == other.weight && literals == other.literals;
+    }   
 }
