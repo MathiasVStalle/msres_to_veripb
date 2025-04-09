@@ -62,7 +62,6 @@ namespace parser
                 int weight = std::min(clause_1.getWeight(), clause_2.getWeight());
 
                 cnf::Clause new_clause(weight, new_literals);
-                new_clause.print();
                 new_clauses.insert(new_clause);
 
                 extention.insert(lit);
