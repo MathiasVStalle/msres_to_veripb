@@ -182,7 +182,7 @@ void exampleProof2(){
     VeriPB::constraintid cxn_bladibla = cpder.end();
 
     // Unchecked assumptions for proof by contradiction
-    VeriPB::constraintid subsubclaim_11, subsubclaim_12, subsubclaim_13;
+    VeriPB::constraintid subsubclaim_11 = 11, subsubclaim_12 = 12, subsubclaim_13 = 13;
 
     // Proving 1 ~x1 1 s2 1 ~s3 1 ~s6 1 ~s7 >= 3  by contradiction
     C.clear();
