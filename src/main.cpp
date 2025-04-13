@@ -182,7 +182,44 @@ void exampleProof2(){
     VeriPB::constraintid cxn_bladibla = cpder.end();
 
     // Unchecked assumptions for proof by contradiction
-    VeriPB::constraintid subsubclaim_11 = 11, subsubclaim_12 = 12, subsubclaim_13 = 13;
+    //VeriPB::constraintid subsubclaim_11 = 11, subsubclaim_12 = 12, subsubclaim_13 = 13;
+
+    // 1 b1 1 b2 1 s2 1 ~s3 1 ~s6 1 ~s7 1 ~x1 >= 3
+    C.clear();
+    C.add_literal(neg(x1), 1);
+    C.add_literal(b1, 1);
+    C.add_literal(b2, 1);
+    C.add_literal(s2, 1);
+    C.add_literal(neg(s3), 1);
+    C.add_literal(neg(s6), 1);
+    C.add_literal(neg(s7), 1);
+    C.add_RHS(3);
+    pl.unchecked_assumption(C);
+    VeriPB::constraintid subsubclaim_11 = pl.get_constraint_counter();
+
+    // 3 ~b1 1 s2 1 ~s3 1 ~s6 1 ~s7 1 ~x1 >= 3
+    C.clear();
+    C.add_literal(neg(x1), 1);
+    C.add_literal(neg(b1), 3);
+    C.add_literal(s2, 1);
+    C.add_literal(neg(s3), 1);
+    C.add_literal(neg(s6), 1);
+    C.add_literal(neg(s7), 1);
+    C.add_RHS(3);
+    pl.unchecked_assumption(C);
+    VeriPB::constraintid subsubclaim_12 = pl.get_constraint_counter();
+
+    // 3 ~b2 1 s2 1 ~s3 1 ~s6 1 ~s7 1 ~x1 >= 3
+    C.clear();
+    C.add_literal(neg(x1), 1);
+    C.add_literal(neg(b2), 3);
+    C.add_literal(s2, 1);
+    C.add_literal(neg(s3), 1);
+    C.add_literal(neg(s6), 1);
+    C.add_literal(neg(s7), 1);
+    C.add_RHS(3);
+    pl.unchecked_assumption(C);
+    VeriPB::constraintid subsubclaim_13 = pl.get_constraint_counter();
 
     // Proving 1 ~x1 1 s2 1 ~s3 1 ~s6 1 ~s7 >= 3  by contradiction
     C.clear();
