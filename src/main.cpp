@@ -3,11 +3,12 @@
 #include "../lib/VeriPB_Prooflogger/core/VeriPbSolverTypes.h"
 #include "../lib/VeriPB_Prooflogger/core/MaxSATProoflogger.h"
 
-void exampleProof() {
-    VeriPB::Var x1 = {.v=1, .only_known_in_proof=false}, 
-                x2 = {.v=2, .only_known_in_proof=false}, 
-                x3 = {.v=3, .only_known_in_proof=false},
-                x4 = {.v=4, .only_known_in_proof=false};
+void exampleProof()
+{
+    VeriPB::Var x1 = {.v = 1, .only_known_in_proof = false},
+                x2 = {.v = 2, .only_known_in_proof = false},
+                x3 = {.v = 3, .only_known_in_proof = false},
+                x4 = {.v = 4, .only_known_in_proof = false};
 
     VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> C1, C2(true, VeriPB::Comparison::LEQ), C3;
     C1.add_literal(VeriPB::create_literal(x1, false), 3);
@@ -46,7 +47,8 @@ void exampleProof() {
     vPL.flush_proof();
 }
 
-void exampleProof2(){
+void exampleProof2()
+{
 
     // Setting up Proof logging library
     VeriPB::VarManagerWithVarRewriting varMgr;
@@ -55,22 +57,22 @@ void exampleProof2(){
 
     // Setting up the context, this has to be done by the parser later.
     uint32_t varcounter;
-    VeriPB::Var varx1 {.v=++varcounter, .only_known_in_proof=false},
-                vara1 {.v=++varcounter, .only_known_in_proof=false},
-                vara2 {.v=++varcounter, .only_known_in_proof=false},
-                varb1 {.v=++varcounter, .only_known_in_proof=false},
-                varb2 {.v=++varcounter, .only_known_in_proof=false};
-    
+    VeriPB::Var varx1{.v = ++varcounter, .only_known_in_proof = false},
+        vara1{.v = ++varcounter, .only_known_in_proof = false},
+        vara2{.v = ++varcounter, .only_known_in_proof = false},
+        varb1{.v = ++varcounter, .only_known_in_proof = false},
+        varb2{.v = ++varcounter, .only_known_in_proof = false};
+
     VeriPB::Var vars1 = varMgr.new_variable_only_in_proof(),
                 vars2 = varMgr.new_variable_only_in_proof();
 
-    VeriPB::Lit x1 {.v=varx1, .negated=false},
-                a1 {.v=vara1, .negated=false},
-                a2 {.v=vara2, .negated=false},
-                b1 {.v=varb1, .negated=false},
-                b2 {.v=varb2, .negated=false},
-                s1 {.v=vars1, .negated=false},
-                s2 {.v=vars2, .negated=false};
+    VeriPB::Lit x1{.v = varx1, .negated = false},
+        a1{.v = vara1, .negated = false},
+        a2{.v = vara2, .negated = false},
+        b1{.v = varb1, .negated = false},
+        b2{.v = varb2, .negated = false},
+        s1{.v = vars1, .negated = false},
+        s2{.v = vars2, .negated = false};
 
     varMgr.store_variable_name(variable(x1), "x1");
     varMgr.store_variable_name(variable(a1), "a1");
@@ -84,7 +86,7 @@ void exampleProof2(){
     // Schrijven van proof header
     varMgr.set_number_original_variables(5);
     pl.write_proof_header();
-    pl.set_n_orig_constraints(2); 
+    pl.set_n_orig_constraints(2);
 
     // Opslaan van reif van originele clauses
     pl.store_reified_constraint_right_implication(variable(s1), 1);
@@ -108,9 +110,9 @@ void exampleProof2(){
     C.add_literal(b2, 1);
     C.add_RHS(1);
     pl.reification_literal_left_implication(neg(s2), C, true);
-    
+
     // Definitie nieuwe variabelen
-    
+
     VeriPB::Var vars3 = varMgr.new_variable_only_in_proof();
     varMgr.store_variable_name(vars3, "s3"); // Not necessary in final implementation.
     VeriPB::Lit s3 = create_literal(vars3, false);
@@ -173,6 +175,7 @@ void exampleProof2(){
     pl.reification_literal_left_implication(neg(s7), C, true);
     pl.reification_literal_right_implication(neg(s7), C, true);
 
+    // p 10 a1 w b1 w b2 w s
     VeriPB::CuttingPlanesDerivation cpder(&pl, true);
     cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(s3)));
     cpder.weaken(variable(a1));
@@ -181,8 +184,31 @@ void exampleProof2(){
     cpder.saturate();
     VeriPB::constraintid cxn_bladibla = cpder.end();
 
+    // 13 x1 w b1 w b2 w s
+    cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(s6)));
+    cpder.weaken(variable(x1));
+    cpder.weaken(variable(b1));
+    cpder.weaken(variable(b2));
+    cpder.saturate();
+    VeriPB::constraintid cxn_bladibla2 = cpder.end();
+
+    // 14 x1 w a1 w b1 w b2 w s
+    cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(s7)));
+    cpder.weaken(variable(x1));
+    cpder.weaken(variable(a1));
+    cpder.weaken(variable(b1));
+    cpder.weaken(variable(b2));
+    cpder.saturate();
+    VeriPB::constraintid cxn_bladibla3 = cpder.end();
+
+    // p -3 -2 + -1 +
+    cpder.start_from_constraint(-3);
+    cpder.add_constraint(-2);
+    cpder.add_constraint(-1);
+    VeriPB::constraintid cxn_bladibla4 = cpder.end();
+
     // Unchecked assumptions for proof by contradiction
-    //VeriPB::constraintid subsubclaim_11 = 11, subsubclaim_12 = 12, subsubclaim_13 = 13;
+    // VeriPB::constraintid subsubclaim_11 = 11, subsubclaim_12 = 12, subsubclaim_13 = 13;
 
     // 1 b1 1 b2 1 s2 1 ~s3 1 ~s6 1 ~s7 1 ~x1 >= 3
     C.clear();
@@ -252,7 +278,6 @@ void exampleProof2(){
 
     pl.flush_proof();
 }
-
 
 int main() {
     std::cout << "Started" << std::endl;
