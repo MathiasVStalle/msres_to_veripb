@@ -12,15 +12,15 @@
 
 namespace convertor {
 
-    ProofConvertor::ProofConvertor(std::string wcnf_file, std::string msres_file)
-        : msres_parser(msres_file), output_file(wcnf_file) {
+    ProofConvertor::ProofConvertor(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
+        : msres_parser(msres_file), output_file(output_file) {
 
         std::vector<cnf::Clause> clauses = parser::WCNFParser::parseWCNF(wcnf_file);
         for (int i = 0; i < clauses.size(); i++) {
             this->wcnf_clauses.emplace(i, clauses[i]);
         }
 
-        this->pl = new VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t>(wcnf_file, &this->var_mgr);
+        this->pl = new VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t>(this->output_file, &this->var_mgr);
         this->pl->set_comments(true);
     }
 
@@ -51,11 +51,14 @@ namespace convertor {
         }
 
         // Print the maps for debugging
-        for (const auto& pair : this->vars) {
-            std::cout << "Var: " << pair.first << ", Lit: " << pair.second.v.v << std::endl;
+        for (const auto& pair : this->wcnf_clauses) {
+            std::cout << "Clause " << pair.first << ": ";
+            const cnf::Clause& clause = pair.second;
+            clause.print();
         }
 
         //TODO: Reification clauses
+        this->reificate();
 
         cnf::Rule *rule;
 
@@ -90,5 +93,9 @@ namespace convertor {
         VeriPB::Lit s2{.v = var_s2, .negated = false};
 
         // Rewrite the proof header
+    }
+
+    void ProofConvertor::reificate() {
+
     }
 }

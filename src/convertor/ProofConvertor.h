@@ -35,6 +35,8 @@ namespace convertor {
             void write_res_rule(const cnf::ResRule *rule);
             void write_split_rule(const cnf::SplitRule *rule);
 
+            void reificate();
+
         public:
             /**
              * Constructor for ProofConvertor.
@@ -42,7 +44,7 @@ namespace convertor {
              * @param wcnf_file The name of the WCNF file to parse.
              * @param msres_file The name of the MSRes file to parse.
              */
-            ProofConvertor(const std::string wcnf_file, const std::string msres_file);
+            ProofConvertor(const std::string wcnf_file, const std::string msres_file, const std::string output_file);
 
             /**
              * Destructor for ProofConvertor.
