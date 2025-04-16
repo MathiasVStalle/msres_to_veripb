@@ -55,10 +55,12 @@ namespace parser
     cnf::Rule* MSResParser::next_rule()
     {
         std::string line;
-        std::getline(*this->file_stream, line);
+        if (!std::getline(*this->file_stream, line))
+        {
+            return nullptr; // End of file
+        }
         this->line_number++;
 
-        // Skip comments
         if (line.empty() || line[0] == 'c')
         {
             return next_rule(); // Skip comments
@@ -78,23 +80,20 @@ namespace parser
                 std::string clause_2_str;
 
                 std::smatch matches;
-                if (std::regex_match(rest, matches, pattern))
-                {
+                if (std::regex_match(rest, matches, pattern)) {
                     clause_1_str = matches[1].str();
                     clause_2_str = matches[2].str();
+
+                    cnf::Clause clause_1 = parseClause(clause_1_str);
+                    cnf::Clause clause_2 = parseClause(clause_2_str);
+
+                    cnf::ResRule *rule = new cnf::ResRule(clause_1, clause_2);
+
+                    this->rule_number++;
+                    return rule;
+                } else {
+                    std::cerr << "Invalid msres format at line: " << this->line_number << std::endl;
                 }
-                else
-                {
-                    std::cout << "Invalid format\n";
-                }
-
-                cnf::Clause clause_1 = parseClause(clause_1_str);
-                cnf::Clause clause_2 = parseClause(clause_2_str);
-
-                cnf::ResRule *rule = new cnf::ResRule(clause_1, clause_2);
-
-                this->rule_number++;
-                return rule;
             }
 
             if (type == "split")
@@ -105,21 +104,20 @@ namespace parser
                 std::string clause_str;
 
                 std::smatch matches;
-                if (std::regex_match(rest, matches, pattern))
-                {
+                if (std::regex_match(rest, matches, pattern)) {
                     clause_str = matches[1].str();
+
+                    cnf::Clause clause = parseClause(clause_str);
+
+                    cnf::SplitRule *rule = new cnf::SplitRule(clause);
+
+                    this->rule_number++;
+                    return rule;
                 }
                 else
                 {
-                    std::cout << "Invalid format\n";
-                }
-
-                cnf::Clause clause = parseClause(clause_str);
-
-                cnf::SplitRule *rule = new cnf::SplitRule(clause);
-
-                this->rule_number++;
-                return rule;
+                    std::cerr << "Invalid msres format at line: " << this->line_number << std::endl;
+                }  
             }
         }
         

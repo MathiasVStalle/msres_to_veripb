@@ -24,10 +24,12 @@ namespace convertor {
         this->pl->set_comments(true);
     }
 
+    // Flag: Segmentation fault
     ProofConvertor::~ProofConvertor() {
-        if (this->pl != nullptr) {
-            delete this->pl;
-        }
+        // if (this->pl != nullptr) {
+        //     delete this->pl;
+        //     this->pl = nullptr;
+        // }
     }
 
     void ProofConvertor::write_proof() {
@@ -46,6 +48,11 @@ namespace convertor {
                     this->var_mgr.store_variable_name(variable(new_lit), "x" + std::to_string(var));
                 }
             }
+        }
+
+        // Print the maps for debugging
+        for (const auto& pair : this->vars) {
+            std::cout << "Var: " << pair.first << ", Lit: " << pair.second.v.v << std::endl;
         }
 
         //TODO: Reification clauses

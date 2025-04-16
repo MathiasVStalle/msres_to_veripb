@@ -29,6 +29,10 @@ int main() {
         std::cout << "No more rules" << std::endl;
     }
 
+    // Example usage of the ProofConvertor
+    convertor::ProofConvertor proof_convertor("example.wcnf", "example_proof.msres");
+    proof_convertor.write_proof();
+
     std::cout << "Ended" << std::endl;
     return 0;
 }
