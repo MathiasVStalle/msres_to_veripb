@@ -1,4 +1,5 @@
 #include <set>
+#include <vector>
 #include <iostream>
 #include <cstdint>
 #include <stdexcept>
@@ -17,10 +18,10 @@ namespace cnf
     // TODO: What to do when there are more than two common literals?
     // TODO: Weighted clauses.
     // TODO: Should this return a pointer?
-    std::set<Clause> ResRule::apply() const {
+    std::vector<Clause> ResRule::apply() const {
         // find the two literals that are the same in both but with different signs
-        std::set<int32_t> literals_1 = clause_1.getLiterals();
-        std::set<int32_t> literals_2 = clause_2.getLiterals();
+        std::unordered_set<int32_t> literals_1 = clause_1.getLiterals();
+        std::unordered_set<int32_t> literals_2 = clause_2.getLiterals();
 
         int32_t common_literal = 0;
         for (const auto& lit : literals_1) {
@@ -36,19 +37,19 @@ namespace cnf
         }
 
         // Remove the common literal from both clauses
-        std::set<int32_t> mod_literals_1 = literals_1;
-        std::set<int32_t> mod_literals_2 = literals_2;
+        std::unordered_set<int32_t> mod_literals_1 = literals_1;
+        std::unordered_set<int32_t> mod_literals_2 = literals_2;
         mod_literals_1.erase(common_literal);
         mod_literals_2.erase(-common_literal);
         
 
-        std::set<Clause> new_clauses;
+        std::vector<Clause> new_clauses;
 
         // Build the first new clause
-        std::set<int32_t> new_literals = mod_literals_1;
+        std::unordered_set<int32_t> new_literals = mod_literals_1;
         new_literals.insert(mod_literals_2.begin(), mod_literals_2.end());
         Clause new_clause(std::min(clause_1.getWeight(), clause_2.getWeight()), new_literals);
-        new_clauses.insert(new_clause);
+        new_clauses.push_back(new_clause);
 
         // Build the first half of the resolution clauses
         std::set<int32_t> extention;
@@ -60,7 +61,7 @@ namespace cnf
             int weight = std::min(clause_1.getWeight(), clause_2.getWeight());
 
             Clause new_clause(weight, new_literals);
-            new_clauses.insert(new_clause);
+            new_clauses.push_back(new_clause);
 
             extention.insert(lit);
         }
@@ -75,7 +76,7 @@ namespace cnf
             int weight = std::min(clause_1.getWeight(), clause_2.getWeight());
 
             Clause new_clause(weight, new_literals);
-            new_clauses.insert(new_clause);
+            new_clauses.push_back(new_clause);
 
             extention.insert(lit);
         }
@@ -97,6 +98,16 @@ namespace cnf
         clause_1.print();
         std::cout << "Clause 2: ";
         clause_2.print();
+    }
+
+    const Clause& ResRule::operator[] (const size_t index) const {
+        if (index == 0) {
+            return clause_1;
+        } else if (index == 1) {
+            return clause_2;
+        } else {
+            throw std::out_of_range("Index out of range");
+        }
     }
 }
 

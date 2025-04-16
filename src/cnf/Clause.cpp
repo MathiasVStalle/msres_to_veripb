@@ -1,14 +1,14 @@
 #include <cstdint>
-#include <set>
+#include <unordered_set>
 #include <iostream>
 
 #include "Clause.h"
 
 namespace cnf
 {
-    Clause::Clause(const std::set<int32_t>& literals) : weight(0), literals(literals) {}
+    Clause::Clause(const std::unordered_set<int32_t>& literals) : weight(0), literals(literals) {}
 
-    Clause::Clause(int32_t weight, const std::set<int32_t>& literals) : weight(weight), literals(literals) {}
+    Clause::Clause(int32_t weight, const std::unordered_set<int32_t>& literals) : weight(weight), literals(literals) {}
    
     Clause::~Clause() {}
 
@@ -18,7 +18,7 @@ namespace cnf
         return weight;
     }
 
-    const std::set<int32_t>& Clause::getLiterals() const {
+    const std::unordered_set<int32_t>& Clause::getLiterals() const {
         return literals;
     }
 

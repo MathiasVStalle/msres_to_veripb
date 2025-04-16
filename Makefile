@@ -1,7 +1,7 @@
 CC ?= gcc
 NAME := MSConvert
 
-CFLAGS = -std=c++2a
+CFLAGS = -std=c++2a -g
 LDFLAGS = -lstdc++ -lm
 
 SRC_DIR ?= ./src

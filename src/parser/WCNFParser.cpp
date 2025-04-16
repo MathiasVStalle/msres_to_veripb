@@ -38,7 +38,7 @@ namespace parser
             int weight;
             iss >> weight;
 
-            std::set<int32_t> literals;
+            std::unordered_set<int32_t> literals;
             int literal;
             while (iss >> literal && literal != 0) {
                 literals.insert(literal);

@@ -1,4 +1,4 @@
-#include <set>
+#include <vector>
 #include <cstdint>
 #include <iostream>
 #include <stdexcept>
@@ -12,7 +12,7 @@ namespace cnf
 
     SplitRule::~SplitRule() {}
 
-    std::set<Clause> SplitRule::apply() const {
+    std::vector<Clause> SplitRule::apply() const {
         throw std::runtime_error("SplitRule is not yet defined.");
     }
 
@@ -23,5 +23,12 @@ namespace cnf
     void SplitRule::print() const {
         std::cout << "SplitRule: ";
         clause.print();
+    }
+    
+    const Clause &SplitRule::operator[](const std::size_t index) const {
+        if (index != 0) {
+            throw std::out_of_range("Index out of range");
+        }
+        return clause;
     }
 }

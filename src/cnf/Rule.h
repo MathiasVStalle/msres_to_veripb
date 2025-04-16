@@ -1,7 +1,7 @@
 #ifndef RULE_H
 #define RULE_H
 
-#include <set>
+#include <vector>
 #include "Clause.h"
 
 namespace cnf
@@ -10,8 +10,10 @@ namespace cnf
     {
         public:
             virtual ~Rule() = default;
-            virtual std::set<Clause> apply() const = 0;
+            virtual std::vector<Clause> apply() const = 0;
             virtual void print() const = 0;
+
+            virtual const Clause& operator[](const std::size_t index) const = 0;
     };
 }
 
