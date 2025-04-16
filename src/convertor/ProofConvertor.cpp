@@ -17,7 +17,7 @@ namespace convertor {
 
         std::vector<cnf::Clause> clauses = parser::WCNFParser::parseWCNF(wcnf_file);
         for (int i = 0; i < clauses.size(); i++) {
-            this->wcnf_clauses[i] = clauses[i];
+            this->wcnf_clauses.emplace(i, clauses[i]);
         }
 
         this->pl = new VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t>(wcnf_file, &this->var_mgr);

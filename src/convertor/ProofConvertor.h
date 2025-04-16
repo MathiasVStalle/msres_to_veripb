@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
@@ -21,7 +22,8 @@ namespace convertor {
         private:
             std::string output_file;
 
-            std::unordered_map<cnf::Clause> wcnf_clauses;
+            std::unordered_map<uint32_t, cnf::Clause> wcnf_clauses;
+
             parser::MSResParser msres_parser;
 
             VeriPB::VarManagerWithVarRewriting var_mgr;
