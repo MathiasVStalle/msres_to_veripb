@@ -17,7 +17,7 @@ namespace convertor {
 
         std::vector<cnf::Clause> clauses = parser::WCNFParser::parseWCNF(wcnf_file);
         for (int i = 0; i < clauses.size(); i++) {
-            this->wcnf_clauses.emplace(i, clauses[i]);
+            this->wcnf_clauses.emplace(i + 1, clauses[i]);
         }
 
         this->pl = new VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t>(this->output_file, &this->var_mgr);
@@ -50,7 +50,13 @@ namespace convertor {
             }
         }
 
+        // Write the proof header
+        this->var_mgr.set_number_original_variables(this->vars.size());
+        this->pl->write_proof_header();
+        this->pl->set_n_orig_constraints(this->wcnf_clauses.size());
+
         // Print the maps for debugging
+        std::cout << "Clauses:" << std::endl;
         for (const auto& pair : this->wcnf_clauses) {
             std::cout << "Clause " << pair.first << ": ";
             const cnf::Clause& clause = pair.second;
@@ -59,7 +65,9 @@ namespace convertor {
 
         //TODO: Reification clauses
         this->reificate();
+        this->pl->flush_proof();
 
+        // Write the proof
         cnf::Rule *rule;
 
         while (true) {
@@ -86,16 +94,46 @@ namespace convertor {
     }
 
     void ProofConvertor::write_res_rule(const cnf::ResRule* rule) {
-        VeriPB::Var var_s1 = this->var_mgr.new_variable_only_in_proof();
-        VeriPB::Var var_s2 = this->var_mgr.new_variable_only_in_proof();
-
-        VeriPB::Lit s1{.v = var_s1, .negated = false};
-        VeriPB::Lit s2{.v = var_s2, .negated = false};
-
-        // Rewrite the proof header
+    
     }
 
     void ProofConvertor::reificate() {
+        // Saving the reification of the original clauses
+        for (int i = 1; i <= this->wcnf_clauses.size(); i++) {
+            const cnf::Clause& clause = this->wcnf_clauses.at(i);
 
+            VeriPB::Var var = this->var_mgr.new_variable_only_in_proof();
+            VeriPB::Lit lit{.v = var, .negated = false};
+
+            this->blocking_vars[i] = lit;
+            
+            this->pl->store_reified_constraint_right_implication(variable(lit), i);
+        }
+
+        // Saving the reification in the other direction
+        VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+        for (int i = 1; i <= this->wcnf_clauses.size(); i++) {
+            const cnf::Clause &clause = this->wcnf_clauses.at(i);
+
+            C.clear();
+            C.add_RHS(1);
+
+            for (const auto &literal : clause.getLiterals())
+            {
+                uint32_t var = std::abs(literal);
+                VeriPB::Lit lit = this->vars[var];
+
+                if (literal < 0)
+                {
+                    C.add_literal(neg(lit), 1);
+                }
+                else
+                {
+                    C.add_literal(lit, 1);
+                }
+            }
+
+            this->pl->reification_literal_left_implication(neg(this->blocking_vars[i]), C, true);
+        }
     }
 }

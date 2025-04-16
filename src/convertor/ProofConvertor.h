@@ -22,6 +22,7 @@ namespace convertor {
         private:
             std::string output_file;
 
+            // TODO: VeriPB constraints instead of CNF clauses
             std::unordered_map<uint32_t, cnf::Clause> wcnf_clauses;
 
             parser::MSResParser msres_parser;
@@ -30,6 +31,7 @@ namespace convertor {
             VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t> *pl;
 
             std::unordered_map<uint32_t, VeriPB::Lit> vars;
+            std::unordered_map<uint32_t, VeriPB::Lit> blocking_vars;
 
             void write_proof(const cnf::Rule *rule);
             void write_res_rule(const cnf::ResRule *rule);
