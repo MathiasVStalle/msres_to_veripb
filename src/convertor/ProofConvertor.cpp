@@ -78,9 +78,12 @@ namespace convertor {
             }
 
             this->write_proof(rule);
+            this->pl->flush_proof();
 
             delete rule;
         }
+
+        delete rule;
     }
 
     // TODO: SpltRule is not yet implemented
