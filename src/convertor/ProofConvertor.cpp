@@ -33,7 +33,7 @@ namespace convertor {
     }
 
     void ProofConvertor::write_proof() {
-        // Initializing all the variables
+        // Initializing all the variables from the original clauses
         for (const auto& pair : this->wcnf_clauses) {
             const cnf::Clause& clause = pair.second;
 
@@ -94,7 +94,9 @@ namespace convertor {
     }
 
     void ProofConvertor::write_res_rule(const cnf::ResRule* rule) {
-    
+        // Add the new clause
+
+        // Generate the four claims
     }
 
     void ProofConvertor::reificate() {
@@ -134,6 +136,23 @@ namespace convertor {
             }
 
             this->pl->reification_literal_left_implication(neg(this->blocking_vars[i]), C, true);
+        }
+    }
+
+    void ProofConvertor::write_new_clauses(const cnf::Rule* rule) {
+        std::vector<cnf::Clause> new_clauses = rule->apply();
+
+        uint32_t curr_clause_id = this->wcnf_clauses.size() + 1;
+
+        for (int i = 0; i < new_clauses.size(); i++) {
+            const cnf::Clause& clause = new_clauses[i];
+
+            // Add the new blocking variable
+            VeriPB::Var var = this->var_mgr.new_variable_only_in_proof();
+            VeriPB::Lit lit{.v = var, .negated = false};
+            this->blocking_vars[i + curr_clause_id] = lit;
+
+            // Add the new clause to the proof logger
         }
     }
 }

@@ -11,7 +11,10 @@
 namespace cnf
 {
     ResRule::ResRule(const Clause& clause_1, const Clause& clause_2) 
-        : clause_1(clause_1), clause_2(clause_2) {}
+        : clause_1(clause_1), clause_2(clause_2), constraint_id_1(0), constraint_id_2(0) {}
+
+    ResRule::ResRule(const Clause& clause_1, const Clause& clause_2, const uint32_t constraint_id_1, const uint32_t constraint_id_2) 
+        : clause_1(clause_1), clause_2(clause_2), constraint_id_1(constraint_id_1), constraint_id_2(constraint_id_2) {}
 
     ResRule::~ResRule() {}
 

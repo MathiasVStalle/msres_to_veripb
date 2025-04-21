@@ -21,23 +21,17 @@ namespace convertor {
     {
         private:
             std::string output_file;
-
-            // TODO: VeriPB constraints instead of CNF clauses
-            std::unordered_map<uint32_t, cnf::Clause> wcnf_clauses;
-
             parser::MSResParser msres_parser;
 
-            VeriPB::VarManagerWithVarRewriting var_mgr;
-            VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t> *pl;
-
+            // (n, c) where n is the constraint id and c is the clause
+            std::unordered_map<uint32_t, cnf::Clause> wcnf_clauses;
             std::unordered_map<uint32_t, VeriPB::Lit> vars;
             std::unordered_map<uint32_t, VeriPB::Lit> blocking_vars;
 
-            void write_proof(const cnf::Rule *rule);
-            void write_res_rule(const cnf::ResRule *rule);
-            void write_split_rule(const cnf::SplitRule *rule);
+            std::vector<uint32_t> constraint_ids;
 
-            void reificate();
+            VeriPB::VarManagerWithVarRewriting var_mgr;
+            VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t> *pl;
 
         public:
             /**
@@ -59,8 +53,31 @@ namespace convertor {
              * @param output_file The name of the output file to write the proof to.
              */
             void write_proof();
-            
-    };
+
+        private:
+            /**
+             * Writes the partial proof of the given rule to the proof logger.
+             * 
+             * @param rule The rule to write to the proof logger.
+             */
+            void write_proof(const cnf::Rule *rule); 
+
+            /**
+             * Writes the resolution rule to the proof logger.
+             * 
+             * @param rule The resolution rule to write to the proof logger.
+             */
+            void write_res_rule(const cnf::ResRule *rule);
+
+            void write_split_rule(const cnf::SplitRule *rule);
+
+            /**
+             * Reifies the original clauses and stores the reification in the proof logger.
+             */
+            void reificate();
+
+            void write_new_clauses(const cnf::Rule *rule);
+        };
 }
 
 #endif

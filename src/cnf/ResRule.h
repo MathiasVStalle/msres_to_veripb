@@ -15,6 +15,9 @@ namespace cnf
             const Clause clause_1;
             const Clause clause_2;
 
+            const uint32_t constraint_id_1;
+            const uint32_t constraint_id_2;
+
         public:
             /**
              * Constructor for ResRule.
@@ -23,6 +26,16 @@ namespace cnf
              * @param clause_2 The second clause in the resolution rule.
              */
             ResRule(const Clause& clause_1, const Clause& clause_2);
+
+            /**
+             * Constructor for ResRule with constraint IDs.
+             * 
+             * @param clause_1 The first clause in the resolution rule.
+             * @param clause_2 The second clause in the resolution rule.
+             * @param constraint_id_1 The ID of the first constraint.
+             * @param constraint_id_2 The ID of the second constraint.
+             */
+            ResRule(const Clause& clause_1, const Clause& clause_2, const uint32_t constraint_id_1, const uint32_t constraint_id_2);
 
             /**
              * Destructor for ResRule.

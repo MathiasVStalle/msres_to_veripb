@@ -1,7 +1,7 @@
-CC ?= gcc
+CC ?= g++
 NAME := MSConvert
 
-CFLAGS = -std=c++2a -g
+CFLAGS = -std=c++17 -g
 LDFLAGS = -lstdc++ -lm
 
 SRC_DIR ?= ./src
@@ -25,7 +25,6 @@ run: all
 build:
 	mkdir -p $(BUILD_DIR)/$(SRC_DIR)
 	find $(SRC_DIR) -type d -exec mkdir -p $(BUILD_DIR)/{} \;
-
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)

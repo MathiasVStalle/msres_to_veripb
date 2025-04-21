@@ -12,6 +12,8 @@ namespace cnf
         private:
             const Clause clause;
 
+            const uint32_t constraint_id;
+
         public:
             /**
              * Constructor for SplitRule.
@@ -19,6 +21,14 @@ namespace cnf
              * @param clause The clause to be split.
              */
             SplitRule(const Clause& clause);
+
+            /**
+             * Constructor for SplitRule with a constraint ID.
+             * 
+             * @param clause The clause to be split.
+             * @param constraint_id The ID of the constraint.
+             */
+            SplitRule(const Clause& clause, const uint32_t constraint_id);
 
             /**
              * Destructor for SplitRule.

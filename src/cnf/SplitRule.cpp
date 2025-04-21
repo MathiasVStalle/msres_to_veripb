@@ -8,7 +8,10 @@
 
 namespace cnf
 {
-    SplitRule::SplitRule(const Clause& clause) : clause(clause) {}
+    SplitRule::SplitRule(const Clause& clause) : clause(clause), constraint_id(0) {}
+
+    SplitRule::SplitRule(const Clause& clause, const uint32_t constraint_id) 
+        : clause(clause), constraint_id(constraint_id) {}
 
     SplitRule::~SplitRule() {}
 
