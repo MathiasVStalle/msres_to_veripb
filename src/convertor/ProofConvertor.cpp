@@ -95,6 +95,7 @@ namespace convertor {
 
     void ProofConvertor::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
+        this->write_new_clauses(rule);
 
         // Generate the four claims
     }
@@ -125,12 +126,9 @@ namespace convertor {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit lit = this->vars[var];
 
-                if (literal < 0)
-                {
+                if (literal < 0) {
                     C.add_literal(neg(lit), 1);
-                }
-                else
-                {
+                } else {
                     C.add_literal(lit, 1);
                 }
             }
@@ -144,15 +142,30 @@ namespace convertor {
 
         uint32_t curr_clause_id = this->wcnf_clauses.size() + 1;
 
+        VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         for (int i = 0; i < new_clauses.size(); i++) {
             const cnf::Clause& clause = new_clauses[i];
 
             // Add the new blocking variable
             VeriPB::Var var = this->var_mgr.new_variable_only_in_proof();
-            VeriPB::Lit lit{.v = var, .negated = false};
+            VeriPB::Lit lit = create_literal(var, false); // TODO
             this->blocking_vars[i + curr_clause_id] = lit;
 
             // Add the new clause to the proof logger
+            C.clear();
+            for (const auto& literal : clause.getLiterals()) {
+                uint32_t var = std::abs(literal);
+                VeriPB::Lit new_lit = this->vars[var];
+
+                if (literal < 0) {
+                    C.add_literal(neg(new_lit), 1);
+                } else {
+                    C.add_literal(new_lit, 1);
+                }
+            }
+            C.add_RHS(1);
+            this->pl->reification_literal_left_implication(neg(lit), C, true);
+            this->pl->reification_literal_right_implication(neg(lit), C, true);
         }
     }
 }

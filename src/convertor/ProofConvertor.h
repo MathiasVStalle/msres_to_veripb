@@ -77,6 +77,8 @@ namespace convertor {
             void reificate();
 
             void write_new_clauses(const cnf::Rule *rule);
+
+            
         };
 }
 
