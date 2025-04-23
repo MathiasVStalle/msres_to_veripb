@@ -119,8 +119,8 @@ namespace convertor {
     }
 
     void ProofConvertor::claim_1(
-        const VeriPB::constraintid id_1, 
-        const VeriPB::constraintid id_2, 
+        const uint32_t clause_id,
+        const VeriPB::constraintid constr_id, 
         const uint32_t num_new_clauses,
         const cnf::ResRule& rule,
         const std::vector<cnf::Clause>& new_clauses
@@ -128,6 +128,7 @@ namespace convertor {
         int32_t counter = 0;
 
         VeriPB::CuttingPlanesDerivation cpder(this->pl, false);
+        VeriPB::Lit s2 = this->blocking_vars[clause_id];
         VeriPB::Lit s3 = this->blocking_vars[blocking_vars.size() - (num_new_clauses - 1)];
 
         std::unordered_set<int32_t> literals_set_clause_1 = rule.getClause1().getLiterals();
@@ -228,7 +229,7 @@ namespace convertor {
 
         std::vector<VeriPB::constraintid> subclaims;
 
-        cpder.start_from_constraint(id_2);
+        cpder.start_from_constraint(constr_id);
         cpder.add_constraint(-1);
         subclaims.push_back(cpder.end());
 
@@ -278,9 +279,33 @@ namespace convertor {
 
 
 
-        // Proof by constradiction
+        // Proof by constradiction (1 ~x1 1 s2 1 ~s3 1 ~s6 ... 1 ~sn >= m)
+        VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+        C.add_literal(neg(x), 1);
+        C.add_literal(s2, 1);
+        C.add_literal(neg(s3), 1);
+        for (int i = literals_clause_1.size() - 1; i >= 0; i--) {
+            VeriPB::Lit sn = this->blocking_vars[blocking_vars.size() - i];
+            C.add_literal(neg(sn), 1);
+        }
+        C.add_RHS((num_new_clauses + 1) / 2);
 
-
+        counter = 0;
+        VeriPB::constraintid cxnneg = this->pl->start_proof_by_contradiction(C);
+        for (auto& subclaim : subclaims) {
+            cpder.start_from_constraint(cxnneg);
+            cpder.add_constraint(subclaim);
+            cpder.saturate();
+            cpder.end();
+            counter++;
+        }
+        cpder.start_from_constraint(-counter);
+        for (int i = counter - 1; i > 0; i--) {
+            cpder.add_constraint(-i);
+        }
+        cpder.saturate();
+        cpder.end();
+        VeriPB::constraintid cxnneg2 = pl->end_proof_by_contradiction();
 
         this->pl->flush_proof();
     }

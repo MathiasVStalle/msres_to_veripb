@@ -98,8 +98,8 @@ namespace convertor {
             get_constraint_ids(const uint32_t constraint_1, const uint32_t constraint_2);
 
             void claim_1(
-                const VeriPB::constraintid id_1, 
-                const VeriPB::constraintid id_2, 
+                const uint32_t clause_id, 
+                const VeriPB::constraintid constr_id, 
                 const uint32_t num_new_clauses,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
