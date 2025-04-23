@@ -18,11 +18,7 @@ namespace cnf
 
     ResRule::~ResRule() {}
 
-    // TODO: What to do when there are more than two common literals?
-    // TODO: Weighted clauses.
-    // TODO: Should this return a pointer?
-    std::vector<Clause> ResRule::apply() const {
-        // find the two literals that are the same in both but with different signs
+    const uint32_t ResRule::get_pivot() const {
         std::unordered_set<int32_t> literals_1 = clause_1.getLiterals();
         std::unordered_set<int32_t> literals_2 = clause_2.getLiterals();
 
@@ -38,6 +34,19 @@ namespace cnf
         if (common_literal == 0) {
             throw std::runtime_error("No common literal found between the two clauses.");
         }
+
+        return common_literal;
+    }
+
+
+    // TODO: What to do when there are more than two common literals?
+    // TODO: Weighted clauses.
+    // TODO: Should this return a pointer?
+    std::vector<Clause> ResRule::apply() const {
+        // find the two literals that are the same in both but with different signs
+        std::unordered_set<int32_t> literals_1 = clause_1.getLiterals();
+        std::unordered_set<int32_t> literals_2 = clause_2.getLiterals();
+        int32_t common_literal = this->get_pivot();
 
         // Remove the common literal from both clauses
         std::unordered_set<int32_t> mod_literals_1 = literals_1;
@@ -93,6 +102,14 @@ namespace cnf
 
     const Clause& ResRule::getClause2() const {
         return clause_2;
+    }
+
+    const uint32_t ResRule::get_constraint_id_1() const {
+        return constraint_id_1;
+    }
+
+    const uint32_t ResRule::get_constraint_id_2() const {
+        return constraint_id_2;
     }
 
     void ResRule::print() const {

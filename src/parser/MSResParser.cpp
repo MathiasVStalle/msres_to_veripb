@@ -52,6 +52,7 @@ namespace parser
         return cnf::Clause(weight, literals);
     }
 
+    // TODO: Be able to parse when a number is given as a float
     cnf::Rule* MSResParser::next_rule()
     {
         std::string line;

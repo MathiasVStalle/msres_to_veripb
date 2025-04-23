@@ -4,3 +4,41 @@ f
 red 3 ~_p1 1 ~x3 1 ~x2 1 ~x1 >=  3; _p1 0
 * ~_p2 <- 1 x5 1 x4 1 ~x1 >= 1
 red 3 ~_p2 1 ~x5 1 ~x4 1 x1 >=  3; _p2 0
+* ~_p3 -> 1 x4 1 x5 1 x3 1 x2 >= 1
+red 1 _p3 1 x4 1 x5 1 x3 1 x2 >= 1; _p3 1
+* ~_p3 <- 1 x4 1 x5 1 x3 1 x2 >= 1
+red 4 ~_p3 1 ~x4 1 ~x5 1 ~x3 1 ~x2 >=  4; _p3 0
+* ~_p4 -> 1 ~x5 1 x3 1 x2 1 x1 >= 1
+red 1 _p4 1 ~x5 1 x3 1 x2 1 x1 >= 1; _p4 1
+* ~_p4 <- 1 ~x5 1 x3 1 x2 1 x1 >= 1
+red 4 ~_p4 1 x5 1 ~x3 1 ~x2 1 ~x1 >=  4; _p4 0
+* ~_p5 -> 1 ~x4 1 x5 1 x3 1 x2 1 x1 >= 1
+red 1 _p5 1 ~x4 1 x5 1 x3 1 x2 1 x1 >= 1; _p5 1
+* ~_p5 <- 1 ~x4 1 x5 1 x3 1 x2 1 x1 >= 1
+red 5 ~_p5 1 x4 1 ~x5 1 ~x3 1 ~x2 1 ~x1 >=  5; _p5 0
+* ~_p6 -> 1 ~x3 1 x5 1 x4 1 ~x1 >= 1
+red 1 _p6 1 ~x3 1 x5 1 x4 1 ~x1 >= 1; _p6 1
+* ~_p6 <- 1 ~x3 1 x5 1 x4 1 ~x1 >= 1
+red 4 ~_p6 1 x3 1 ~x5 1 ~x4 1 x1 >=  4; _p6 0
+* ~_p7 -> 1 ~x2 1 x3 1 x5 1 x4 1 ~x1 >= 1
+red 1 _p7 1 ~x2 1 x3 1 x5 1 x4 1 ~x1 >= 1; _p7 1
+* ~_p7 <- 1 ~x2 1 x3 1 x5 1 x4 1 ~x1 >= 1
+red 5 ~_p7 1 x2 1 ~x3 1 ~x5 1 ~x4 1 x1 >=  5; _p7 0
+p 6 x3 w x5 w x4 w s
+p 12 x1 w x5 w x4 w s
+p 14 x1 w x3 w x5 w x4 w s
+p -3 -2 + -1 +
+p 6 x2 w x5 w x4 w s
+p 14 x1 w x2 w x5 w x4 w s
+p -2 -1 +
+p 20 2 *
+p 21 -1 + 2 d
+p 2 -1 +
+p 6 x3 w x2 w x5 w s
+p 12 x1 w x3 w x5 w s
+p 14 x1 w x3 w x2 w x5 w s
+p -3 -2 + -1 +
+p 6 x3 w x2 w x4 w s
+p 12 x1 w x3 w x4 w s
+p 14 x1 w x3 w x2 w x4 w s
+p -3 -2 + -1 +

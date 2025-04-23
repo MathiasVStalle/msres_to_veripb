@@ -16,4 +16,6 @@ template long VeriPB::Prooflogger::reification_literal_left_implication<VeriPB::
 template long VeriPB::Prooflogger::get_reified_constraint_left_implication<VeriPB::Var>(VeriPB::Var const&);
 template long VeriPB::Prooflogger::get_reified_constraint_right_implication<VeriPB::Var>(VeriPB::Var const&);
 template void VeriPB::CuttingPlanesDerivation::weaken<VeriPB::Var>(VeriPB::Var const&);
+template void VeriPB::CuttingPlanesDerivation::multiply<int>(int const&);
+template void VeriPB::CuttingPlanesDerivation::divide<int>(int const&);
 template long VeriPB::Prooflogger::start_proof_by_contradiction<VeriPB::Constraint<VeriPB::Lit, unsigned int, unsigned int> >(VeriPB::Constraint<VeriPB::Lit, unsigned int, unsigned int> const&);

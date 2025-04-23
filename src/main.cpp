@@ -12,22 +12,9 @@ int main() {
     std::cout << "Started" << std::endl;
     
     parser::MSResParser parser("example_proof.msres");
-    cnf::Rule* rule_1 = parser.next_rule();
-    cnf::Rule* rule_2 = parser.next_rule();
+    cnf::Rule *rule = parser.next_rule();
 
-    if (rule_1 != nullptr) {
-        rule_1->print();
-        delete rule_1;
-    } else {
-        std::cout << "No more rules" << std::endl;
-    }
-
-    if (rule_2 != nullptr) {
-        rule_2->print();
-        delete rule_2;
-    } else {
-        std::cout << "No more rules" << std::endl;
-    }
+    rule->print();
 
     // Example usage of the ProofConvertor
     convertor::ProofConvertor proof_convertor("example.wcnf", "example_proof.msres", "output.pbp");

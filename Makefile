@@ -1,7 +1,7 @@
 CC ?= g++
 NAME := MSConvert
 
-CFLAGS = -std=c++17 -g
+CFLAGS = -std=c++17 -g "-I./lib/VeriPB_Prooflogger/core"
 LDFLAGS = -lstdc++ -lm
 
 SRC_DIR ?= ./src

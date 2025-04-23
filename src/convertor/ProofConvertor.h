@@ -13,8 +13,8 @@
 
 #include "../parser/MSResParser.h"
 
-#include "../../lib/VeriPB_Prooflogger/core/VeriPbSolverTypes.h"
-#include "../../lib/VeriPB_Prooflogger/core/MaxSATProoflogger.h"
+#include "VeriPbSolverTypes.h"
+#include "MaxSATProoflogger.h"
 
 namespace convertor {
     class ProofConvertor
@@ -28,7 +28,8 @@ namespace convertor {
             std::unordered_map<uint32_t, VeriPB::Lit> vars;
             std::unordered_map<uint32_t, VeriPB::Lit> blocking_vars;
 
-            std::vector<uint32_t> constraint_ids;
+            // The amount of constraints in each partial proof (reification of the wcnf clauses not included)
+            std::vector<uint32_t> proof_sizes;
 
             VeriPB::VarManagerWithVarRewriting var_mgr;
             VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t> *pl;
@@ -76,10 +77,34 @@ namespace convertor {
              */
             void reificate();
 
+            /**
+             * Applies the given rule and writes the new clauses to the proof logger.
+             * 
+             * @param rule The rule to apply.
+             */
             void write_new_clauses(const cnf::Rule *rule);
 
-            
-        };
+            /**
+             * Gives the constraint ids in the veripb proof logger for the given constraints.
+             * 
+             * @param constraint_1 The MaxSAT resolution constraint id for the first constraint.
+             * @param constraint_2 The MaxSAT resolution constraint id for the second constraint.
+             * @return A pair of pairs containing the constraint ids in the veripb proof logger. Both left and right implication are included.
+             */
+            std::pair<
+                std::pair<VeriPB::constraintid, VeriPB::constraintid>, 
+                std::pair<VeriPB::constraintid, VeriPB::constraintid>
+            > 
+            get_constraint_ids(const uint32_t constraint_1, const uint32_t constraint_2);
+
+            void claim_1(
+                const VeriPB::constraintid id_1, 
+                const VeriPB::constraintid id_2, 
+                const uint32_t num_new_clauses,
+                const cnf::ResRule& rule,
+                const std::vector<cnf::Clause>& new_clauses
+            );
+    };
 }
 
 #endif
