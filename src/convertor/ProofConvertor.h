@@ -97,12 +97,58 @@ namespace convertor {
             > 
             get_constraint_ids(const uint32_t constraint_1, const uint32_t constraint_2);
 
-            void claim_1(
-                const uint32_t clause_id, 
+            VeriPB::constraintid claim_1(
+                const uint32_t clause_id_1,
+                const uint32_t clause_id_2,
                 const VeriPB::constraintid constr_id, 
                 const uint32_t num_new_clauses,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
+            );
+
+
+
+            VeriPB::constraintid claim_1_step_1(
+                VeriPB::CuttingPlanesDerivation& cpder, 
+                VeriPB::Lit x,
+                VeriPB::Lit s3, 
+                std::vector<int32_t>& literals_1, 
+                std::vector<int32_t>& literals_2
+            );
+
+            VeriPB::constraintid claim_1_step_2(
+                VeriPB::CuttingPlanesDerivation& cpder, 
+                VeriPB::Lit x,
+                VeriPB::Lit s3,
+                std::vector<int32_t>& literals_1, 
+                std::vector<int32_t>& literals_2
+            );
+            
+            VeriPB::constraintid claim_1_step_3(
+                VeriPB::CuttingPlanesDerivation& cpder, 
+                VeriPB::constraintid cxn_1,
+                VeriPB::constraintid cxn_2,
+                int32_t counter
+            );
+
+            std::vector<VeriPB::constraintid> claim_1_step_4(
+                VeriPB::CuttingPlanesDerivation& cpder,
+                VeriPB::constraintid c_id_s2,
+                VeriPB::Lit x,
+                VeriPB::Lit s2,
+                VeriPB::Lit s3,
+                std::vector<int32_t>& literals_1, 
+                std::vector<int32_t>& literals_2
+            );
+
+            VeriPB::constraintid claim_1_contradiction(
+                VeriPB::CuttingPlanesDerivation& cpder,
+                VeriPB::Lit x,
+                VeriPB::Lit s2,
+                VeriPB::Lit s3,
+                std::vector<int32_t>& literals_1, 
+                std::vector<int32_t>& literals_2,
+                std::vector<VeriPB::constraintid>& subclaims
             );
     };
 }
