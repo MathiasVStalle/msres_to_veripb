@@ -127,6 +127,92 @@ namespace convertor {
             *res_rule,
             res_rule->apply()
         );
+        constraintid claim_3 = this->claim_3(
+            res_rule->get_constraint_id_1(),
+            res_rule->get_constraint_id_2(),
+            id_pair.second.second,
+            num_new_clauses,
+            *res_rule,
+            res_rule->apply()
+        );
+        constraintid claim_4 = this->claim_4(
+            res_rule->get_constraint_id_1(),
+            res_rule->get_constraint_id_2(),
+            id_pair.first.second,
+            num_new_clauses,
+            *res_rule,
+            res_rule->apply()
+        );
+
+        // s1 + s2 >= s3 + s4 + ... + s_n
+        Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+        C.add_literal(blocking_vars[res_rule->get_constraint_id_1()], 1);
+        C.add_literal(blocking_vars[res_rule->get_constraint_id_2()], 1);
+        for (int i = 0; i < num_new_clauses; i++) {
+            C.add_literal(neg(blocking_vars[blocking_vars.size() - i]), 1);
+        }
+        C.add_RHS(num_new_clauses - 2);
+
+        CuttingPlanesDerivation cpder(pl, false);
+        pl->start_proof_by_contradiction(C);
+
+        cpder.start_from_constraint(-1);
+        cpder.add_constraint(claim_1);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(claim_2);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(-1);
+        cpder.end();
+        pl->move_to_coreset_by_id(-1);
+
+
+        // s1 + s2 <= s3 + s4 + ... + s_n
+        C.clear();
+        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
+        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
+        for (int i = 0; i < num_new_clauses; i++) {
+            C.add_literal(blocking_vars[blocking_vars.size() - i], 1);
+        }
+        C.add_RHS(2);
+
+        pl->start_proof_by_contradiction(C);
+
+        cpder.start_from_constraint(-1);
+        cpder.add_constraint(claim_3);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(claim_4);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(-1);
+        cpder.end();
+        pl->move_to_coreset_by_id(-1);
+
+
+        // Objective aanpassen
+        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+
+        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
+        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
+
+        for (int i = 0; i < num_new_clauses; i++) {
+            c_new.add_literal(blocking_vars[blocking_vars.size() - i], 1);
+        }
+
+        pl->write_objective_update_diff(c_old, c_new);
+        
+        pl->write_conclusion_NONE();
     }
 
     void ProofConvertor::reificate() {

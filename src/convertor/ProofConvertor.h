@@ -202,6 +202,25 @@ namespace convertor {
                 std::vector<int32_t>& literals_2,
                 std::vector<VeriPB::constraintid>& subclaims
             );
+
+
+            VeriPB::constraintid claim_3(
+                uint32_t clause_id_1,
+                uint32_t clause_id_2,
+                VeriPB::constraintid constr_id,
+                uint32_t num_new_clauses,
+                const cnf::ResRule& rule,
+                const std::vector<cnf::Clause>& new_clauses
+            );
+
+            VeriPB::constraintid claim_4(
+                uint32_t clause_id_1,
+                uint32_t clause_id_2,
+                VeriPB::constraintid constr_id,
+                uint32_t num_new_clauses,
+                const cnf::ResRule& rule,
+                const std::vector<cnf::Clause>& new_clauses
+            );
     };
 }
 
