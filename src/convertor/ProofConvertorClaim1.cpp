@@ -65,15 +65,14 @@ namespace convertor {
         int32_t counter = 0;
         int32_t offset = blocking_vars.size() - literals_clause_1.size();
         for (int i = 0; i < literals_clause_2.size(); i++) {
-            VeriPB::Lit sn = this->blocking_vars[offset - 1];
+            VeriPB::Lit sn = this->blocking_vars[offset - i];
         
             // Take all the unused constraints and weaken them
-            cpder.start_from_constraint(this->pl->get_reified_constraint_right_implication(variable(sn)));
+            cpder.start_from_constraint(this->pl->get_reified_constraint_left_implication(variable(sn)));
             for (int j = 0; j < literals_clause_1.size(); j++) {
                 cpder.weaken(variable(this->vars[std::abs(literals_clause_1[j])]));
             }
-            int32_t not_neaded = literals_clause_2.size() - i - 1;
-            for (int j = 0; j < literals_clause_2.size() - not_neaded; j++) {
+            for (int j = 0; j < literals_clause_2.size() - i; j++) {
                 cpder.weaken(variable(this->vars[std::abs(literals_clause_2[j])]));
             }
             cpder.saturate();
@@ -200,7 +199,7 @@ namespace convertor {
 
         cpder.start_from_constraint(cxn_2);
         cpder.add_constraint(-1);
-        cpder.divide(counter);
+        cpder.divide(counter + 1);
         constraintid cxn = cpder.end();
 
         return cxn;

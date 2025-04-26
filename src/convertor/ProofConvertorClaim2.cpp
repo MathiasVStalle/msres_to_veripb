@@ -37,7 +37,7 @@ namespace convertor {
         VeriPB::constraintid cxn_1 = claim_2_step_1(cpder, x, s3, literals_clause_1, literals_clause_2);
         VeriPB::constraintid cxn_2 = claim_2_step_2(cpder, x, s3, literals_clause_1, literals_clause_2);
         VeriPB::constraintid cxn_3 = claim_1_step_3(cpder, cxn_1, cxn_2, literals_clause_1.size());
-        std::vector<VeriPB::constraintid> subclaims = claim_1_step_4(
+        std::vector<VeriPB::constraintid> subclaims = claim_2_step_4(
             cpder,
             constr_id,
             x,
@@ -46,7 +46,8 @@ namespace convertor {
             literals_clause_1,
             literals_clause_2
         );
-        VeriPB::constraintid cxn_4 = claim_1_contradiction(
+
+        VeriPB::constraintid cxn_4 = claim_2_contradiction(
             cpder,
             x,
             s1,
@@ -71,8 +72,7 @@ namespace convertor {
             for (int j = 0; j < literals_clause_2.size(); j++) {
                 cpder.weaken(variable(vars[std::abs(literals_clause_2[j])]));
             }
-            int32_t not_neaded = literals_clause_1.size() - i - 1;
-            for (int j = 0; j < literals_clause_1.size() - not_neaded; j++) {
+            for (int j = 0; j < literals_clause_1.size() - i; j++) {
                 cpder.weaken(variable(vars[std::abs(literals_clause_1[j])]));
             }
             cpder.saturate();
@@ -253,8 +253,9 @@ namespace convertor {
             cpder.add_literal_axiom(s1);
             cpder.add_literal_axiom(x);
             subclaims.push_back(cpder.end());
-
         }
+
+        return subclaims;
     }
 
     VeriPB::constraintid ProofConvertor::claim_2_contradiction(
@@ -280,10 +281,11 @@ namespace convertor {
         }
         C.add_RHS((num_new_clauses + 1) / 2);
 
-        // Proof by constradiction (1 ~x1 1 s2 1 ~s3 1 ~s6 ... 1 ~sn >= m)
+        // Proof by constradiction
         int32_t counter = 0;
         VeriPB::constraintid cxnneg = pl->start_proof_by_contradiction(C);
         for (auto& subclaim : subclaims) {
+            std::cout << "Adding subclaim: " << subclaim << std::endl;
             cpder.start_from_constraint(cxnneg);
             cpder.add_constraint(subclaim);
             cpder.saturate();

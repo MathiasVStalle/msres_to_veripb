@@ -35,13 +35,12 @@ namespace convertor {
 
 
         // Step 1
-        cpder.start_from_literal_axiom(s3);
-        for (int i = 0; i < literals_clause_1.size(); i++) {
-            Lit sn = blocking_vars[blocking_vars.size() - literals_clause_1.size() - i];
-            constraintid cxn = pl->get_reified_constraint_right_implication(variable(sn));
-            cpder.add_constraint(cxn);
+        cpder.start_from_constraint(pl->get_reified_constraint_right_implication(variable(s3)));
+        for (int i = 0; i < literals_clause_2.size(); i++) {
+            Lit sn = blocking_vars[blocking_vars.size() - literals_clause_2.size() - i];
+            cpder.add_constraint(pl->get_reified_constraint_right_implication(variable(sn)));
+            cpder.saturate();
         }
-        cpder.saturate();
         cpder.end();
 
         cpder.start_from_constraint(-1);
@@ -71,7 +70,7 @@ namespace convertor {
         C.add_literal(s3, 1);
         for (int i = 0; i < literals_clause_1.size(); i++) {
             Lit sn = blocking_vars[blocking_vars.size() - literals_clause_1.size() - i];
-            C.add_literal(neg(sn), 1);
+            C.add_literal(sn, 1);
         }
         C.add_RHS(1);
 

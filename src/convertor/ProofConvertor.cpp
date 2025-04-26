@@ -151,7 +151,7 @@ namespace convertor {
         for (int i = 0; i < num_new_clauses; i++) {
             C.add_literal(neg(blocking_vars[blocking_vars.size() - i]), 1);
         }
-        C.add_RHS(num_new_clauses - 2);
+        C.add_RHS(num_new_clauses);
 
         CuttingPlanesDerivation cpder(pl, false);
         pl->start_proof_by_contradiction(C);
@@ -169,6 +169,8 @@ namespace convertor {
         cpder.start_from_constraint(-2);
         cpder.add_constraint(-1);
         cpder.end();
+
+        pl->end_proof_by_contradiction();
         pl->move_to_coreset_by_id(-1);
 
 
@@ -196,6 +198,8 @@ namespace convertor {
         cpder.start_from_constraint(-2);
         cpder.add_constraint(-1);
         cpder.end();
+
+        pl->end_proof_by_contradiction();
         pl->move_to_coreset_by_id(-1);
 
 
@@ -203,8 +207,8 @@ namespace convertor {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
-        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
-        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
+        c_old.add_literal(blocking_vars[res_rule->get_constraint_id_1()], 1);
+        c_old.add_literal(blocking_vars[res_rule->get_constraint_id_2()], 1);
 
         for (int i = 0; i < num_new_clauses; i++) {
             c_new.add_literal(blocking_vars[blocking_vars.size() - i], 1);
