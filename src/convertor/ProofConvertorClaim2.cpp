@@ -134,6 +134,7 @@ namespace convertor {
         cpder.start_from_constraint(-counter);
         for (int i = counter - 1; i > 0; i--) {
             cpder.add_constraint(-i);
+            cpder.saturate();
         }
         cxn = cpder.end();
 
@@ -279,7 +280,7 @@ namespace convertor {
             VeriPB::Lit sn = blocking_vars[blocking_vars.size() - offset - i];
             C.add_literal(neg(sn), 1);
         }
-        C.add_RHS((num_new_clauses + 1) / 2);
+        C.add_RHS(num_new_clauses - literals_1.size());
 
         // Proof by constradiction
         int32_t counter = 0;
