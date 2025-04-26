@@ -204,10 +204,13 @@ line 057: end
 line 058: 
 line 059: @subclaim_1 p -1 ~x1 2 * +
   ConstraintId 042 (@subclaim_1): 1 s2 1 ~s3 1 ~s6 1 ~s7 3 ~x1 >= 3
+
 line 060: p 11 a1 w a2 w b1 w s
   ConstraintId 043: 1 ~s4 1 ~x1 >= 1
+
 line 061: p 12 a1 w a2 w b1 w b2 w s
   ConstraintId 044: 1 ~s5 1 ~x1 >= 1
+  
 line 062: @claim_1 p -2 -1 + @subclaim_1 + s1 +
   ConstraintId 045 (@claim_1): 1 s1 1 s2 1 ~s3 1 ~s4 1 ~s5 1 ~s6 1 ~s7 5 ~x1 >= 5
 line 063: 
