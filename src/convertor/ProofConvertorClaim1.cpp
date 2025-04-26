@@ -230,8 +230,7 @@ namespace convertor {
                 cpder.weaken(variable(vars[std::abs(literals_1[j])]));
             }
             for (int j = 0; j < literals_2.size(); j++) {
-                if (i != j) continue;
-
+                if (i == j) continue;
                 cpder.weaken(variable(vars[std::abs(literals_2[j])]));
             }
             cpder.saturate();
@@ -248,7 +247,7 @@ namespace convertor {
                     cpder.weaken(variable(vars[std::abs(literals_1[k])]));
                 }
                 for (int k = 0; k < literals_2.size(); k++) {
-                    if (i != k) continue;
+                    if (i == k) continue;
 
                     cpder.weaken(variable(vars[std::abs(literals_2[k])]));
                 }

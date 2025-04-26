@@ -8,31 +8,18 @@
 #include "./parser/WCNFParser.h"
 #include "./convertor/ProofConvertor.h"
 
-int main() {
-    std::cout << "Started" << std::endl;
+int main(int argc, char *argv[]) {
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <wcnf_file> <msres_file> <output_file>" << std::endl;
+        return 1;
+    }
+
+    std::string wcnf_file = argv[1];
+    std::string msres_file = argv[2];
+    std::string output_file = argv[3];
     
-    parser::MSResParser parser("example_proof.msres");
-    cnf::Rule* rule_1 = parser.next_rule();
-    cnf::Rule* rule_2 = parser.next_rule();
-
-    if (rule_1 != nullptr) {
-        rule_1->print();
-        delete rule_1;
-    } else {
-        std::cout << "No more rules" << std::endl;
-    }
-
-    if (rule_2 != nullptr) {
-        rule_2->print();
-        delete rule_2;
-    } else {
-        std::cout << "No more rules" << std::endl;
-    }
-
-    // Example usage of the ProofConvertor
-    convertor::ProofConvertor proof_convertor("example.wcnf", "example_proof.msres", "output.pbp");
+    convertor::ProofConvertor proof_convertor(wcnf_file, msres_file, output_file);
     proof_convertor.write_proof();
 
-    std::cout << "Ended" << std::endl;
     return 0;
 }

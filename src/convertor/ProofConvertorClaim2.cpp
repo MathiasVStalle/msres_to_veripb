@@ -211,7 +211,7 @@ namespace convertor {
             // Weaken on everything except a_i
             cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(s3)));
             for (int j = 0; j < literals_1.size(); j++) {
-                if (i != j) continue;
+                if (i == j) continue;
 
                 cpder.weaken(variable(vars[std::abs(literals_1[j])]));
             }
@@ -232,7 +232,7 @@ namespace convertor {
                     cpder.weaken(variable(vars[std::abs(literals_2[k])]));
                 }
                 for (int k = 0; k < literals_1.size(); k++) {
-                    if (i != k) continue;
+                    if (i == k) continue;
 
                     cpder.weaken(variable(vars[std::abs(literals_1[k])]));
                 }
