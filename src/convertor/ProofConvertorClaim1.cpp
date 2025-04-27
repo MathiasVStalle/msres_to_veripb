@@ -79,11 +79,15 @@ namespace convertor {
         }
 
         // Add all the previous constraints
-        cpder.start_from_constraint(-counter);
-        for (int i = counter - 1; i > 0; i--) {
-            cpder.add_constraint(-i);
+        if (counter != 0) {
+            cpder.start_from_constraint(-counter);
+            for (int i = counter - 1; i > 0; i--) {
+                cpder.add_constraint(-i);
+            }
+            cpder.add_constraint(subclaim);
+        } else {
+            cpder.start_from_constraint(subclaim);
         }
-        cpder.add_constraint(subclaim);
         cpder.add_literal_axiom(s1);
         VeriPB::constraintid result = cpder.end();
         pl->write_comment("Claim 1");

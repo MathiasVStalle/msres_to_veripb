@@ -79,11 +79,15 @@ namespace convertor {
         }
         
         // Add all the previous constraints
-        cpder.start_from_constraint(-counter);
-        for (int i = counter - 1; i > 0; i--) {
-            cpder.add_constraint(-i);
+        if (counter != 0) {
+            cpder.start_from_constraint(-counter);
+            for (int i = counter - 1; i > 0; i--) {
+                cpder.add_constraint(-i);
+            }
+            cpder.add_constraint(subclaim);
+        } else {
+            cpder.start_from_constraint(subclaim);
         }
-        cpder.add_constraint(subclaim);
         cpder.add_literal_axiom(s2);
         VeriPB::constraintid result = cpder.end();
         pl->write_comment("Claim 2");
@@ -153,7 +157,7 @@ namespace convertor {
                 cpder.weaken(variable(x));
 
                 uint32_t n = (j <= i) ? j : i;
-                for (int k = 0; k < literals_2.size() - n; k++) {
+                for (int k = 0; k < literals_2.size(); k++) {
                     if (n == k + 1) continue;
                     cpder.weaken(variable(vars[std::abs(literals_2[k])]));
                 }
@@ -331,7 +335,6 @@ namespace convertor {
         int32_t counter = 0;
         VeriPB::constraintid cxnneg = pl->start_proof_by_contradiction(C);
         for (auto& subclaim : subclaims) {
-            std::cout << "Adding subclaim: " << subclaim << std::endl;
             cpder.start_from_constraint(cxnneg);
             cpder.add_constraint(subclaim);
             cpder.saturate();
