@@ -92,123 +92,46 @@ namespace convertor {
     }
 
     void ProofConvertor::write_res_rule(const cnf::ResRule* rule) {
-        // TODO: Remove this
-        cnf::ResRule* res_rule = new cnf::ResRule(rule->getClause1(), rule->getClause2(), 1, 2);
-
-        // Get the starting constraint id's from both clauses
-        std::pair<
-            std::pair<VeriPB::constraintid, VeriPB::constraintid>, 
-            std::pair<VeriPB::constraintid, VeriPB::constraintid>
-        >
-        id_pair = this->get_constraint_ids(
-            res_rule->get_constraint_id_1(), 
-            res_rule->get_constraint_id_2()
-        );
-
         // Add the new clause
         uint32_t num_new_clauses = this->blocking_vars.size();
         this->write_new_clauses(rule);
         num_new_clauses = this->blocking_vars.size() - num_new_clauses;
 
+        uint32_t constraint_id_1 = constraint_ids.at(rule->getClause1());
+        uint32_t constraint_id_2 = constraint_ids.at(rule->getClause2());
+
         // Generate the four claims
         constraintid claim_1 = this->claim_1(
-            res_rule->get_constraint_id_1(),
-            res_rule->get_constraint_id_2(),
-            *res_rule,
-            res_rule->apply()
+            constraint_id_1,
+            constraint_id_2,
+            *rule,
+            rule->apply()
         );
+        pl->write_comment("__Claim 1__");
         constraintid claim_2 = this->claim_2(
-            res_rule->get_constraint_id_1(),
-            res_rule->get_constraint_id_2(),
-            *res_rule,
-            res_rule->apply()
+            constraint_id_1,
+            constraint_id_2,
+            *rule,
+            rule->apply()
         );
+        pl->write_comment("__Claim 2__");
         constraintid claim_3 = this->claim_3(
-            res_rule->get_constraint_id_1(),
-            res_rule->get_constraint_id_2(),
-            *res_rule,
-            res_rule->apply()
+            constraint_id_1,
+            constraint_id_2,
+            *rule,
+            rule->apply()
         );
+        pl->write_comment("__Claim 3__");
         constraintid claim_4 = this->claim_4(
-            res_rule->get_constraint_id_1(),
-            res_rule->get_constraint_id_2(),
-            *res_rule,
-            res_rule->apply()
+            constraint_id_1,
+            constraint_id_2,
+            *rule,
+            rule->apply()
         );
+        pl->write_comment("__Claim 4__");
 
-        // s1 + s2 >= s3 + s4 + ... + s_n
-        Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
-        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
-        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
-        for (int i = 0; i < num_new_clauses; i++) {
-            C.add_literal(neg(blocking_vars[blocking_vars.size() - i]), 1);
-        }
-        C.add_RHS(num_new_clauses);
-
-        CuttingPlanesDerivation cpder(pl, false);
-        pl->start_proof_by_contradiction(C);
-
-        cpder.start_from_constraint(-1);
-        cpder.add_constraint(claim_1);
-        cpder.saturate();
-        cpder.end();
-
-        cpder.start_from_constraint(-2);
-        cpder.add_constraint(claim_2);
-        cpder.saturate();
-        cpder.end();
-
-        cpder.start_from_constraint(-2);
-        cpder.add_constraint(-1);
-        cpder.end();
-
-        pl->end_proof_by_contradiction();
-        pl->move_to_coreset_by_id(-1);
-
-
-        // s1 + s2 <= s3 + s4 + ... + s_n
-        C.clear();
-        C.add_literal(blocking_vars[res_rule->get_constraint_id_1()], 1);
-        C.add_literal(blocking_vars[res_rule->get_constraint_id_2()], 1);
-        for (int i = 0; i < num_new_clauses; i++) {
-            C.add_literal(blocking_vars[blocking_vars.size() - i], 1);
-        }
-        C.add_RHS(2);
-
-        pl->start_proof_by_contradiction(C);
-
-        cpder.start_from_constraint(-1);
-        cpder.add_constraint(claim_3);
-        cpder.saturate();
-        cpder.end();
-
-        cpder.start_from_constraint(-2);
-        cpder.add_constraint(claim_4);
-        cpder.saturate();
-        cpder.end();
-
-        cpder.start_from_constraint(-2);
-        cpder.add_constraint(-1);
-        cpder.end();
-
-        pl->end_proof_by_contradiction();
-        pl->move_to_coreset_by_id(-1);
-
-
-        // Objective aanpassen
-        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
-        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-
-        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
-        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
-
-        for (int i = 0; i < num_new_clauses; i++) {
-            c_new.add_literal(blocking_vars[blocking_vars.size() - i], 1);
-        }
-
-        pl->write_objective_update_diff(c_old, c_new);
-        
-        pl->write_conclusion_NONE();
+        assemble_proof(claim_1, claim_2, claim_3, claim_4, constraint_id_1, constraint_id_2, num_new_clauses);
+        change_objective(constraint_id_1, constraint_id_2, num_new_clauses);
     }
 
     void ProofConvertor::reificate() {
@@ -221,6 +144,7 @@ namespace convertor {
             VeriPB::Lit lit{.v = var, .negated = false};
 
             this->blocking_vars[i] = lit;
+            this->constraint_ids[clause] = i;
             
             this->pl->store_reified_constraint_right_implication(variable(lit), i);
         }
@@ -262,6 +186,7 @@ namespace convertor {
             VeriPB::Var var = this->var_mgr.new_variable_only_in_proof();
             VeriPB::Lit lit = create_literal(var, false); // TODO
             this->blocking_vars[i + curr_clause_id + 1] = lit;
+            this->constraint_ids[clause] = i + curr_clause_id + 1;
 
             // Add the new clause to the proof logger
             C.clear();
@@ -281,31 +206,89 @@ namespace convertor {
         }
     }
 
-    // TODO: Implement this function further
-    std::pair<
-        std::pair<VeriPB::constraintid, VeriPB::constraintid>, 
-        std::pair<VeriPB::constraintid, VeriPB::constraintid>
-    > 
-    ProofConvertor::get_constraint_ids(const uint32_t id_1, const uint32_t id_2) {
-        std::pair<VeriPB::constraintid, VeriPB::constraintid> first_pair;
-        std::pair<VeriPB::constraintid, VeriPB::constraintid> second_pair;
+    void ProofConvertor::assemble_proof(
+        VeriPB::constraintid claim_1, 
+        VeriPB::constraintid claim_2,
+        VeriPB::constraintid claim_3,
+        VeriPB::constraintid claim_4,
+        uint32_t clause_id_1,
+        uint32_t clause_id_2,
+        uint32_t num_new_clauses
+    ) {
+        // s1 + s2 >= s3 + s4 + ... + s_n
+        Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+        C.add_literal(neg(blocking_vars[clause_id_1]), 1);
+        C.add_literal(neg(blocking_vars[clause_id_2]), 1);
+        for (int i = 0; i < num_new_clauses; i++) {
+            C.add_literal(neg(blocking_vars[blocking_vars.size() - i]), 1);
+        }
+        C.add_RHS(num_new_clauses);
 
-        if (id_1 <= this->wcnf_clauses.size()) {
-            first_pair.first = (VeriPB::constraintid) id_1;
-            first_pair.second = (VeriPB::constraintid) id_1 + this->wcnf_clauses.size();
-        } else {
-            // throw
-            std::cerr << "Not yet implemented" << std::endl;
+        CuttingPlanesDerivation cpder(pl, false);
+        pl->write_comment("__Proof by contradiction__");
+        pl->start_proof_by_contradiction(C);
+
+        cpder.start_from_constraint(-1);
+        cpder.add_constraint(claim_1);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(claim_2);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(-1);
+        cpder.end();
+
+        pl->end_proof_by_contradiction();
+        pl->move_to_coreset_by_id(-1);
+
+
+        // s1 + s2 <= s3 + s4 + ... + s_n
+        C.clear();
+        C.add_literal(blocking_vars[clause_id_1], 1);
+        C.add_literal(blocking_vars[clause_id_2], 1);
+        for (int i = 0; i < num_new_clauses; i++) {
+            C.add_literal(blocking_vars[blocking_vars.size() - i], 1);
+        }
+        C.add_RHS(2);
+        pl->write_comment("__Proof by contradiction__");
+        pl->start_proof_by_contradiction(C);
+
+        cpder.start_from_constraint(-1);
+        cpder.add_constraint(claim_3);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(claim_4);
+        cpder.saturate();
+        cpder.end();
+
+        cpder.start_from_constraint(-2);
+        cpder.add_constraint(-1);
+        cpder.end();
+
+        pl->end_proof_by_contradiction();
+        pl->move_to_coreset_by_id(-1);
+    }
+
+    void ProofConvertor::change_objective(uint32_t clause_id_1, uint32_t clause_id_2, uint32_t num_new_clauses) {
+        // Objective aanpassen
+        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+
+        c_old.add_literal(neg(blocking_vars[clause_id_1]), 1);
+        c_old.add_literal(neg(blocking_vars[clause_id_2]), 1);
+
+        for (int i = 0; i < num_new_clauses; i++) {
+            c_new.add_literal(blocking_vars[blocking_vars.size() - i], 1);
         }
 
-        if (id_2 <= this->wcnf_clauses.size()) {
-            second_pair.first = (VeriPB::constraintid) id_2;
-            second_pair.second = (VeriPB::constraintid) id_2 + this->wcnf_clauses.size();
-        } else {
-            // throw
-            std::cerr << "Not yet implemented" << std::endl;
-        }
-
-        return std::make_pair(first_pair, second_pair);
+        pl->write_objective_update_diff(c_old, c_new);
+        
+        pl->write_conclusion_NONE();
     }
 }

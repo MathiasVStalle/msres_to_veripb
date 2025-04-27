@@ -70,6 +70,21 @@ namespace cnf
 }
 
 
+// Hash function for the Clause class.
+namespace std {
+    template <>
+    struct hash<cnf::Clause> {
+        size_t operator()(const cnf::Clause& clause) const {
+            size_t hash_value = 0;
+            for (const auto& literal : clause.getLiterals()) {
+                hash_value ^= std::hash<int32_t>()(literal);
+            }
+            return hash_value;
+        }
+    };
+}
+
+
 
 #endif
 

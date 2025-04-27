@@ -26,6 +26,8 @@ namespace convertor {
             // (n, c) where n is the constraint id and c is the clause
             std::unordered_map<uint32_t, cnf::Clause> wcnf_clauses;
             std::unordered_map<uint32_t, VeriPB::Lit> vars;
+
+            std::unordered_map<cnf::Clause, uint32_t> constraint_ids;
             std::unordered_map<uint32_t, VeriPB::Lit> blocking_vars;
 
             // The amount of constraints in each partial proof (reification of the wcnf clauses not included)
@@ -180,6 +182,22 @@ namespace convertor {
                 uint32_t clause_id_2,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
+            );
+
+            void assemble_proof(
+                VeriPB::constraintid claim_1,
+                VeriPB::constraintid claim_2,
+                VeriPB::constraintid claim_3,
+                VeriPB::constraintid claim_4,
+                uint32_t clause_id_1,
+                uint32_t clause_id_2,
+                uint32_t num_new_clauses
+            );
+
+            void change_objective(
+                uint32_t clause_id_1,
+                uint32_t clause_id_2,
+                uint32_t num_new_clauses
             );
     };
 }

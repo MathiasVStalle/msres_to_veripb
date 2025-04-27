@@ -22,32 +22,27 @@ namespace cnf
             /**
              * Constructor for ResRule.
              * 
+             * @param pivot The pivot variable for the resolution rule.
              * @param clause_1 The first clause in the resolution rule.
              * @param clause_2 The second clause in the resolution rule.
              */
-            ResRule(const Clause& clause_1, const Clause& clause_2);
+            ResRule(const uint32_t pivot, const Clause& clause_1, const Clause& clause_2);
 
             /**
              * Constructor for ResRule with constraint IDs.
              * 
+             * @param pivot The pivot variable for the resolution rule.
              * @param clause_1 The first clause in the resolution rule.
              * @param clause_2 The second clause in the resolution rule.
              * @param constraint_id_1 The ID of the first constraint.
              * @param constraint_id_2 The ID of the second constraint.
              */
-            ResRule(const Clause& clause_1, const Clause& clause_2, const uint32_t constraint_id_1, const uint32_t constraint_id_2);
+            ResRule(const uint32_t pivot, const Clause& clause_1, const Clause& clause_2, const uint32_t constraint_id_1, const uint32_t constraint_id_2);
 
             /**
              * Destructor for ResRule.
              */
             ~ResRule();
-
-            /**
-             * Get the pivot variable of the resolution rule.
-             * 
-             * @return The pivot variable.
-             */
-            const uint32_t get_pivot() const;
 
             /**
              * Apply the resolution rule to the two clauses.
@@ -69,20 +64,6 @@ namespace cnf
              * @return The second clause.
              */
             const Clause& getClause2() const;
-
-            /**
-             * Get the constraint ID of the first clause.
-             * 
-             * @return The constraint ID of the first clause.
-             */
-            const uint32_t get_constraint_id_1() const;
-
-            /**
-             * Get the constraint ID of the second clause.
-             * 
-             * @return The constraint ID of the second clause.
-             */
-            const uint32_t get_constraint_id_2() const;
 
             /**
              * Print the resolution rule to the standard output.

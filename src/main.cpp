@@ -14,6 +14,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    // Check for .wcnf extension
+    if (std::string(argv[1]).find(".wcnf") == std::string::npos) {
+        std::cerr << "Error: The first argument must be a .wcnf file." << std::endl;
+        return 1;
+    }
+
     std::string wcnf_file = argv[1];
     std::string msres_file = argv[2];
     std::string output_file = argv[3];

@@ -1,0 +1,4 @@
+t msres < 1 1 2 3 4 | 1 -1 5 >
+o 1
+v 010
+c executionTime 0.000571 seconds

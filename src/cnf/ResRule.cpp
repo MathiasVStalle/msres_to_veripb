@@ -10,39 +10,20 @@
 
 namespace cnf
 {
-    ResRule::ResRule(const Clause& clause_1, const Clause& clause_2) 
-        : clause_1(clause_1), clause_2(clause_2), constraint_id_1(0), constraint_id_2(0) {}
+    ResRule::ResRule(const uint32_t pivot, const Clause& clause_1, const Clause& clause_2) 
+        : Rule(pivot), clause_1(clause_1), clause_2(clause_2), constraint_id_1(0), constraint_id_2(0) {}
 
-    ResRule::ResRule(const Clause& clause_1, const Clause& clause_2, const uint32_t constraint_id_1, const uint32_t constraint_id_2) 
-        : clause_1(clause_1), clause_2(clause_2), constraint_id_1(constraint_id_1), constraint_id_2(constraint_id_2) {}
+    ResRule::ResRule(const uint32_t pivot, const Clause& clause_1, const Clause& clause_2, const uint32_t constraint_id_1, const uint32_t constraint_id_2) 
+        : Rule(pivot), clause_1(clause_1), clause_2(clause_2), constraint_id_1(constraint_id_1), constraint_id_2(constraint_id_2) {}
 
     ResRule::~ResRule() {}
-
-    const uint32_t ResRule::get_pivot() const {
-        std::unordered_set<int32_t> literals_1 = clause_1.getLiterals();
-        std::unordered_set<int32_t> literals_2 = clause_2.getLiterals();
-
-        int32_t common_literal = 0;
-        for (const auto& lit : literals_1) {
-            if (literals_2.find(-lit) != literals_2.end()) {
-                common_literal = lit;
-                break;
-            }
-        }
-
-        // If no common literal is found, throw an error
-        if (common_literal == 0) {
-            throw std::runtime_error("No common literal found between the two clauses.");
-        }
-
-        return common_literal;
-    }
-
 
     // TODO: What to do when there are more than two common literals?
     // TODO: Weighted clauses.
     // TODO: Should this return a pointer?
     std::vector<Clause> ResRule::apply() const {
+        std::cout << "Applying resolution rule with pivot: " << this->get_pivot() << std::endl;
+
         // find the two literals that are the same in both but with different signs
         std::unordered_set<int32_t> literals_1 = clause_1.getLiterals();
         std::unordered_set<int32_t> literals_2 = clause_2.getLiterals();
@@ -53,7 +34,6 @@ namespace cnf
         std::unordered_set<int32_t> mod_literals_2 = literals_2;
         mod_literals_1.erase(common_literal);
         mod_literals_2.erase(-common_literal);
-        
 
         std::vector<Clause> new_clauses;
 
@@ -102,14 +82,6 @@ namespace cnf
 
     const Clause& ResRule::getClause2() const {
         return clause_2;
-    }
-
-    const uint32_t ResRule::get_constraint_id_1() const {
-        return constraint_id_1;
-    }
-
-    const uint32_t ResRule::get_constraint_id_2() const {
-        return constraint_id_2;
     }
 
     void ResRule::print() const {
