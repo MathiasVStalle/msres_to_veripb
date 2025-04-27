@@ -33,7 +33,7 @@ namespace convertor {
 
         // Excecute the proof steps
         VeriPB::constraintid cxn_1 = claim_2_step_1(cpder, x, s3, literals_clause_1, literals_clause_2);
-        std::vector<VeriPB::constraintid> subclaims = claim_2_step_4(
+        std::vector<VeriPB::constraintid> subclaims = claim_2_step_2(
             cpder,
             x,
             s1,
@@ -235,7 +235,7 @@ namespace convertor {
         return subclaim_1;
     }
 
-    std::vector<VeriPB::constraintid> ProofConvertor::claim_2_step_4(
+    std::vector<VeriPB::constraintid> ProofConvertor::claim_2_step_2(
         CuttingPlanesDerivation& cpder,
         Lit x,
         Lit s1,

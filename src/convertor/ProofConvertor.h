@@ -120,7 +120,7 @@ namespace convertor {
                 std::vector<int32_t>& literals_2
             );
 
-            std::vector<VeriPB::constraintid> claim_1_step_4(
+            std::vector<VeriPB::constraintid> claim_1_step_2(
                 VeriPB::CuttingPlanesDerivation& cpder,
                 VeriPB::Lit x,
                 VeriPB::Lit s2,
@@ -148,7 +148,7 @@ namespace convertor {
                 std::vector<int32_t>& literals_2
             );
 
-            std::vector<VeriPB::constraintid> claim_2_step_4(
+            std::vector<VeriPB::constraintid> claim_2_step_2(
                 VeriPB::CuttingPlanesDerivation& cpder,
                 VeriPB::Lit x,
                 VeriPB::Lit s1,
