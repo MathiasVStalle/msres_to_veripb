@@ -6,8 +6,6 @@ namespace convertor {
     VeriPB::constraintid ProofConvertor::claim_2(
         uint32_t clause_id_1,
         uint32_t clause_id_2,
-        VeriPB::constraintid constr_id,
-        uint32_t num_new_clauses,
         const cnf::ResRule& rule,
         const std::vector<cnf::Clause>& new_clauses
     ) {
@@ -16,7 +14,7 @@ namespace convertor {
         std::unordered_set<int32_t> literals_set_clause_1 = rule.getClause1().getLiterals();
         std::unordered_set<int32_t> literals_set_clause_2 = rule.getClause2().getLiterals();
 
-        int32_t rhs = num_new_clauses - 2;
+        int32_t rhs = new_clauses.size() - 2;
 
         // Remove pivot literal from both clauses
         uint32_t pivot = rule.get_pivot();
@@ -31,13 +29,12 @@ namespace convertor {
         Lit x = this->vars[pivot];
         Lit s1 = this->blocking_vars[clause_id_1];
         Lit s2 = this->blocking_vars[clause_id_2];
-        Lit s3 = this->blocking_vars[blocking_vars.size() - (num_new_clauses - 1)];
+        Lit s3 = this->blocking_vars[blocking_vars.size() - (new_clauses.size() - 1)];
 
         // Excecute the proof steps
         VeriPB::constraintid cxn_1 = claim_2_step_1(cpder, x, s3, literals_clause_1, literals_clause_2);
         std::vector<VeriPB::constraintid> subclaims = claim_2_step_4(
             cpder,
-            constr_id,
             x,
             s1,
             s3,
@@ -88,7 +85,7 @@ namespace convertor {
         } else {
             cpder.start_from_constraint(subclaim);
         }
-        cpder.add_literal_axiom(s2);
+        cpder.add_literal_axiom(neg(s2));
         VeriPB::constraintid result = cpder.end();
         pl->write_comment("Claim 2");
         pl->write_comment("");
@@ -240,7 +237,6 @@ namespace convertor {
 
     std::vector<VeriPB::constraintid> ProofConvertor::claim_2_step_4(
         CuttingPlanesDerivation& cpder,
-        constraintid c_id_s1,
         Lit x,
         Lit s1,
         Lit s3,
@@ -250,7 +246,7 @@ namespace convertor {
         int32_t offset = literals_1.size();
         std::vector<VeriPB::constraintid> subclaims;
 
-        cpder.start_from_constraint(c_id_s1);
+        cpder.start_from_constraint(pl->get_reified_constraint_right_implication(variable(s1)));
         cpder.add_constraint(-1);
         subclaims.push_back(cpder.end());
 
@@ -300,7 +296,7 @@ namespace convertor {
 
             // Add the missing literals
             cpder.start_from_constraint(-1);
-            cpder.add_literal_axiom(s1);
+            cpder.add_literal_axiom(neg(s1));
             cpder.add_literal_axiom(x);
             subclaims.push_back(cpder.end());
         }
@@ -323,7 +319,7 @@ namespace convertor {
         // make contradicting constraint
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         C.add_literal(x, 1);
-        C.add_literal(s1, 1);
+        C.add_literal(neg(s1), 1);
         C.add_literal(neg(s3), 1);
         for (int i = literals_2.size() - 1; i >= 0; i--) {
             VeriPB::Lit sn = blocking_vars[blocking_vars.size() - offset - i];

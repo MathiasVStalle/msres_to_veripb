@@ -100,8 +100,6 @@ namespace convertor {
             VeriPB::constraintid claim_1(
                 const uint32_t clause_id_1,
                 const uint32_t clause_id_2,
-                const VeriPB::constraintid constr_id, 
-                const uint32_t num_new_clauses,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
             );
@@ -109,8 +107,6 @@ namespace convertor {
             VeriPB::constraintid claim_2(
                 uint32_t clause_id_1,
                 uint32_t clause_id_2,
-                VeriPB::constraintid constr_id,
-                uint32_t num_new_clauses,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
             );
@@ -124,24 +120,8 @@ namespace convertor {
                 std::vector<int32_t>& literals_2
             );
 
-            VeriPB::constraintid claim_1_step_2(
-                VeriPB::CuttingPlanesDerivation& cpder, 
-                VeriPB::Lit x,
-                VeriPB::Lit s3,
-                std::vector<int32_t>& literals_1, 
-                std::vector<int32_t>& literals_2
-            );
-            
-            VeriPB::constraintid claim_1_step_3(
-                VeriPB::CuttingPlanesDerivation& cpder, 
-                VeriPB::constraintid cxn_1,
-                VeriPB::constraintid cxn_2,
-                int32_t counter
-            );
-
             std::vector<VeriPB::constraintid> claim_1_step_4(
                 VeriPB::CuttingPlanesDerivation& cpder,
-                VeriPB::constraintid c_id_s2,
                 VeriPB::Lit x,
                 VeriPB::Lit s2,
                 VeriPB::Lit s3,
@@ -168,24 +148,8 @@ namespace convertor {
                 std::vector<int32_t>& literals_2
             );
 
-            VeriPB::constraintid claim_2_step_2(
-                VeriPB::CuttingPlanesDerivation& cpder,
-                VeriPB::Lit x,
-                VeriPB::Lit s3,
-                std::vector<int32_t>& literals_1, 
-                std::vector<int32_t>& literals_2
-            );
-
-            VeriPB::constraintid claim_2_step_3(
-                VeriPB::CuttingPlanesDerivation& cpder,
-                VeriPB::constraintid cxn_1,
-                VeriPB::constraintid cxn_2,
-                int32_t counter
-            );
-
             std::vector<VeriPB::constraintid> claim_2_step_4(
                 VeriPB::CuttingPlanesDerivation& cpder,
-                VeriPB::constraintid c_id_s2,
                 VeriPB::Lit x,
                 VeriPB::Lit s1,
                 VeriPB::Lit s3,
@@ -207,8 +171,6 @@ namespace convertor {
             VeriPB::constraintid claim_3(
                 uint32_t clause_id_1,
                 uint32_t clause_id_2,
-                VeriPB::constraintid constr_id,
-                uint32_t num_new_clauses,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
             );
@@ -216,8 +178,6 @@ namespace convertor {
             VeriPB::constraintid claim_4(
                 uint32_t clause_id_1,
                 uint32_t clause_id_2,
-                VeriPB::constraintid constr_id,
-                uint32_t num_new_clauses,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
             );

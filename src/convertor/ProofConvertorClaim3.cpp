@@ -6,8 +6,6 @@ namespace convertor {
     VeriPB::constraintid ProofConvertor::claim_3(
         uint32_t clause_id_1,
         uint32_t clause_id_2,
-        VeriPB::constraintid constr_id,
-        uint32_t num_new_clauses,
         const cnf::ResRule& rule,
         const std::vector<cnf::Clause>& new_clauses
     ) {
@@ -16,7 +14,7 @@ namespace convertor {
         std::unordered_set<int32_t> literals_set_clause_1 = rule.getClause1().getLiterals();
         std::unordered_set<int32_t> literals_set_clause_2 = rule.getClause2().getLiterals();
 
-        int32_t rhs = num_new_clauses - 2;
+        int32_t rhs = new_clauses.size() - 2;
 
         // Remove pivot literal from both clauses
         uint32_t pivot = rule.get_pivot();
@@ -31,7 +29,7 @@ namespace convertor {
         Lit x = this->vars[pivot];
         Lit s1 = this->blocking_vars[clause_id_1];
         Lit s2 = this->blocking_vars[clause_id_2];
-        Lit s3 = this->blocking_vars[blocking_vars.size() - (num_new_clauses - 1)];
+        Lit s3 = this->blocking_vars[blocking_vars.size() - (new_clauses.size() - 1)];
 
 
         // Step 1
@@ -65,7 +63,7 @@ namespace convertor {
         // Case Splitting
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         C.add_literal(neg(x), 1);
-        C.add_literal(neg(s2), 1);
+        C.add_literal(s2, 1);
         C.add_literal(s3, 1);
         for (int i = 0; i < literals_clause_1.size(); i++) {
             C.add_literal(blocking_vars[blocking_vars.size() - i], 1);

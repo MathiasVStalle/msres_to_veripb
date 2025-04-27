@@ -114,40 +114,32 @@ namespace convertor {
         constraintid claim_1 = this->claim_1(
             res_rule->get_constraint_id_1(),
             res_rule->get_constraint_id_2(),
-            id_pair.second.first,
-            num_new_clauses,
             *res_rule,
             res_rule->apply()
         );
         constraintid claim_2 = this->claim_2(
             res_rule->get_constraint_id_1(),
             res_rule->get_constraint_id_2(),
-            id_pair.first.first,
-            num_new_clauses,
             *res_rule,
             res_rule->apply()
         );
         constraintid claim_3 = this->claim_3(
             res_rule->get_constraint_id_1(),
             res_rule->get_constraint_id_2(),
-            id_pair.second.second,
-            num_new_clauses,
             *res_rule,
             res_rule->apply()
         );
         constraintid claim_4 = this->claim_4(
             res_rule->get_constraint_id_1(),
             res_rule->get_constraint_id_2(),
-            id_pair.first.second,
-            num_new_clauses,
             *res_rule,
             res_rule->apply()
         );
 
         // s1 + s2 >= s3 + s4 + ... + s_n
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
-        C.add_literal(blocking_vars[res_rule->get_constraint_id_1()], 1);
-        C.add_literal(blocking_vars[res_rule->get_constraint_id_2()], 1);
+        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
+        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
         for (int i = 0; i < num_new_clauses; i++) {
             C.add_literal(neg(blocking_vars[blocking_vars.size() - i]), 1);
         }
@@ -176,8 +168,8 @@ namespace convertor {
 
         // s1 + s2 <= s3 + s4 + ... + s_n
         C.clear();
-        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
-        C.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
+        C.add_literal(blocking_vars[res_rule->get_constraint_id_1()], 1);
+        C.add_literal(blocking_vars[res_rule->get_constraint_id_2()], 1);
         for (int i = 0; i < num_new_clauses; i++) {
             C.add_literal(blocking_vars[blocking_vars.size() - i], 1);
         }
@@ -207,8 +199,8 @@ namespace convertor {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
-        c_old.add_literal(blocking_vars[res_rule->get_constraint_id_1()], 1);
-        c_old.add_literal(blocking_vars[res_rule->get_constraint_id_2()], 1);
+        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_1()]), 1);
+        c_old.add_literal(neg(blocking_vars[res_rule->get_constraint_id_2()]), 1);
 
         for (int i = 0; i < num_new_clauses; i++) {
             c_new.add_literal(blocking_vars[blocking_vars.size() - i], 1);
@@ -225,6 +217,7 @@ namespace convertor {
             const cnf::Clause& clause = this->wcnf_clauses.at(i);
 
             VeriPB::Var var = this->var_mgr.new_variable_only_in_proof();
+            var_mgr.store_variable_name(var, "_b" + std::to_string(i)); 
             VeriPB::Lit lit{.v = var, .negated = false};
 
             this->blocking_vars[i] = lit;
@@ -252,7 +245,7 @@ namespace convertor {
                 }
             }
 
-            this->pl->reification_literal_left_implication(neg(this->blocking_vars[i]), C, true);
+            this->pl->reification_literal_left_implication(this->blocking_vars[i], C, true);
         }
     }
 
