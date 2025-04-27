@@ -46,6 +46,8 @@ namespace convertor {
         cpder.start_from_constraint(-1);
         cpder.add_literal_axiom(neg(s2));
         constraintid cxn_1 = cpder.end();
+        pl->write_comment("Step 1");
+        pl->write_comment("");
 
         // Step 2
         cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(s2)));
@@ -62,6 +64,8 @@ namespace convertor {
         cpder.multiply((int32_t) literals_clause_2.size());
         cpder.add_constraint(-1);
         constraintid cxn_2 = cpder.end();
+        pl->write_comment("Step 2");
+        pl->write_comment("");
 
 
         // Case Splitting
@@ -105,6 +109,8 @@ namespace convertor {
         for (int i = 0; i < literals_clause_2.size(); i++) {
             cpder.add_literal_axiom(blocking_vars[blocking_vars.size() - literals_clause_1.size() - i]);
         }
+        pl->write_comment("Step 3");
+        pl->write_comment("");
         return cpder.end();
     }
 }

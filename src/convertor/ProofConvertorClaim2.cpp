@@ -35,8 +35,6 @@ namespace convertor {
 
         // Excecute the proof steps
         VeriPB::constraintid cxn_1 = claim_2_step_1(cpder, x, s3, literals_clause_1, literals_clause_2);
-        VeriPB::constraintid cxn_2 = claim_2_step_2(cpder, x, s3, literals_clause_1, literals_clause_2);
-        VeriPB::constraintid cxn_3 = claim_1_step_3(cpder, cxn_1, cxn_2, literals_clause_1.size());
         std::vector<VeriPB::constraintid> subclaims = claim_2_step_4(
             cpder,
             constr_id,
@@ -88,6 +86,8 @@ namespace convertor {
         cpder.add_constraint(subclaim);
         cpder.add_literal_axiom(s2);
         VeriPB::constraintid result = cpder.end();
+        pl->write_comment("Claim 2");
+        pl->write_comment("");
 
         this->pl->flush_proof();
         return result;
@@ -100,93 +100,138 @@ namespace convertor {
         std::vector<int32_t>& literals_1, 
         std::vector<int32_t>& literals_2
     ) {
-        int32_t counter = 1;
-        int32_t offset = literals_1.size();
+        int32_t RHS = literals_2.size();
+        int32_t offset = blocking_vars.size() - literals_1.size();
 
-        // Weaken b_1 and every a_i on s3
-        cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(s3)));
-        cpder.weaken(variable(vars[std::abs(literals_2[0])]));
-        for (int i = 0; i < literals_1.size(); i++) {
-            cpder.weaken(variable(vars[std::abs(literals_1[i])]));
-        }
-        cpder.saturate();
-        constraintid cxn = cpder.end();
-
-        // Weaken on everything except b_n
-        for (int i = literals_2.size() - 1; i >= 0; i--) {
-            VeriPB::Lit sn = blocking_vars[blocking_vars.size() - offset - i];
+        // Initial constraint
+        for (int i = 1; i <= literals_2.size(); i++) {
+            Lit sn = blocking_vars[offset - i + 1];
             cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(sn)));
 
-            cpder.weaken(variable(x));
-
-            for (int j = 0; j < literals_2.size() - i - 1; j++) {
+            // Weaken on everything except the last b
+            for (int j = 0; j < literals_2.size() - i; j++) {
                 cpder.weaken(variable(vars[std::abs(literals_2[j])]));
             }
             for (int j = 0; j < literals_1.size(); j++) {
                 cpder.weaken(variable(vars[std::abs(literals_1[j])]));
             }
+            cpder.weaken(variable(x));
             cpder.saturate();
-            cxn = cpder.end();
-            counter++;
+            cpder.end();
         }
 
-        // Add all the previous constraints
-        cpder.start_from_constraint(-counter);
-        for (int i = counter - 1; i > 0; i--) {
+        // Add the constraints
+        cpder.start_from_literal_axiom(neg(s3));
+        for (int i = 1; i <= literals_2.size(); i++) {
             cpder.add_constraint(-i);
-            cpder.saturate();
         }
-        cxn = cpder.end();
+        VeriPB::constraintid intitial = cpder.end();
+        pl->write_comment("Initial constraint");
+        pl->write_comment("");
 
-        return cxn;
-    }
-
-    VeriPB::constraintid ProofConvertor::claim_2_step_2(
-        CuttingPlanesDerivation& cpder,
-        Lit x,
-        Lit s3,
-        std::vector<int32_t>& literals_1, 
-        std::vector<int32_t>& literals_2
-    ) {
-        int32_t counter = 1;
-        int32_t offset = literals_1.size();
-
-        // Weaken on everything except b_1
-        cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(s3)));
-        for (int i = 1; i < literals_2.size(); i++) {
-            cpder.weaken(variable(vars[std::abs(literals_2[i])]));
-        }
-        for (int i = 0; i < literals_1.size(); i++) {
-            cpder.weaken(variable(vars[std::abs(literals_1[i])]));
-        }
-        cpder.saturate();
-        VeriPB::constraintid cxn = cpder.end();
-
-        // Weaken on everything except b_1
-        for (int i = literals_2.size() - 2; i >= 0; i--) {
-            VeriPB::Lit sn = blocking_vars[blocking_vars.size() - offset - i];
-            cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(sn)));
-
-            cpder.weaken(variable(x));
-
-            for (int j = 1; j < literals_2.size() - i; j++) {
-                cpder.weaken(variable(vars[std::abs(literals_2[j])]));
-            }
+        std::vector<VeriPB::constraintid> subclaims;
+        for (int i = 1; i <= literals_2.size(); i++) {
+            cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(s3)));
+            
+            // Weaken on everything except b_i
             for (int j = 0; j < literals_1.size(); j++) {
                 cpder.weaken(variable(vars[std::abs(literals_1[j])]));
+            }
+            for (int j = 0; j < literals_2.size(); j++) {
+                if (i == j + 1) continue;
+                cpder.weaken(variable(vars[std::abs(literals_2[j])]));
             }
             cpder.saturate();
             cpder.end();
-            counter++;
+
+            // Weaken on everything except the last b_n where n <= i
+            for (int j = 1; j <= literals_2.size(); j++) {
+                if (i == j) continue;
+
+                VeriPB::Lit sn = blocking_vars[offset - literals_2.size() + j];
+                cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(sn)));
+                cpder.weaken(variable(x));
+
+                uint32_t n = (j <= i) ? j : i;
+                for (int k = 0; k < literals_2.size() - n; k++) {
+                    if (n == k + 1) continue;
+                    cpder.weaken(variable(vars[std::abs(literals_2[k])]));
+                }
+                for (int k = 0; k < literals_1.size(); k++) {
+                    cpder.weaken(variable(vars[std::abs(literals_1[k])]));
+                }
+                cpder.saturate();
+                cpder.end();
+            }
+
+            // Add all the previous constraints
+            cpder.start_from_constraint(-1);
+            for (int j = 2; j <= literals_2.size(); j++) {
+                cpder.add_constraint(-j);
+            }
+
+            // Add the missing literals
+            Lit sn = blocking_vars[offset - literals_2.size() + i];
+            cpder.add_literal_axiom(neg(sn));
+
+            subclaims.push_back(cpder.end());
+            pl->write_comment("Subclaim" + std::to_string(i));
+            pl->write_comment("");
         }
 
-        cpder.start_from_constraint(-counter);
-        for (int i = counter - 1; i > 0; i--) {
-            cpder.add_constraint(-i);
-        }
-        cxn = cpder.end();
 
-        return cxn;
+
+        // Proofs by contradiction
+        constraintid subclaim_1 = intitial;
+        for (int i = literals_2.size() - 1; i >= 0; i--) {
+            constraintid subclaim_2 = subclaims[i];
+
+            // Build the constraint
+            Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+            C.add_literal(neg(s3), 1);
+            for (int j = 0; j < literals_2.size(); j++) {
+                C.add_literal(neg(blocking_vars[offset - j]), 1);
+            }
+            for (int j = 0; j < i; j++) {
+                C.add_literal(vars[std::abs(literals_2[j])], 1);
+            }
+            C.add_RHS(literals_2.size());
+
+
+            // Start the proof
+            pl->write_comment("Proof by contradiction" + std::to_string(i));
+            pl->write_comment("");
+            pl->start_proof_by_contradiction(C);
+
+            cpder.start_from_constraint(subclaim_1);
+            cpder.add_constraint(-1);
+            cpder.saturate();
+            cpder.end();
+
+            cpder.start_from_constraint(subclaim_2);
+            cpder.add_constraint(-2);
+            cpder.saturate();
+            cpder.end();
+
+            // Add all the previous constraints
+            cpder.start_from_constraint(-1);
+            cpder.add_constraint(-2);
+            cpder.saturate();
+            cpder.end();
+
+            pl->end_proof_by_contradiction();
+
+            // Add the missing literal
+            if (i != 0) {
+                cpder.start_from_constraint(-1);
+                cpder.add_literal_axiom(vars[std::abs(literals_2[i - 1])]);
+                subclaim_1 = cpder.end();
+            } else {
+                pl->get_constraint_counter();
+            }
+        }
+
+        return subclaim_1;
     }
 
     std::vector<VeriPB::constraintid> ProofConvertor::claim_2_step_4(

@@ -192,7 +192,6 @@ namespace convertor {
                 C.add_literal(neg(blocking_vars[blocking_vars.size() - j]), 1);
             }
             for (int j = 0; j < i; j++) {
-                uint32_t coefficient = (j < i - 1) ? 1 : literals_1.size() - i;
                 C.add_literal(vars[std::abs(literals_1[j])], 1);
             }
             C.add_RHS(literals_1.size());
@@ -232,71 +231,6 @@ namespace convertor {
         }
 
         return subclaim_1;
-    }
-
-    VeriPB::constraintid ProofConvertor::claim_1_step_2(
-        CuttingPlanesDerivation& cpder,
-        Lit x,
-        Lit s3,
-        std::vector<int32_t>& literals_1, 
-        std::vector<int32_t>& literals_2
-    ) {
-        int32_t counter = 1;
-
-        // Weaken on everything except a_1
-        cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(s3)));
-        for (int i = 1; i < literals_1.size(); i++) {
-            cpder.weaken(variable(vars[std::abs(literals_1[i])]));
-        }
-        for (int i = 0; i < literals_2.size(); i++) {
-            cpder.weaken(variable(vars[std::abs(literals_2[i])]));
-        }
-        cpder.saturate();
-        VeriPB::constraintid cxn = cpder.end();
-
-        // Weaken on everything except a_1
-        for (int i = literals_1.size() - 2; i >= 0; i--) {
-            VeriPB::Lit sn = blocking_vars[blocking_vars.size() - i];
-            cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(sn)));
-
-            cpder.weaken(variable(x));
-
-            for (int j = 1; j < literals_1.size() - i; j++) {
-                cpder.weaken(variable(vars[std::abs(literals_1[j])]));
-            }
-            for (int j = 0; j < literals_2.size(); j++) {
-                cpder.weaken(variable(vars[std::abs(literals_2[j])]));
-            }
-            cpder.saturate();
-            cpder.end();
-            counter++;
-        }
-
-        cpder.start_from_constraint(-counter);
-        for (int i = counter - 1; i > 0; i--) {
-            cpder.add_constraint(-i);
-        }
-        cxn = cpder.end();
-
-        return cxn;
-    }
-
-    VeriPB::constraintid ProofConvertor::claim_1_step_3(
-        CuttingPlanesDerivation& cpder,
-        constraintid cxn_1,
-        constraintid cxn_2,
-        int32_t counter
-    ) {
-        cpder.start_from_constraint(cxn_1);
-        cpder.multiply(counter);
-        cpder.end();
-
-        cpder.start_from_constraint(cxn_2);
-        cpder.add_constraint(-1);
-        cpder.divide(counter + 1);
-        constraintid cxn = cpder.end();
-
-        return cxn;
     }
 
     std::vector<constraintid> ProofConvertor::claim_1_step_4(
