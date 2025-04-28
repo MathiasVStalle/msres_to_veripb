@@ -22,7 +22,6 @@ namespace cnf
     // TODO: Weighted clauses.
     // TODO: Should this return a pointer?
     std::vector<Clause> ResRule::apply() const {
-        std::cout << "Applying resolution rule with pivot: " << this->get_pivot() << std::endl;
 
         // find the two literals that are the same in both but with different signs
         std::unordered_set<int32_t> literals_1 = clause_1.getLiterals();
@@ -85,7 +84,7 @@ namespace cnf
     }
 
     void ResRule::print() const {
-        std::cout << "ResRule: " << std::endl;
+        std::cout << "ResRule: " << get_pivot() << std::endl;
         std::cout << "Clause 1: ";
         clause_1.print();
         std::cout << "Clause 2: ";
@@ -100,6 +99,16 @@ namespace cnf
         } else {
             throw std::out_of_range("Index out of range");
         }
+    }
+
+    std::unordered_set<int32_t> ResRule::remove_tautologies(std::unordered_set<int32_t>& literals) const{
+        std::unordered_set<int32_t> new_literals;
+        for (const auto& lit : literals) {
+            if (literals.find(-lit) == literals.end()) {
+                new_literals.insert(lit);
+            }
+        }
+        return new_literals;
     }
 }
 

@@ -54,6 +54,13 @@ namespace cnf
              */
             const std::unordered_set<int32_t> &getLiterals() const;
 
+            /** 
+             * Check if the clause is a unit clause.
+             * 
+             * @return True if the clause is a unit clause, false otherwise.
+             */
+            bool is_unit_clause() const;
+
             /**
              * Print the clause to the standard output.
              */
@@ -76,10 +83,13 @@ namespace std {
     struct hash<cnf::Clause> {
         size_t operator()(const cnf::Clause& clause) const {
             size_t hash_value = 0;
+            size_t prod = 1;
             for (const auto& literal : clause.getLiterals()) {
-                hash_value ^= std::hash<int32_t>()(literal);
+                size_t h = std::hash<int32_t>()(literal);
+                hash_value += h;
+                prod *= (h | 1); // Make sure we don't multiply by zero
             }
-            return hash_value;
+            return hash_value ^ prod;
         }
     };
 }

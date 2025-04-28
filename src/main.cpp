@@ -20,6 +20,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    std::vector<cnf::Clause> wcnf_clauses = parser::WCNFParser::parseWCNF(argv[1]);
+    for (const auto& clause : wcnf_clauses) {
+        std::cout << "WCNF Clause: ";
+        clause.print();
+    }
+
     std::string wcnf_file = argv[1];
     std::string msres_file = argv[2];
     std::string output_file = argv[3];

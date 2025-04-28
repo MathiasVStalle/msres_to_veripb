@@ -22,6 +22,10 @@ namespace cnf
         return literals;
     }
 
+    bool Clause::is_unit_clause() const {
+        return literals.size() == 1;
+    }
+
     void Clause::print() const {
         std::cout << "Clause weight: " << weight << ", literals: ";
         for (const auto& lit : literals) {

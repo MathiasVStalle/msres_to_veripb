@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_set>
 #include <utility>
+#include <algorithm>
 
 #include "ProofConvertor.h"
 
@@ -53,10 +54,19 @@ namespace convertor {
             }
         }
 
+
+        uint32_t unit_clauses = std::count_if(
+            this->wcnf_clauses.begin(),
+            this->wcnf_clauses.end(),
+            [](const auto& pair) {
+                return pair.second.is_unit_clause();
+            }
+        );
+
         // Write the proof header
         this->var_mgr.set_number_original_variables(this->vars.size());
         this->pl->write_proof_header();
-        this->pl->set_n_orig_constraints(this->wcnf_clauses.size());
+        this->pl->set_n_orig_constraints(this->wcnf_clauses.size() - unit_clauses);
 
         //TODO: Reification clauses
         this->reificate();
@@ -71,13 +81,16 @@ namespace convertor {
             if (rule == nullptr) {
                 break;
             }
-
+            rule->print();
             this->write_proof(rule);
-            this->pl->flush_proof();
-
-            break; // TODO: Remove this line
+            pl->write_comment("Rule: ");
+            pl->write_comment("");
+            pl->write_comment("");
         }
 
+
+        pl->write_conclusion_NONE();
+        pl->flush_proof();
         delete rule;
     }
 
@@ -288,7 +301,5 @@ namespace convertor {
         }
 
         pl->write_objective_update_diff(c_old, c_new);
-        
-        pl->write_conclusion_NONE();
     }
 }
