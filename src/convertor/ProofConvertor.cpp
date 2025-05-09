@@ -30,10 +30,10 @@ namespace convertor {
 
     // Flag: Segmentation fault
     ProofConvertor::~ProofConvertor() {
-        // if (this->pl != nullptr) {
-        //     delete this->pl;
-        //     this->pl = nullptr;
-        // }
+        if (this->pl != nullptr) {
+            delete this->pl;
+            this->pl = nullptr;
+        }
     }
 
     void ProofConvertor::write_proof() {
