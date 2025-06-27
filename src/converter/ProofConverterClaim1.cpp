@@ -3,6 +3,48 @@
 using namespace VeriPB;
 
 namespace converter {
+    std::vector<VeriPB::Lit> ProofConverter::get_total_vars(
+        const std::vector<int32_t>& literals_1,
+        const std::vector<int32_t>& literals_2
+    ) {
+        std::vector<VeriPB::Lit> total_vars;
+
+        for (const auto& lit : literals_1) {
+            total_vars.push_back(this->vars[std::abs(lit)]);
+        }
+        for (const auto& lit : literals_2) {
+            total_vars.push_back(this->vars[std::abs(lit)]);
+        }
+
+        return total_vars;
+    }
+
+    void ProofConverter::weaken_all(VeriPB::constraintid id, std::vector<VeriPB::Lit>& literals) {
+        CuttingPlanesDerivation cpder(this->pl, false);
+        cpder.start_from_constraint(id);
+        for (const auto& lit : literals) {
+            cpder.weaken(variable(lit));
+        }
+        cpder.saturate();
+        cpder.end();
+    }
+
+    void ProofConverter::weaken_all_except(
+        VeriPB::constraintid id,
+        std::vector<VeriPB::Lit>& literals,
+        VeriPB::Lit except
+    ) {
+        CuttingPlanesDerivation cpder(this->pl, false);
+        cpder.start_from_constraint(id);
+        for (const auto& lit : literals) {
+            if (lit.v.v != except.v.v) {
+                cpder.weaken(variable(lit));
+            }
+        }
+        cpder.saturate();
+        cpder.end();
+    }
+
     VeriPB::constraintid ProofConverter::claim_1(
         const uint32_t clause_id_1,
         const uint32_t clause_id_2,
@@ -103,22 +145,24 @@ namespace converter {
         std::vector<int32_t>& literals_2
     ) {
         int32_t RHS = literals_1.size();
+    
+        // TODO: This should be optimized
+        std::vector<VeriPB::Lit> total_vars = get_total_vars(literals_1, literals_2);
+        total_vars.push_back(x);
 
         // Initial constraint 
         for (int i = 1; i <= literals_1.size(); i++) {
             Lit sn = blocking_vars[blocking_vars.size() - i + 1];
-            cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(sn)));
+
 
             // Weaken on everything except the last a
-            for (int j = 0; j < literals_1.size() - i; j++) {
-                cpder.weaken(variable(vars[std::abs(literals_1[j])]));
-            }
-            for (int j = 0; j < literals_2.size(); j++) {
-                cpder.weaken(variable(vars[std::abs(literals_2[j])]));
-            }
-            cpder.weaken(variable(x));
-            cpder.saturate();
-            cpder.end();
+            int index = literals_1.size() - i;
+            
+            weaken_all_except(
+                pl->get_reified_constraint_left_implication(variable(sn)),
+                total_vars,
+                total_vars[literals_1.size() - i]
+            );
         }
 
         // Add the constraints

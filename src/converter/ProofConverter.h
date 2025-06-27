@@ -199,6 +199,19 @@ namespace converter {
                 uint32_t clause_id_2,
                 uint32_t num_new_clauses
             );
+
+            std::vector<VeriPB::Lit> get_total_vars(
+                const std::vector<int32_t>& literals_1, 
+                const std::vector<int32_t>& literals_2
+            );
+
+            void weaken_all(VeriPB::constraintid id, std::vector<VeriPB::Lit>& literals);
+
+            void weaken_all_except(
+                VeriPB::constraintid id, 
+                std::vector<VeriPB::Lit>& literals, 
+                VeriPB::Lit except
+            );
     };
 }
 
