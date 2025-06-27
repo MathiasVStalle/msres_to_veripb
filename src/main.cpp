@@ -6,7 +6,7 @@
 #include "./cnf/Rule.h"
 #include "./parser/MSResParser.h"
 #include "./parser/WCNFParser.h"
-#include "./convertor/ProofConvertor.h"
+#include "./converter/ProofConverter.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 4) {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     std::string msres_file = argv[2];
     std::string output_file = argv[3];
     
-    convertor::ProofConvertor proof_convertor(wcnf_file, msres_file, output_file);
+    converter::ProofConverter proof_convertor(wcnf_file, msres_file, output_file);
     proof_convertor.write_proof();
 
     return 0;

@@ -4,7 +4,7 @@
 #include <utility>
 #include <algorithm>
 
-#include "ProofConvertor.h"
+#include "ProofConverter.h"
 
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
@@ -14,9 +14,9 @@
 
 using namespace VeriPB;
 
-namespace convertor {
+namespace converter {
 
-    ProofConvertor::ProofConvertor(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
+    ProofConverter::ProofConverter(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
         : msres_parser(msres_file), output_file(output_file) {
 
         std::vector<cnf::Clause> clauses = parser::WCNFParser::parseWCNF(wcnf_file);
@@ -28,15 +28,15 @@ namespace convertor {
         this->pl->set_comments(true);
     }
 
-    // Flag: Segmentation fault
-    ProofConvertor::~ProofConvertor() {
+    // Segmentation fault
+    ProofConverter::~ProofConverter() {
         // if (this->pl != nullptr) {
         //     delete this->pl;
         //     this->pl = nullptr;
         // }
     }
 
-    void ProofConvertor::write_proof() {
+    void ProofConverter::write_proof() {
         // Initializing all the variables from the original clauses
         for (const auto& pair : this->wcnf_clauses) {
             const cnf::Clause& clause = pair.second;
@@ -95,7 +95,7 @@ namespace convertor {
     }
 
     // TODO: SpltRule is not yet implemented
-    void ProofConvertor::write_proof(const cnf::Rule* rule) {
+    void ProofConverter::write_proof(const cnf::Rule* rule) {
         if (dynamic_cast<const cnf::ResRule*>(rule)) {
             const cnf::ResRule* res_rule = dynamic_cast<const cnf::ResRule*>(rule);
             this->write_res_rule(res_rule);
@@ -104,7 +104,7 @@ namespace convertor {
         }
     }
 
-    void ProofConvertor::write_res_rule(const cnf::ResRule* rule) {
+    void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
         uint32_t num_new_clauses = this->blocking_vars.size();
         this->write_new_clauses(rule);
@@ -147,7 +147,7 @@ namespace convertor {
         change_objective(constraint_id_1, constraint_id_2, num_new_clauses);
     }
 
-    void ProofConvertor::reificate() {
+    void ProofConverter::reificate() {
         // Saving the reification of the original clauses
         for (int i = 1; i <= this->wcnf_clauses.size(); i++) {
             const cnf::Clause& clause = this->wcnf_clauses.at(i);
@@ -186,7 +186,7 @@ namespace convertor {
         }
     }
 
-    void ProofConvertor::write_new_clauses(const cnf::Rule* rule) {
+    void ProofConverter::write_new_clauses(const cnf::Rule* rule) {
         std::vector<cnf::Clause> new_clauses = rule->apply();
 
         uint32_t curr_clause_id = this->blocking_vars.size();
@@ -219,7 +219,7 @@ namespace convertor {
         }
     }
 
-    void ProofConvertor::assemble_proof(
+    void ProofConverter::assemble_proof(
         VeriPB::constraintid claim_1, 
         VeriPB::constraintid claim_2,
         VeriPB::constraintid claim_3,
@@ -288,7 +288,7 @@ namespace convertor {
         pl->move_to_coreset_by_id(-1);
     }
 
-    void ProofConvertor::change_objective(uint32_t clause_id_1, uint32_t clause_id_2, uint32_t num_new_clauses) {
+    void ProofConverter::change_objective(uint32_t clause_id_1, uint32_t clause_id_2, uint32_t num_new_clauses) {
         // Objective aanpassen
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;

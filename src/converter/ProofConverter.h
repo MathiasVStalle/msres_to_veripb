@@ -16,8 +16,8 @@
 #include "VeriPbSolverTypes.h"
 #include "MaxSATProoflogger.h"
 
-namespace convertor {
-    class ProofConvertor
+namespace converter {
+    class ProofConverter
     {
         private:
             std::string output_file;
@@ -43,12 +43,12 @@ namespace convertor {
              * @param wcnf_file The name of the WCNF file to parse.
              * @param msres_file The name of the MSRes file to parse.
              */
-            ProofConvertor(const std::string wcnf_file, const std::string msres_file, const std::string output_file);
+            ProofConverter(const std::string wcnf_file, const std::string msres_file, const std::string output_file);
 
             /**
              * Destructor for ProofConvertor.
              */	
-            ~ProofConvertor();
+            ~ProofConverter();
 
             /**
              * Writes the Veripb proof to a file.

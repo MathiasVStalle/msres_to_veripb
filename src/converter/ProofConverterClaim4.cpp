@@ -1,9 +1,9 @@
-#include "ProofConvertor.h"
+#include "ProofConverter.h"
 
 using namespace VeriPB;
 
-namespace convertor {
-    VeriPB::constraintid ProofConvertor::claim_4(
+namespace converter {
+    VeriPB::constraintid ProofConverter::claim_4(
         const uint32_t clause_id_1,
         const uint32_t clause_id_2,
         const cnf::ResRule& rule,
