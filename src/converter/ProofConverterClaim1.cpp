@@ -45,6 +45,35 @@ namespace converter {
         cpder.end();
     }
 
+    VeriPB::constraintid ProofConverter::weaken_all_except(
+        VeriPB::constraintid id,
+        std::vector<VeriPB::Lit> &literals,
+        uint32_t begin,
+        uint32_t end
+    )
+    {
+        CuttingPlanesDerivation cpder(this->pl, false);
+        cpder.start_from_constraint(id);
+        for (int i = 0; i < literals.size(); i++) {
+            if (i < begin || i > end) {
+                cpder.weaken(variable(literals[i]));
+            }
+        }
+
+        cpder.saturate();
+        return cpder.end();
+    }
+
+    VeriPB::constraintid ProofConverter::add_all(std::vector<VeriPB::constraintid> constraints) {
+        CuttingPlanesDerivation cpder(this->pl, false);
+        cpder.start_from_constraint(constraints[0]);
+        for (size_t i = 1; i < constraints.size(); i++) {
+            cpder.add_constraint(constraints[i]);
+        }
+        cpder.saturate();
+        return cpder.end();
+    }
+
     VeriPB::constraintid ProofConverter::claim_1(
         const uint32_t clause_id_1,
         const uint32_t clause_id_2,
@@ -156,7 +185,8 @@ namespace converter {
 
 
             // Weaken on everything except the last a
-            int index = literals_1.size() - i;
+            int begin = literals_1.size() - i;
+            int end = literals_1.size() - 1;
             
             weaken_all_except(
                 pl->get_reified_constraint_left_implication(variable(sn)),

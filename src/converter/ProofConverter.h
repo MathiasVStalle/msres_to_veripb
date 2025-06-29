@@ -200,6 +200,7 @@ namespace converter {
                 uint32_t num_new_clauses
             );
 
+
             std::vector<VeriPB::Lit> get_total_vars(
                 const std::vector<int32_t>& literals_1, 
                 const std::vector<int32_t>& literals_2
@@ -212,6 +213,15 @@ namespace converter {
                 std::vector<VeriPB::Lit>& literals, 
                 VeriPB::Lit except
             );
+
+            VeriPB::constraintid weaken_all_except(
+                VeriPB::constraintid id, 
+                std::vector<VeriPB::Lit>& literals, 
+                uint32_t begin,
+                uint32_t end
+            );
+
+            VeriPB::constraintid add_all(std::vector<VeriPB::constraintid> constraints);
     };
 }
 
