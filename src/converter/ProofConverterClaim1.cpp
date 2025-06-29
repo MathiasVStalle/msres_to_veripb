@@ -19,30 +19,12 @@ namespace converter {
         return total_vars;
     }
 
-    void ProofConverter::weaken_all(VeriPB::constraintid id, std::vector<VeriPB::Lit>& literals) {
-        CuttingPlanesDerivation cpder(this->pl, false);
-        cpder.start_from_constraint(id);
-        for (const auto& lit : literals) {
-            cpder.weaken(variable(lit));
-        }
-        cpder.saturate();
-        cpder.end();
-    }
-
-    void ProofConverter::weaken_all_except(
+    VeriPB::constraintid ProofConverter::weaken_all_except(
         VeriPB::constraintid id,
-        std::vector<VeriPB::Lit>& literals,
-        VeriPB::Lit except
+        std::vector<VeriPB::Lit> &literals,
+        uint32_t except
     ) {
-        CuttingPlanesDerivation cpder(this->pl, false);
-        cpder.start_from_constraint(id);
-        for (const auto& lit : literals) {
-            if (lit.v.v != except.v.v) {
-                cpder.weaken(variable(lit));
-            }
-        }
-        cpder.saturate();
-        cpder.end();
+        return weaken_all_except(id, literals, except, except);
     }
 
     VeriPB::constraintid ProofConverter::weaken_all_except(
@@ -179,6 +161,29 @@ namespace converter {
         std::vector<VeriPB::Lit> total_vars = get_total_vars(literals_1, literals_2);
         total_vars.push_back(x);
 
+        // DRAFT
+        // List of the relavant constraint ids sorted by the way they are added to the proof
+        // std::vector<VeriPB::constraintid> active_constraints = std::vector<VeriPB::constraintid>(pl->get_reified_constraint_left_implication(variable(s3)));
+        // for (int i = 0; i < literals_1.size(); i++) {
+        //     Lit sn = blocking_vars[blocking_vars.size() - (literals_1.size() - 1) + i];
+        //     active_constraints.push_back(pl->get_reified_constraint_left_implication(variable(sn)));
+        // }
+        // 
+        // // Build the subcaims
+        // for (int i = 0; i < literals_1.size(); i++) {
+        //     for (int j = 0; j < active_constraints.size(); j++) {
+        //         if (i == j) continue;
+        //         
+        //         if (j == 0) {
+        //             // Weaken on everything except a_i
+        //             weaken_all_except(active_constraints[j], total_vars, i);
+        //         } else {
+        //             // Weaken on everything except the last a_n where n <= i
+        //             
+        //         }
+        //     }
+        // }
+
         // Initial constraint 
         for (int i = 1; i <= literals_1.size(); i++) {
             Lit sn = blocking_vars[blocking_vars.size() - i + 1];
@@ -191,7 +196,8 @@ namespace converter {
             weaken_all_except(
                 pl->get_reified_constraint_left_implication(variable(sn)),
                 total_vars,
-                total_vars[literals_1.size() - i]
+                begin,
+                end
             );
         }
 

@@ -21,6 +21,10 @@ all: ./$(TARGET)
 run: all
 	./$(TARGET)
 
+.PHONY: test
+test: all
+	./$(TARGET) example/test/test.wcnf example/test/test.msres temp.pbp
+
 .PHONY: build
 build:
 	mkdir -p $(BUILD_DIR)/$(SRC_DIR)

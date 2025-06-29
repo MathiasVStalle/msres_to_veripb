@@ -215,6 +215,12 @@ namespace converter {
             );
 
             VeriPB::constraintid weaken_all_except(
+                VeriPB::constraintid id,
+                std::vector<VeriPB::Lit> &literals,
+                uint32_t except
+            );
+
+            VeriPB::constraintid weaken_all_except(
                 VeriPB::constraintid id, 
                 std::vector<VeriPB::Lit>& literals, 
                 uint32_t begin,
