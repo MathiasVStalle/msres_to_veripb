@@ -19,6 +19,7 @@ namespace converter {
     ProofConverter::ProofConverter(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
         : msres_parser(msres_file), output_file(output_file) {
 
+        // Add the clauses from the WCNF file
         std::vector<cnf::Clause> clauses = parser::WCNFParser::parseWCNF(wcnf_file);
         for (int i = 0; i < clauses.size(); i++) {
             this->wcnf_clauses.emplace(i + 1, clauses[i]);
@@ -28,7 +29,7 @@ namespace converter {
         this->pl->set_comments(true);
     }
 
-    // Segmentation fault
+    // TODO: Segmentation fault
     ProofConverter::~ProofConverter() {
         // if (this->pl != nullptr) {
         //     delete this->pl;
@@ -37,22 +38,7 @@ namespace converter {
     }
 
     void ProofConverter::write_proof() {
-        // Initializing all the variables from the original clauses
-        for (const auto& pair : this->wcnf_clauses) {
-            const cnf::Clause& clause = pair.second;
-
-            for (const auto& literal : clause.getLiterals()) {
-                uint32_t var = std::abs(literal);
-
-                if (this->vars.find(var) == this->vars.end()) {
-                    VeriPB::Var new_var{.v = var, .only_known_in_proof = false};
-                    VeriPB::Lit new_lit{.v = new_var, .negated = false};
-                    
-                    this->vars[var] = new_lit;
-                    this->var_mgr.store_variable_name(variable(new_lit), "x" + std::to_string(var));
-                }
-            }
-        }
+        initialize_vars();
 
 
         uint32_t unit_clauses = std::count_if(
@@ -69,7 +55,7 @@ namespace converter {
         this->pl->set_n_orig_constraints(this->wcnf_clauses.size() - unit_clauses);
 
         //TODO: Reification clauses
-        this->reificate();
+        this->reificate_original_clauses();
         this->pl->flush_proof();
 
         // Write the proof
@@ -103,6 +89,7 @@ namespace converter {
             throw std::runtime_error("Unknown rule type");
         }
     }
+
 
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
@@ -147,7 +134,25 @@ namespace converter {
         change_objective(constraint_id_1, constraint_id_2, num_new_clauses);
     }
 
-    void ProofConverter::reificate() {
+
+    void ProofConverter::initialize_vars() {
+        // Initialize the variables from the original clauses
+        for (const auto &[_, clause] : this->wcnf_clauses) {
+            for (const auto &literal : clause.getLiterals()) {
+                uint32_t var = std::abs(literal);
+
+                if (vars.find(var) == vars.end()) {
+                    VeriPB::Var new_var{.v = var, .only_known_in_proof = false};
+                    VeriPB::Lit new_lit{.v = new_var, .negated = false};
+
+                    this->vars[var] = new_lit;
+                    this->var_mgr.store_variable_name(variable(new_lit), "x" + std::to_string(var));
+                }
+            }
+        }
+    }
+
+    void ProofConverter::reificate_original_clauses() {
         // Saving the reification of the original clauses
         for (int i = 1; i <= this->wcnf_clauses.size(); i++) {
             const cnf::Clause& clause = this->wcnf_clauses.at(i);

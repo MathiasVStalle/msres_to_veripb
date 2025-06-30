@@ -77,7 +77,7 @@ namespace converter {
             /**
              * Reifies the original clauses and stores the reification in the proof logger.
              */
-            void reificate();
+            void reificate_original_clauses();
 
             /**
              * Applies the given rule and writes the new clauses to the proof logger.
@@ -206,14 +206,6 @@ namespace converter {
                 const std::vector<int32_t>& literals_2
             );
 
-            void weaken_all(VeriPB::constraintid id, std::vector<VeriPB::Lit>& literals);
-
-            void weaken_all_except(
-                VeriPB::constraintid id, 
-                std::vector<VeriPB::Lit>& literals, 
-                VeriPB::Lit except
-            );
-
             VeriPB::constraintid weaken_all_except(
                 VeriPB::constraintid id,
                 std::vector<VeriPB::Lit> &literals,
@@ -228,6 +220,17 @@ namespace converter {
             );
 
             VeriPB::constraintid add_all(std::vector<VeriPB::constraintid> constraints);
+            VeriPB::constraintid add_all_from_literal(std::vector<VeriPB::constraintid> constraints, VeriPB::Lit var);
+            VeriPB::constraintid add_all_prev(int32_t range);
+            VeriPB::constraintid add_all_prev_from_literal(int32_t range, VeriPB::Lit var);
+
+
+            /**
+             * Initializes the variables used in the proof conversion.
+             * 
+             * This method extracts the variables from the original clauses and initializes them in the variable manager.
+             */
+            void initialize_vars();
     };
 }
 

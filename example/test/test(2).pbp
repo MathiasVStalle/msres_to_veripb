@@ -34,14 +34,14 @@ p ~_p5 -1 + -2 + s
 * Initial constraint
 * 
 p 10 x2 w x5 w x4 w s
-p 18 x2 w x5 w x4 w x1 w s
-p ~_p8 -1 + -2 + s
-* Subclaim 0
+p 18 x1 w x2 w x5 w x4 w s
+p -1 -2 + ~_p8 +
+* Subclaim 1
 * 
 p 10 x3 w x5 w x4 w s
-p 16 x2 w x5 w x4 w x1 w s
-p ~_p9 -1 + -2 + s
-* Subclaim 1
+p 16 x1 w x2 w x5 w x4 w s
+p -1 -2 + ~_p9 +
+* Subclaim 2
 * 
 * Proof by contradiction1
 * 
@@ -222,14 +222,14 @@ p ~_p10 -1 + -2 + s
 * Initial constraint
 * 
 p 142 x6 w x9 w s
-p 148 x6 w x9 w x7 w s
-p ~_p12 -1 + -2 + s
-* Subclaim 0
+p 148 x7 w x6 w x9 w s
+p -1 -2 + ~_p12 +
+* Subclaim 1
 * 
 p 142 x8 w x9 w s
-p 146 x6 w x9 w x7 w s
-p ~_p13 -1 + -2 + s
-* Subclaim 1
+p 146 x7 w x6 w x9 w s
+p -1 -2 + ~_p13 +
+* Subclaim 2
 * 
 * Proof by contradiction1
 * 

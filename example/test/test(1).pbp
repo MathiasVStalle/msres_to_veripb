@@ -28,20 +28,20 @@ red 4 ~_p8 1 x3 1 ~x5 1 ~x4 1 x1 >=  4; _p8 0
 red 1 _p9 1 ~x2 1 x3 1 x5 1 x4 1 ~x1 >= 1; _p9 1
 * ~_p9 <- 1 ~x2 1 x3 1 x5 1 x4 1 ~x1 >= 1
 red 5 ~_p9 1 x2 1 ~x3 1 ~x5 1 ~x4 1 x1 >=  5; _p9 0
-p 16 x5 w x4 w x1 w s
 p 18 x3 w x5 w x4 w x1 w s
-p ~_p5 -1 + -2 + s
+p 16 x5 w x4 w x1 w s
+p ~_p5 -1 + -2 +
 * Initial constraint
 * 
 p 10 x2 w x5 w x4 w s
-p 18 x2 w x5 w x4 w x1 w s
-p ~_p8 -1 + -2 + s
-* Subclaim 0
+p 18 x1 w x2 w x5 w x4 w s
+p -1 -2 + ~_p8 +
+* Subclaim 1
 * 
 p 10 x3 w x5 w x4 w s
-p 16 x2 w x5 w x4 w x1 w s
-p ~_p9 -1 + -2 + s
-* Subclaim 1
+p 16 x1 w x2 w x5 w x4 w s
+p -1 -2 + ~_p9 +
+* Subclaim 2
 * 
 * Proof by contradiction1
 * 
@@ -216,20 +216,20 @@ red 3 ~_p12 1 x8 1 ~x9 1 x7 >=  3; _p12 0
 red 1 _p13 1 ~x6 1 x8 1 x9 1 ~x7 >= 1; _p13 1
 * ~_p13 <- 1 ~x6 1 x8 1 x9 1 ~x7 >= 1
 red 4 ~_p13 1 x6 1 ~x8 1 ~x9 1 x7 >=  4; _p13 0
-p 146 x9 w x7 w s
 p 148 x8 w x9 w x7 w s
-p ~_p10 -1 + -2 + s
+p 146 x9 w x7 w s
+p ~_p10 -1 + -2 +
 * Initial constraint
 * 
 p 142 x6 w x9 w s
-p 148 x6 w x9 w x7 w s
-p ~_p12 -1 + -2 + s
-* Subclaim 0
+p 148 x7 w x6 w x9 w s
+p -1 -2 + ~_p12 +
+* Subclaim 1
 * 
 p 142 x8 w x9 w s
-p 146 x6 w x9 w x7 w s
-p ~_p13 -1 + -2 + s
-* Subclaim 1
+p 146 x7 w x6 w x9 w s
+p -1 -2 + ~_p13 +
+* Subclaim 2
 * 
 * Proof by contradiction1
 * 
