@@ -75,6 +75,13 @@ namespace converter {
             void write_split_rule(const cnf::SplitRule *rule);
 
             /**
+             * Initializes the variables used in the proof conversion.
+             *
+             * This method extracts the variables from the original clauses and initializes them in the variable manager.
+             */
+            void initialize_vars();
+
+            /**
              * Reifies the original clauses and stores the reification in the proof logger.
              */
             void reificate_original_clauses();
@@ -112,6 +119,7 @@ namespace converter {
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
             );
+
 
 
             VeriPB::constraintid claim_1_step_1(
@@ -201,17 +209,22 @@ namespace converter {
             );
 
 
+
+            std::vector<VeriPB::constraintid> build_subclaims(
+                VeriPB::Lit x,
+                std::vector<VeriPB::Lit>& total_vars,
+                std::vector<VeriPB::Lit>& active_blocking_vars,
+                std::vector<VeriPB::constraintid>& active_constraints
+            );
+
+
+
             std::vector<VeriPB::Lit> get_total_vars(
                 const std::vector<int32_t>& literals_1, 
                 const std::vector<int32_t>& literals_2
             );
 
-            VeriPB::constraintid weaken_all_except(
-                VeriPB::constraintid id,
-                std::vector<VeriPB::Lit> &literals,
-                uint32_t except
-            );
-
+            VeriPB::constraintid weaken_all_except(VeriPB::constraintid id, std::vector<VeriPB::Lit> &literals, uint32_t except);
             VeriPB::constraintid weaken_all_except(
                 VeriPB::constraintid id, 
                 std::vector<VeriPB::Lit>& literals, 
@@ -224,13 +237,8 @@ namespace converter {
             VeriPB::constraintid add_all_prev(int32_t range);
             VeriPB::constraintid add_all_prev_from_literal(int32_t range, VeriPB::Lit var);
 
-
-            /**
-             * Initializes the variables used in the proof conversion.
-             * 
-             * This method extracts the variables from the original clauses and initializes them in the variable manager.
-             */
-            void initialize_vars();
+            VeriPB::constraintid build_proof_by_contradiction(VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t>& C, VeriPB::constraintid claim_1, VeriPB::constraintid claim_2);
+            VeriPB::constraintid build_proof_by_contradiction(VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t>& C, std::vector<VeriPB::constraintid>& claims);
     };
 }
 
