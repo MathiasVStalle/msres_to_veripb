@@ -64,20 +64,20 @@ p -1 -2 + s
 end
 p 2 -1 +
 p 10 x3 w x2 w x4 w s
-p 16 x3 w x2 w x4 w x1 w s
-p 18 x3 w x2 w x4 w x1 w s
-p -1 -2 + -3 + s
+p 16 x1 w x3 w x4 w s
+p 18 x1 w x3 w x2 w x4 w s
+p -3 -2 + -1 +
 p -1 ~_b2 + ~x1 +
 p 10 x3 w x2 w x5 w s
-p 16 x3 w x2 w x5 w x1 w s
-p 18 x3 w x2 w x5 w x1 w s
-p -1 -2 + -3 + s
+p 16 x1 w x3 w x5 w s
+p 18 x1 w x3 w x2 w x5 w s
+p -3 -2 + -1 +
 p -1 ~_b2 + ~x1 +
 red 1 ~x1 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 >= 3; ; begin 
 	proofgoal #1
+p 53 41 + s
 p 53 46 + s
 p 53 51 + s
-p 53 41 + s
 p -3 -2 + -1 + s
 	end -1
 end
@@ -252,14 +252,14 @@ p -1 -2 + s
 end
 p 4 -1 +
 p 142 x8 w x6 w s
-p 146 x8 w x6 w x7 w s
-p 148 x8 w x6 w x7 w s
-p -1 -2 + -3 + s
+p 146 x7 w x8 w s
+p 148 x7 w x8 w x6 w s
+p -3 -2 + -1 +
 p -1 ~_b4 + ~x7 +
 red 1 ~x7 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 >= 3; ; begin 
 	proofgoal #1
-p 178 176 + s
 p 178 171 + s
+p 178 176 + s
 p -2 -1 + s
 	end -1
 end

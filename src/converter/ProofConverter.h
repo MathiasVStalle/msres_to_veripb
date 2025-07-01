@@ -210,19 +210,28 @@ namespace converter {
 
 
             // TODO: active_blocking_vars and active_constraints are of the same size, so they can be combined into one vector
-            std::vector<VeriPB::constraintid> build_subclaims(
+            std::vector<VeriPB::constraintid> build_iterative_subclaims(
                 VeriPB::Lit x,
                 std::vector<VeriPB::Lit>& total_vars,
                 std::vector<VeriPB::Lit>& active_blocking_vars,
                 std::vector<VeriPB::constraintid>& active_constraints
             );
 
-
             VeriPB::constraintid iterative_proofs_by_contradiction(
                 std::vector<int32_t>& active_literals,
                 std::vector<VeriPB::Lit>& active_blocking_vars,
                 std::vector<VeriPB::constraintid>& subclaims
             );
+
+            // TODO: s2 variable should not be needed
+            // TODO: If the total amount of subclaims is large, dynamic allocation should be used
+            std::vector<VeriPB::constraintid> build_conjunctive_subclaims(
+                VeriPB::Lit x,
+                VeriPB::Lit s2,
+                std::vector<VeriPB::Lit>& total_vars,
+                std::vector<VeriPB::constraintid>& active_constraints
+            );
+
 
             std::vector<VeriPB::Lit> get_total_vars(
                 const std::vector<int32_t>& literals_1, 
