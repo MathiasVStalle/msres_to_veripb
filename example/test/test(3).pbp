@@ -45,7 +45,7 @@ p ~_p9 -1 + -2 + s
 * 
 * Proof by contradiction1
 * 
-red 1 ~_p5 1 ~_p8 1 ~_p9 1 x3 >= 2; ; begin 
+red 1 ~_p5 1 ~_p9 1 ~_p8 1 x3 >= 2; ; begin 
 	proofgoal #1
 p 21 -1 + s
 p 27 -2 + s
@@ -55,7 +55,7 @@ end
 p -1 x3 +
 * Proof by contradiction0
 * 
-red 1 ~_p5 1 ~_p8 1 ~_p9 >= 2; ; begin 
+red 1 ~_p5 1 ~_p9 1 ~_p8 >= 2; ; begin 
 	proofgoal #1
 p 34 -1 + s
 p 24 -2 + s
@@ -233,7 +233,7 @@ p ~_p13 -1 + -2 + s
 * 
 * Proof by contradiction1
 * 
-red 1 ~_p10 1 ~_p12 1 ~_p13 1 x8 >= 2; ; begin 
+red 1 ~_p10 1 ~_p13 1 ~_p12 1 x8 >= 2; ; begin 
 	proofgoal #1
 p 151 -1 + s
 p 157 -2 + s
@@ -243,7 +243,7 @@ end
 p -1 x8 +
 * Proof by contradiction0
 * 
-red 1 ~_p10 1 ~_p12 1 ~_p13 >= 2; ; begin 
+red 1 ~_p10 1 ~_p13 1 ~_p12 >= 2; ; begin 
 	proofgoal #1
 p 164 -1 + s
 p 154 -2 + s

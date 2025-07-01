@@ -248,6 +248,45 @@ namespace converter {
         return subclaims;
     }
 
+    VeriPB::constraintid ProofConverter::iterative_proofs_by_contradiction(
+        std::vector<int32_t>& active_literals,
+        std::vector<VeriPB::Lit>& active_blocking_vars,
+        std::vector<VeriPB::constraintid>& subclaims
+    ) {
+        constraintid subclaim_1 = subclaims.back();
+        constraintid subclaim_2;
+        for (int i = subclaims.size() - 2; i >= 0; i--) {
+            subclaim_2 = subclaims[i];
+
+            // Build the constraint
+            Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+            for (Lit sn : active_blocking_vars) {
+                C.add_literal(neg(sn), 1);
+            }
+            for (int j = 0; j < i; j++) {
+                C.add_literal(vars[std::abs(active_literals[j])], 1);
+            }
+            C.add_RHS(subclaims.size() - 1);
+
+            // Start the proof
+            pl->write_comment("Proof by contradiction" + std::to_string(i));
+            pl->write_comment("");
+            build_proof_by_contradiction(C, subclaim_1, subclaim_2);
+
+            // Add the missing literal to the result for the next iteration
+            if (i != 0) {
+                CuttingPlanesDerivation cpder(pl, false);
+                cpder.start_from_constraint(-1);
+                cpder.add_literal_axiom(vars[std::abs(active_literals[i - 1])]);
+                cpder.end();
+            }
+
+            subclaim_1 = pl->get_constraint_counter();
+        }
+
+        return subclaim_1;
+    }
+
     VeriPB::constraintid ProofConverter::claim_1_step_1(
         CuttingPlanesDerivation& cpder,
         Lit x,
@@ -273,44 +312,8 @@ namespace converter {
             active_constraints.push_back(pl->get_reified_constraint_left_implication(variable(sn)));
         }
 
-        // Build the subcaims
         std::vector<VeriPB::constraintid> subclaims = build_subclaims(x, total_vars, active_blocking_vars, active_constraints);
-        
-        constraintid intitial = subclaims[subclaims.size() - 1];
-
-        // Iterative proofs by contradiction
-
-        constraintid subclaim_1 = intitial;
-        for (int i = literals_1.size() - 1; i >= 0; i--) {
-            constraintid subclaim_2 = subclaims[i];
-
-            // Build the constraint
-            Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
-            for (Lit sn : active_blocking_vars) {
-                C.add_literal(neg(sn), 1);
-            }
-            for (int j = 0; j < i; j++) {
-                C.add_literal(vars[std::abs(literals_1[j])], 1);
-            }
-            C.add_RHS(literals_1.size());
-
-
-            // Start the proof
-            pl->write_comment("Proof by contradiction" + std::to_string(i));
-            pl->write_comment("");
-            build_proof_by_contradiction(C, subclaim_1, subclaim_2);
-
-            // Add the missing literal
-            if (i != 0) {
-                cpder.start_from_constraint(-1);
-                cpder.add_literal_axiom(vars[std::abs(literals_1[i - 1])]);
-                subclaim_1 = cpder.end();
-            } else {
-                pl->get_constraint_counter();
-            }
-        }
-
-        return subclaim_1;
+        return iterative_proofs_by_contradiction(literals_1, active_blocking_vars, subclaims);
     }
 
     std::vector<constraintid> ProofConverter::claim_1_step_2(
