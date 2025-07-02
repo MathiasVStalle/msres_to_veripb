@@ -101,12 +101,7 @@ namespace converter {
         uint32_t constraint_id_2 = constraint_ids.at(rule->getClause2());
 
         // Generate the four claims
-        constraintid claim_1 = this->claim_1(
-            constraint_id_1,
-            constraint_id_2,
-            *rule,
-            rule->apply()
-        );
+        constraintid claim_1 = this->claim_type_1(*rule);
         pl->write_comment("__Claim 1__");
         constraintid claim_2 = this->claim_2(
             constraint_id_1,

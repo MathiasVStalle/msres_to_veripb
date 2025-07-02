@@ -106,11 +106,8 @@ namespace converter {
             > 
             get_constraint_ids(const uint32_t constraint_1, const uint32_t constraint_2);
 
-            VeriPB::constraintid claim_1(
-                const uint32_t clause_id_1,
-                const uint32_t clause_id_2,
-                const cnf::ResRule& rule,
-                const std::vector<cnf::Clause>& new_clauses
+            VeriPB::constraintid claim_type_1(
+                const cnf::ResRule& rule
             );
 
             VeriPB::constraintid claim_2(
@@ -118,35 +115,6 @@ namespace converter {
                 uint32_t clause_id_2,
                 const cnf::ResRule& rule,
                 const std::vector<cnf::Clause>& new_clauses
-            );
-
-
-
-            VeriPB::constraintid claim_1_step_1(
-                VeriPB::CuttingPlanesDerivation& cpder, 
-                VeriPB::Lit x,
-                VeriPB::Lit s3, 
-                std::vector<int32_t>& literals_1, 
-                std::vector<int32_t>& literals_2
-            );
-
-            VeriPB::constraintid claim_1_step_2(
-                VeriPB::CuttingPlanesDerivation& cpder,
-                VeriPB::Lit x,
-                VeriPB::Lit s2,
-                VeriPB::Lit s3,
-                std::vector<int32_t>& literals_1, 
-                std::vector<int32_t>& literals_2
-            );
-
-            VeriPB::constraintid claim_1_contradiction(
-                VeriPB::CuttingPlanesDerivation& cpder,
-                VeriPB::Lit x,
-                VeriPB::Lit s2,
-                VeriPB::Lit s3,
-                std::vector<int32_t>& literals_1, 
-                std::vector<int32_t>& literals_2,
-                std::vector<VeriPB::constraintid>& subclaims
             );
 
 
@@ -214,7 +182,8 @@ namespace converter {
                 VeriPB::Lit x,
                 std::vector<VeriPB::Lit>& total_vars,
                 std::vector<VeriPB::Lit>& active_blocking_vars,
-                std::vector<VeriPB::constraintid>& active_constraints
+                std::vector<VeriPB::constraintid>& active_constraints,
+                uint32_t unactive_constraints_amount
             );
 
             VeriPB::constraintid iterative_proofs_by_contradiction(
@@ -229,7 +198,8 @@ namespace converter {
                 VeriPB::Lit x,
                 VeriPB::Lit s2,
                 std::vector<VeriPB::Lit>& total_vars,
-                std::vector<VeriPB::constraintid>& active_constraints
+                std::vector<VeriPB::constraintid>& active_constraints,
+                uint32_t unactive_constraints_amount
             );
 
 
@@ -253,7 +223,7 @@ namespace converter {
 
             VeriPB::constraintid build_proof_by_contradiction(VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t>& C, VeriPB::constraintid claim_1, VeriPB::constraintid claim_2);
             VeriPB::constraintid build_proof_by_contradiction(VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t>& C, std::vector<VeriPB::constraintid>& claims);
-    };
+        };
 }
 
 #endif
