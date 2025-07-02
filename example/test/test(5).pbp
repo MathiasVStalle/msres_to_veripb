@@ -78,13 +78,13 @@ red 1 ~x1 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 >= 3; ; begin
 p 53 46 + s
 p 53 51 + s
 p 53 41 + s
-p -1 -2 + -3 + s
+p -3 -2 + -1 + s
 	end -1
 end
 p ~x1 2 * -1 +
 p 14 x3 w x2 w x5 w x4 w s
 p 12 x3 w x2 w x5 w s
-p ~_b1 -1 + -2 + -3 + s
+p -2 -1 + 59 + ~_b1 +
 * Claim 1
 * 
 * __Claim 1__
@@ -260,12 +260,12 @@ red 1 ~x7 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 >= 3; ; begin
 	proofgoal #1
 p 178 176 + s
 p 178 171 + s
-p -1 -2 + s
+p -2 -1 + s
 	end -1
 end
 p ~x7 1 * -1 +
 p 144 x8 w x6 w x9 w s
-p ~_b3 -1 + -2 + s
+p -1 183 + ~_b3 +
 * Claim 1
 * 
 * __Claim 1__

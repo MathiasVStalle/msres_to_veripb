@@ -293,16 +293,14 @@ namespace converter {
 
         // List all the blocking variables of the active constraints
         std::vector<VeriPB::Lit> active_blocking_vars = {s3};
-        for (int i = 0; i < literals_clause_1.size(); i++)
-        {
+        for (int i = 0; i < literals_clause_1.size(); i++) {
             Lit sn = blocking_vars[blocking_vars.size() - (literals_clause_1.size() - 1) + i];
             active_blocking_vars.push_back(sn);
         }
 
         // List of the relavant constraint ids sorted by the way they are added to the proof
         std::vector<VeriPB::constraintid> active_constraints;
-        for (Lit sn : active_blocking_vars)
-        {
+        for (Lit sn : active_blocking_vars) {
             active_constraints.push_back(pl->get_reified_constraint_left_implication(variable(sn)));
         }
 
@@ -321,8 +319,7 @@ namespace converter {
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         C.add_literal(neg(x), 1);
         C.add_literal(neg(s2), 1);
-        for (auto &sn : active_blocking_vars)
-        {
+        for (auto &sn : active_blocking_vars) {
             C.add_literal(neg(sn), 1);
         }
         C.add_RHS(active_blocking_vars.size());
@@ -334,38 +331,18 @@ namespace converter {
         cpder.start_from_literal_axiom(neg(x));
         cpder.multiply(rhs - 1);
         cpder.add_constraint(-1);
-        VeriPB::constraintid subclaim = cpder.end();
+        cpder.end();
         
-        int32_t counter = 0;
         int32_t offset = blocking_vars.size() - literals_clause_1.size();
         for (int i = 0; i < literals_clause_2.size(); i++) {
-            VeriPB::Lit sn = this->blocking_vars[offset - i];
-        
-            // Take all the unused constraints and weaken them
-            cpder.start_from_constraint(this->pl->get_reified_constraint_left_implication(variable(sn)));
-            for (int j = 0; j < literals_clause_1.size(); j++) {
-                cpder.weaken(variable(this->vars[std::abs(literals_clause_1[j])]));
-            }
-            for (int j = 0; j < literals_clause_2.size() - i; j++) {
-                cpder.weaken(variable(this->vars[std::abs(literals_clause_2[j])]));
-            }
-            cpder.saturate();
-            cpder.end();
-            counter++;
+            VeriPB::Lit sn = blocking_vars[offset - i];
+            constraintid constraint = pl->get_reified_constraint_left_implication(variable(sn));
+
+            weaken_all_except(constraint, total_vars, total_vars.size() - i, total_vars.size());
         }
 
-        // Add all the previous constraints
-        if (counter != 0) {
-            cpder.start_from_constraint(-counter);
-            for (int i = counter - 1; i > 0; i--) {
-                cpder.add_constraint(-i);
-            }
-            cpder.add_constraint(subclaim);
-        } else {
-            cpder.start_from_constraint(subclaim);
-        }
-        cpder.add_literal_axiom(neg(s1));
-        VeriPB::constraintid result = cpder.end();
+        constraintid result = add_all_prev_from_literal(literals_clause_2.size() + 1, neg(s1)); // Also add the constraint that adds the pivot variable
+
         pl->write_comment("Claim 1");
         pl->write_comment("");
         
