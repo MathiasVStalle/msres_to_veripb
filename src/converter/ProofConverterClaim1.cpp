@@ -135,7 +135,6 @@ namespace converter {
 
     // TODO: If the total amount of subclaims is large, dynamic allocation should be used
     // TODO: Change the unactive.. name
-    // CHANGE: the active_... params should be different
     std::vector<VeriPB::constraintid> ProofConverter::build_iterative_subclaims(
         VeriPB::Lit x,
         std::vector<VeriPB::Lit> &total_vars,
@@ -246,7 +245,6 @@ namespace converter {
 
         // Repeat for every b_i
         for (int i = 0; i < unactive_vars_amount; i++) {
-            // CHANGE
             weaken_all_except(active_constraints[0], total_vars, active_constraints_offset + i);
 
             // Weaken on everything except b_i
@@ -270,7 +268,6 @@ namespace converter {
     }
 
 
-    // CHANGE: the clause id's should be switched
     VeriPB::constraintid ProofConverter::claim_type_1(const cnf::ResRule& rule, const bool negated_pivot) {
         const uint32_t clause_id_1 = constraint_ids[rule.getClause1()];
         const uint32_t clause_id_2 = constraint_ids[rule.getClause2()];
@@ -331,7 +328,6 @@ namespace converter {
         // List all the blocking variables of the active constraints
         std::vector<VeriPB::Lit> active_blocking_vars = {s3};
         for (int i = 0; i < active_constraints_amount; i++) {
-            // CHANGE: Active blocking variable index - literals_clause_2
             Lit sn = blocking_vars[blocking_vars.size() - active_blocking_var_offset + i];
             active_blocking_vars.push_back(sn);
         }
@@ -342,26 +338,20 @@ namespace converter {
             active_constraints.push_back(pl->get_reified_constraint_left_implication(variable(sn)));
         }
 
-        // CHANGE: Last parameter should be literals_clause_1.size()
         std::vector<VeriPB::constraintid> subclaims = build_iterative_subclaims(x, total_vars, active_blocking_vars, active_constraints, active_constraints_offset);
         iterative_proofs_by_contradiction(active_literals, active_blocking_vars, subclaims);
 
         // Complete the formula (1 ~x 1 b1 1 b2 ... 1 bn 1 s2 1 ~s3 1 ~s(n+1) ... 1 ~s(n+m) >= m)
-        // CHANGE: constraint of s1
         cpder.start_from_constraint(pl->get_reified_constraint_right_implication(variable(active_original_blocking_var)));
         cpder.add_constraint(-1);
         constraintid completed = cpder.end();
 
-        // CHANGE: This should be s1
-        // CHANGE: Last parameter should be literals_clause_1.size()
         subclaims = build_conjunctive_subclaims(x, active_original_blocking_var, total_vars, active_constraints, negated_pivot);
         subclaims.push_back(completed);
 
-        // Make contradicting constraint (1 ~x1 1 s2 1 ~s3 1 ~s6 ... 1 ~sn >= m)
+        // Make contradicting constraint
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
-        // CHANGE: constaint of x
         C.add_literal(pivot_literal, 1);
-        // CHANGE: constraint of s1
         C.add_literal(neg(active_original_blocking_var), 1);
         for (auto &sn : active_blocking_vars) {
             C.add_literal(neg(sn), 1);
@@ -378,8 +368,6 @@ namespace converter {
         cpder.end();
         
         // TODO: This should be put in a separete function
-        // CHANGE: offset = blocking_vars.size()
-        // CHANGE: iterate for all unactive blocking vars
         int32_t offset = negated_pivot ? blocking_vars.size() : (blocking_vars.size() - literals_clause_1.size());
 
         for (int i = 0; i < unactive_constraints_amount; i++) {
@@ -392,7 +380,6 @@ namespace converter {
             weaken_all_except(constraint, total_vars, total_vars.size());
         }
 
-        // CHANGE: s2
         constraintid result = add_all_prev_from_literal(unactive_constraints_amount + 1, neg(unactive_original_blocking_var)); // Also add the constraint that adds the pivot variable
 
         pl->write_comment("Claim 1");
