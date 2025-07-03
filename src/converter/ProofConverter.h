@@ -106,9 +106,7 @@ namespace converter {
             > 
             get_constraint_ids(const uint32_t constraint_1, const uint32_t constraint_2);
 
-            VeriPB::constraintid claim_type_1(
-                const cnf::ResRule& rule
-            );
+            VeriPB::constraintid claim_type_1(const cnf::ResRule& rule, const bool negated_pivot);
 
             VeriPB::constraintid claim_2(
                 uint32_t clause_id_1,
@@ -183,7 +181,7 @@ namespace converter {
                 std::vector<VeriPB::Lit>& total_vars,
                 std::vector<VeriPB::Lit>& active_blocking_vars,
                 std::vector<VeriPB::constraintid>& active_constraints,
-                uint32_t unactive_constraints_amount
+                uint32_t active_constraints_offset
             );
 
             VeriPB::constraintid iterative_proofs_by_contradiction(
@@ -199,7 +197,7 @@ namespace converter {
                 VeriPB::Lit s2,
                 std::vector<VeriPB::Lit>& total_vars,
                 std::vector<VeriPB::constraintid>& active_constraints,
-                uint32_t unactive_constraints_amount
+                bool negated_pivot
             );
 
 
