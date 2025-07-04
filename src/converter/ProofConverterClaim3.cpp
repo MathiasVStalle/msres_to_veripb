@@ -110,7 +110,7 @@ namespace converter {
     {
         const uint32_t clause_id_1 = constraint_ids[rule.getClause1()];
         const uint32_t clause_id_2 = constraint_ids[rule.getClause2()];
-        const uint32_t num_new_clauses = rule.getClause1().getLiterals().size() + rule.getClause2().getLiterals().size() - 1;
+        const uint32_t num_new_clauses = rule.getClause1().getLiterals().size() + rule.getClause2().getLiterals().size() - 1; // TODO: This should be changed to the actual number of new clauses
         const int32_t rhs = num_new_clauses - 2;
         const uint32_t pivot = rule.get_pivot();
 
@@ -143,7 +143,7 @@ namespace converter {
             pivot_literal = x;
             active_original_blocking_var = s1;
             unactive_original_blocking_var = s2;
-            active_blocking_var_offset = num_new_clauses - 1;
+            active_blocking_var_offset = num_new_clauses - 2; // TODO: Check why not num_new_clauses - 1
             active_constraints_amount = literals_clause_2.size();
             unactive_constraints_amount = literals_clause_1.size();
             active_constraints_offset = literals_clause_1.size();
@@ -176,7 +176,6 @@ namespace converter {
 
         constraintid cxn_1 = add_all_and_saturate(active_constraints);
 
-        // Step 2
         cpder.start_from_constraint(pl->get_reified_constraint_left_implication(variable(active_original_blocking_var)));
         cpder.weaken(variable(x));
         cpder.saturate();

@@ -107,12 +107,7 @@ namespace converter {
         pl->write_comment("__Claim 2__");
         constraintid claim_3 = this->claim_type_2(*rule, false);
         pl->write_comment("__Claim 3__");
-        constraintid claim_4 = this->claim_4(
-            constraint_id_1,
-            constraint_id_2,
-            *rule,
-            rule->apply()
-        );
+        constraintid claim_4 = this->claim_type_2(*rule, true);
         pl->write_comment("__Claim 4__");
 
         assemble_proof(claim_1, claim_2, claim_3, claim_4, constraint_id_1, constraint_id_2, num_new_clauses);

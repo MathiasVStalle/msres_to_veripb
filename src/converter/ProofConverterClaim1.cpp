@@ -69,7 +69,6 @@ namespace converter {
             cpder.add_constraint(constraints[i]);
             cpder.saturate();
         }
-        cpder.saturate();
         return cpder.end();
     }
 
