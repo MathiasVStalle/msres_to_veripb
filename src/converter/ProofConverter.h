@@ -107,6 +107,7 @@ namespace converter {
             get_constraint_ids(const uint32_t constraint_1, const uint32_t constraint_2);
 
             VeriPB::constraintid claim_type_1(const cnf::ResRule& rule, const bool negated_pivot);
+            VeriPB::constraintid claim_type_2(const cnf::ResRule &rule, const bool negated_pivot);
 
             VeriPB::constraintid claim_2(
                 uint32_t clause_id_1,
@@ -206,6 +207,7 @@ namespace converter {
                 const std::vector<int32_t>& literals_2
             );
 
+            VeriPB::constraintid weaken(VeriPB::constraintid id, std::vector<VeriPB::Lit> &literals, uint32_t begin, uint32_t end);
             VeriPB::constraintid weaken_all_except(VeriPB::constraintid id, std::vector<VeriPB::Lit> &literals, uint32_t except);
             VeriPB::constraintid weaken_all_except(
                 VeriPB::constraintid id, 
@@ -215,6 +217,7 @@ namespace converter {
             );
 
             VeriPB::constraintid add_all(std::vector<VeriPB::constraintid> constraints);
+            VeriPB::constraintid add_all_and_saturate(std::vector<VeriPB::constraintid> constraints);
             VeriPB::constraintid add_all_from_literal(std::vector<VeriPB::constraintid> constraints, VeriPB::Lit var);
             VeriPB::constraintid add_all_prev(int32_t range);
             VeriPB::constraintid add_all_prev_from_literal(int32_t range, VeriPB::Lit var);

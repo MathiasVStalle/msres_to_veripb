@@ -19,6 +19,16 @@ namespace converter {
         return total_vars;
     }
 
+    VeriPB::constraintid ProofConverter::weaken(VeriPB::constraintid id, std::vector<VeriPB::Lit> &literals, uint32_t begin, uint32_t end) {
+        CuttingPlanesDerivation cpder(this->pl, false);
+        cpder.start_from_constraint(id);
+        for (int i = begin; i < end; i++) {
+            cpder.weaken(variable(literals[i]));
+        }
+        cpder.saturate();
+        return cpder.end();
+    }
+
     VeriPB::constraintid ProofConverter::weaken_all_except(VeriPB::constraintid id, std::vector<VeriPB::Lit> &literals, uint32_t except) {
         return weaken_all_except(id, literals, except, except);
     }
@@ -46,6 +56,18 @@ namespace converter {
         cpder.start_from_constraint(constraints[0]);
         for (size_t i = 1; i < constraints.size(); i++) {
             cpder.add_constraint(constraints[i]);
+        }
+        cpder.saturate();
+        return cpder.end();
+    }
+
+    // Check why this should be in reversed order
+    VeriPB::constraintid ProofConverter::add_all_and_saturate(std::vector<VeriPB::constraintid> constraints) {
+        CuttingPlanesDerivation cpder(this->pl, false);
+        cpder.start_from_constraint(constraints[0]);
+        for (size_t i = constraints.size() - 1; i >= 1; i--) {
+            cpder.add_constraint(constraints[i]);
+            cpder.saturate();
         }
         cpder.saturate();
         return cpder.end();
