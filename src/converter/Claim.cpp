@@ -14,24 +14,24 @@ namespace converter {
         }
 
         const uint32_t num_clauses_1 = rule.getClause1().getLiterals().size() - 1; // -1 for the pivot variable
-        const std::vector<Lit> new_blocking_vars = std::vector<Lit>(blocking_vars.begin() + 3, blocking_vars.end());
+        const std::vector<Lit> new_blocking_vars = std::vector<Lit>(blocking_vars.begin() + 2, blocking_vars.end());
 
-        this->active_blocking_vars = {blocking_vars[3]};
+        this->active_blocking_vars = {new_blocking_vars[0]}; // Add the first new blocking variables
 
         if (negated_pivot) {
-            this->pivot_literal = vars[0];
+            this->pivot_literal = vars.back();
             this->active_original_blocking_var = blocking_vars[0];
             this->unactive_original_blocking_var = blocking_vars[1];
 
-            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin(), new_blocking_vars.end() + num_clauses_1);
-            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_1, new_blocking_vars.end());
+            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
+            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_1 + 1, new_blocking_vars.end());
         } else {
-            this->pivot_literal = neg(vars[0]);
+            this->pivot_literal = neg(vars.back());
             this->active_original_blocking_var = blocking_vars[1];
             this->unactive_original_blocking_var = blocking_vars[0];
 
-            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_1, new_blocking_vars.end());
-            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin(), new_blocking_vars.begin() + num_clauses_1);
+            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_1 + 1, new_blocking_vars.end());
+            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.begin() + num_clauses_1 + 1);
         }
     }
 
@@ -68,27 +68,35 @@ namespace converter {
         return unactive_blocking_vars;
     }
 
+    const std::vector<constraintid> &Claim::get_active_constraints() const {
+        return active_constraints;
+    }
 
-    constraintid Claim::weaken(Prooflogger &pl, constraintid id, uint32_t begin, uint32_t end) {
+    void Claim::set_active_constraints(const std::vector<constraintid> &active_constraints) {
+        this->active_constraints = active_constraints;
+    }
+
+
+    constraintid Claim::weaken(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_constraint(id);
         for (int i = begin; i < end; i++) {
-            cpder.weaken(variable(vars[i]));
+            cpder.weaken(variable(variables[i]));
         }
         cpder.saturate();
         return cpder.end();
     }
 
-    constraintid Claim::weaken_all_except(Prooflogger &pl, constraintid id, uint32_t except) {
-        return weaken_all_except(pl, id, except, except);
+    constraintid Claim::weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t except) {
+        return weaken_all_except(pl, id, variables, except, except);
     }
 
-    constraintid Claim::weaken_all_except(Prooflogger &pl, constraintid id, uint32_t begin, uint32_t end) {
+    constraintid Claim::weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_constraint(id);
-        for (int i = 0; i < vars.size(); i++) {
+        for (int i = 0; i < variables.size(); i++) {
             if (i < begin || i > end) {
-                cpder.weaken(variable(vars[i]));
+                cpder.weaken(variable(variables[i]));
             }
         }
         cpder.saturate();
@@ -183,6 +191,8 @@ namespace converter {
             cpder.saturate();
             cpder.end();
         }
+
+        add_all_prev(pl, claims.size());
 
         return pl.end_proof_by_contradiction();
     }

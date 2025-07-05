@@ -5,7 +5,8 @@
 #include <algorithm>
 
 #include "ProofConverter.h"
-
+#include "ClaimType1.h"
+#include "ClaimType2.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
 #include "../cnf/ResRule.h"
@@ -67,7 +68,6 @@ namespace converter {
             if (rule == nullptr) {
                 break;
             }
-            rule->print();
             this->write_proof(rule);
             pl->write_comment("Rule: ");
             pl->write_comment("");
@@ -100,14 +100,39 @@ namespace converter {
         uint32_t constraint_id_1 = constraint_ids.at(rule->getClause1());
         uint32_t constraint_id_2 = constraint_ids.at(rule->getClause2());
 
+        // TODO: Cleanup
+        const uint32_t clause_id_1 = constraint_ids[rule->getClause1()];
+        const uint32_t clause_id_2 = constraint_ids[rule->getClause2()];
+        int32_t pivot = rule->get_pivot();
+        std::unordered_set<int32_t> literals_set_clause_1 = rule->getClause1().getLiterals();
+        std::unordered_set<int32_t> literals_set_clause_2 = rule->getClause2().getLiterals();
+        literals_set_clause_1.erase(pivot);
+        literals_set_clause_2.erase(-pivot);
+        std::vector<int32_t> literals_clause_1(literals_set_clause_1.begin(), literals_set_clause_1.end());
+        std::vector<int32_t> literals_clause_2(literals_set_clause_2.begin(), literals_set_clause_2.end());
+        std::vector<Lit> variables = get_total_vars(literals_clause_1, literals_clause_2);
+        variables.push_back(this->vars[std::abs(pivot)]); // Add the pivot variable
+
+        std::vector<Lit> blocking_variables;
+        blocking_variables.push_back(this->blocking_vars[clause_id_1]);
+        blocking_variables.push_back(this->blocking_vars[clause_id_2]);
+        for (uint32_t i = 0; i < num_new_clauses; i++) {
+            blocking_variables.push_back(this->blocking_vars[i + this->blocking_vars.size() - num_new_clauses + 1]);
+        }
+
+        ClaimType1 c_1 = ClaimType1(*rule, variables, blocking_variables, false);
+        ClaimType1 c_2 = ClaimType1(*rule, variables, blocking_variables, true);
+        ClaimType2 c_3 = ClaimType2(*rule, variables, blocking_variables, false);
+        ClaimType2 c_4 = ClaimType2(*rule, variables, blocking_variables, true);
+
         // Generate the four claims
-        constraintid claim_1 = this->claim_type_1(*rule, false);
+        constraintid claim_1 = c_1.write(*pl);
         pl->write_comment("__Claim 1__");
-        constraintid claim_2 = this->claim_type_1(*rule, true);
+        constraintid claim_2 = c_2.write(*pl);
         pl->write_comment("__Claim 2__");
-        constraintid claim_3 = this->claim_type_2(*rule, false);
+        constraintid claim_3 = c_3.write(*pl);
         pl->write_comment("__Claim 3__");
-        constraintid claim_4 = this->claim_type_2(*rule, true);
+        constraintid claim_4 = c_4.write(*pl);
         pl->write_comment("__Claim 4__");
 
         assemble_proof(claim_1, claim_2, claim_3, claim_4, constraint_id_1, constraint_id_2, num_new_clauses);

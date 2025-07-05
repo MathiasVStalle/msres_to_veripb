@@ -1,5 +1,5 @@
-#ifndef CLAIM_TYPE_1_H
-#define CLAIM_TYPE_1_H
+#ifndef CLAIM_TYPE_2_H
+#define CLAIM_TYPE_2_H
 
 #include <vector>
 
@@ -9,15 +9,12 @@
 #include "VeriPbSolverTypes.h"
 #include "MaxSATProoflogger.h"
 
-using namespace VeriPB;
-
 namespace converter {
-    class ClaimType1 final : public Claim {
+    class ClaimType2 final : public Claim {
         
-
         public:
 
-            ClaimType1(
+            ClaimType2(
                 const cnf::ResRule &rule, 
                 const std::vector<Lit> &vars, 
                 const std::vector<Lit> &blocking_vars,
@@ -25,13 +22,7 @@ namespace converter {
             ) : Claim(rule, vars, blocking_vars, negated_pivot) {}
 
             constraintid write(Prooflogger &pl) override;
-
-        private:
-        
-            std::vector<constraintid> build_iterative_subclaims(Prooflogger &pl);
-            constraintid iterative_proofs_by_contradiction(Prooflogger &pl, std::vector<constraintid> &subclaims);
-            std::vector<VeriPB::constraintid> build_conjunctive_subclaims(Prooflogger &pl);
     };
 }
 
-#endif // CLAIM_TYPE_1_H
+#endif // CLAIM_TYPE_2_H

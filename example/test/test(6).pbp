@@ -83,29 +83,29 @@ p -1 -2 + -3 + s
 end
 p ~x1 2 * -1 +
 p 14 x3 w x2 w x5 w x4 w s
-p 12 x3 w x2 w x5 w x4 w s
+p 12 x3 w x2 w x5 w s
 p ~_b1 -1 + -2 + -3 + s
 * Claim 1
 * 
 * __Claim 1__
+p 14 x5 w x3 w x2 w x1 w s
 p 12 x3 w x2 w x1 w s
-p 14 x3 w x2 w x5 w x1 w s
-p ~_p5 -1 + -2 + s
+p ~_p5 -1 + -2 +
 * Initial constraint
 * 
 p 10 x3 w x2 w x4 w s
-p 14 x3 w x2 w x4 w x1 w s
-p ~_p6 -1 + -2 + s
-* Subclaim 0
+p 14 x1 w x4 w x3 w x2 w s
+p -1 -2 + ~_p6 +
+* Subclaim1
 * 
 p 10 x3 w x2 w x5 w s
-p 12 x3 w x2 w x4 w x1 w s
-p ~_p7 -1 + -2 + s
-* Subclaim 1
+p 12 x1 w x4 w x3 w x2 w s
+p -1 -2 + ~_p7 +
+* Subclaim2
 * 
 * Proof by contradiction1
 * 
-red 1 ~_p5 1 ~_p6 1 ~_p7 1 x5 >= 2; ; begin 
+red 1 ~_p5 1 ~_p7 1 ~_p6 1 x5 >= 2; ; begin 
 	proofgoal #1
 p 65 -1 + s
 p 71 -2 + s
@@ -115,7 +115,7 @@ end
 p -1 x5 +
 * Proof by contradiction0
 * 
-red 1 ~_p5 1 ~_p6 1 ~_p7 >= 2; ; begin 
+red 1 ~_p5 1 ~_p7 1 ~_p6 >= 2; ; begin 
 	proofgoal #1
 p 78 -1 + s
 p 68 -2 + s
@@ -124,36 +124,36 @@ p -1 -2 + s
 end
 p 1 -1 +
 p 10 x2 w x5 w x4 w s
-p 12 x2 w x5 w x4 w x1 w s
-p 14 x2 w x5 w x4 w x1 w s
-p -1 -2 + -3 + s
+p 12 x1 w x5 w x2 w s
+p 14 x1 w x5 w x4 w x2 w s
+p -3 -2 + -1 +
 p -1 ~_b1 + x1 +
 p 10 x3 w x5 w x4 w s
-p 12 x3 w x5 w x4 w x1 w s
-p 14 x3 w x5 w x4 w x1 w s
-p -1 -2 + -3 + s
+p 12 x1 w x5 w x3 w s
+p 14 x1 w x5 w x4 w x3 w s
+p -3 -2 + -1 +
 p -1 ~_b1 + x1 +
 red 1 x1 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 >= 3; ; begin 
 	proofgoal #1
+p 97 85 + s
 p 97 90 + s
 p 97 95 + s
-p 97 85 + s
-p -1 -2 + -3 + s
+p -3 -2 + -1 + s
 	end -1
 end
 p x1 2 * -1 +
-p 18 x3 w x2 w x5 w x4 w s
-p 16 x3 w x2 w x5 w x4 w s
-p ~_b2 -1 + -2 + -3 + s
-* Claim 1
+p 18 x5 w x4 w x3 w x2 w s
+p 16 x5 w x4 w x3 w s
+p -2 -1 + 103 + ~_b2 +
+* Claim 2
 * 
 * __Claim 2__
 p 9 17 + s 15 + s
 p 6 x1 w s
-p ~x1 _p5 + _p8 + _p9 + 2 * -1 +
+p ~x1 _p5 + _p9 + _p8 + 2 * -1 +
 * Step 2
 * 
-red 1 ~x1 1 _b2 1 _p5 1 _p8 1 _p9 >= 1; ; begin 
+red 1 ~x1 1 _b2 1 _p5 1 _p9 1 _p8 >= 1; ; begin 
 	proofgoal #1
 p -1 2 * 109 + s
 p -2 107 + s
@@ -161,14 +161,14 @@ p -2 -1 +
 	end -1
 end
 p 5 x3 w x2 w s
+* Step 3
+* 
 p -2 -1 + _p7 + _p6 +
 * __Claim 3__
 p 9 13 + s 11 + s
 p 5 x1 w s
-p x1 _p5 + _p6 + _p7 + 2 * -1 +
-* Step 2
-* 
-red 1 x1 1 _b1 1 _p5 1 _p6 1 _p7 >= 1; ; begin 
+p x1 _p5 + _p7 + _p6 + 2 * -1 +
+red 1 x1 1 _b1 1 _p5 1 _p7 1 _p6 >= 1; ; begin 
 	proofgoal #1
 p -1 2 * 120 + s
 p -2 118 + s
@@ -270,12 +270,12 @@ p ~_b3 -1 + -2 + s
 * 
 * __Claim 1__
 p 144 x8 w x6 w x7 w s
-p ~_p10 -1 + s
+p ~_p10 -1 +
 * Initial constraint
 * 
 p 142 x8 w x6 w s
-p ~_p11 -1 + s
-* Subclaim 0
+p -1 ~_p11 +
+* Subclaim1
 * 
 * Proof by contradiction0
 * 
@@ -288,34 +288,34 @@ p -1 -2 + s
 end
 p 3 -1 +
 p 142 x6 w x9 w s
-p 144 x6 w x9 w x7 w s
-p -1 -2 + s
+p 144 x7 w x9 w x6 w s
+p -2 -1 +
 p -1 ~_b3 + x7 +
 p 142 x8 w x9 w s
-p 144 x8 w x9 w x7 w s
-p -1 -2 + s
+p 144 x7 w x9 w x8 w s
+p -2 -1 +
 p -1 ~_b3 + x7 +
 red 1 x7 1 ~_b3 1 ~_p10 1 ~_p11 >= 2; ; begin 
 	proofgoal #1
+p 206 196 + s
 p 206 200 + s
 p 206 204 + s
-p 206 196 + s
-p -1 -2 + -3 + s
+p -3 -2 + -1 + s
 	end -1
 end
 p x7 1 * -1 +
-p 148 x8 w x6 w x9 w s
-p 146 x8 w x6 w x9 w s
-p ~_b4 -1 + -2 + -3 + s
-* Claim 1
+p 148 x9 w x8 w x6 w s
+p 146 x9 w x8 w s
+p -2 -1 + 212 + ~_b4 +
+* Claim 2
 * 
 * __Claim 2__
 p 141 147 + s 145 + s
 p 8 x7 w s
-p ~x7 _p10 + _p12 + _p13 + 1 * -1 +
+p ~x7 _p10 + _p13 + _p12 + 1 * -1 +
 * Step 2
 * 
-red 1 ~x7 1 _b4 1 _p10 1 _p12 1 _p13 >= 1; ; begin 
+red 1 ~x7 1 _b4 1 _p10 1 _p13 1 _p12 >= 1; ; begin 
 	proofgoal #1
 p -1 1 * 218 + s
 p -2 216 + s
@@ -323,13 +323,13 @@ p -2 -1 +
 	end -1
 end
 p 7 x8 w x6 w s
+* Step 3
+* 
 p -2 -1 + _p11 +
 * __Claim 3__
 p 141 143 + s
 p 7 x7 w s
-p x7 _p10 + _p11 + 1 * -1 +
-* Step 2
-* 
+p x7 _p10 + _p11 + 2 * -1 +
 red 1 x7 1 _b3 1 _p10 1 _p11 >= 1; ; begin 
 	proofgoal #1
 p -1 2 * 229 + s

@@ -27,8 +27,11 @@ namespace converter {
             std::vector<Lit> active_blocking_vars;
             std::vector<Lit> unactive_blocking_vars;
 
+            std::vector<constraintid> active_constraints;
+
         public:
 
+            // TODO: var should be given separatly
             Claim(
                 const cnf::ResRule &rule,
                 const std::vector<Lit> &vars, 
@@ -48,10 +51,14 @@ namespace converter {
             const Lit& get_unactive_original_blocking_var() const;
             const std::vector<Lit>& get_active_blocking_vars() const;
             const std::vector<Lit>& get_unactive_blocking_vars() const;
+            const std::vector<constraintid>& get_active_constraints() const;
 
-            constraintid weaken(Prooflogger &pl, constraintid id, uint32_t begin, uint32_t end);
-            constraintid weaken_all_except(Prooflogger &pl, constraintid id, uint32_t except);
-            constraintid weaken_all_except(Prooflogger &pl, constraintid id, uint32_t begin, uint32_t end);
+            void set_active_constraints(const std::vector<constraintid> &active_constraints);
+
+            // TODO: variables should not be given directly
+            constraintid weaken(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end);
+            constraintid weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t except);
+            constraintid weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end);
 
             constraintid add_all(Prooflogger &pl, const std::vector<constraintid> &constraints);
             constraintid add_all_and_saturate(Prooflogger &pl, const std::vector<constraintid> &constraints);
