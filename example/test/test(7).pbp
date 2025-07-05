@@ -82,8 +82,8 @@ p -1 -2 + -3 + s
 	end -1
 end
 p ~x1 2 * -1 +
-p 12 x3 w x2 w x5 w x4 w s
 p 14 x3 w x2 w x5 w x4 w s
+p 12 x3 w x2 w x5 w x4 w s
 p ~_b1 -1 + -2 + -3 + s
 * Claim 1
 * 
@@ -142,8 +142,8 @@ p -1 -2 + -3 + s
 	end -1
 end
 p x1 2 * -1 +
-p 16 x3 w x2 w x5 w x4 w s
 p 18 x3 w x2 w x5 w x4 w s
+p 16 x3 w x2 w x5 w x4 w s
 p ~_b2 -1 + -2 + -3 + s
 * Claim 1
 * 
@@ -161,7 +161,7 @@ p -2 -1 +
 	end -1
 end
 p 5 x3 w x2 w s
-p -2 -1 + _p6 + _p7 +
+p -2 -1 + _p7 + _p6 +
 * __Claim 3__
 p 9 13 + s 11 + s
 p 5 x1 w s
@@ -176,7 +176,7 @@ p -2 -1 +
 	end -1
 end
 p 6 x5 w x4 w s
-p -2 -1 + _p8 + _p9 +
+p -2 -1 + _p9 + _p8 +
 * __Claim 4__
 * __Proof by contradiction__
 red 1 ~_b1 1 ~_b2 1 ~_p9 1 ~_p8 1 ~_p7 1 ~_p6 1 ~_p5 >= 5; ; begin 
@@ -304,8 +304,8 @@ p -1 -2 + -3 + s
 	end -1
 end
 p x7 1 * -1 +
-p 146 x8 w x6 w x9 w s
 p 148 x8 w x6 w x9 w s
+p 146 x8 w x6 w x9 w s
 p ~_b4 -1 + -2 + -3 + s
 * Claim 1
 * 
@@ -338,7 +338,7 @@ p -2 -1 +
 	end -1
 end
 p 8 x9 w s
-p -2 -1 + _p12 + _p13 +
+p -2 -1 + _p13 + _p12 +
 * __Claim 4__
 * __Proof by contradiction__
 red 1 ~_b3 1 ~_b4 1 ~_p13 1 ~_p12 1 ~_p11 1 ~_p10 >= 4; ; begin 

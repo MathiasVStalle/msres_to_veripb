@@ -1,5 +1,5 @@
-#ifndef CLAIM_TYPE_1_H
-#define CLAIM_TYPE_1_H
+#ifndef CLAIM_TYPE_A_H
+#define CLAIM_TYPE_A_H
 
 #include <vector>
 
@@ -12,12 +12,12 @@
 using namespace VeriPB;
 
 namespace converter {
-    class ClaimType1 final : public Claim {
+    class ClaimTypeA final : public Claim {
         
 
         public:
 
-            ClaimType1(
+            ClaimTypeA(
                 const cnf::ResRule &rule, 
                 const std::vector<Lit> &vars, 
                 const std::vector<Lit> &blocking_vars,

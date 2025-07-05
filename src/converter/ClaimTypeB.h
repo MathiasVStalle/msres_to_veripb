@@ -1,5 +1,5 @@
-#ifndef CLAIM_TYPE_2_H
-#define CLAIM_TYPE_2_H
+#ifndef CLAIM_TYPE_B_H
+#define CLAIM_TYPE_B_H
 
 #include <vector>
 
@@ -10,11 +10,11 @@
 #include "MaxSATProoflogger.h"
 
 namespace converter {
-    class ClaimType2 final : public Claim {
+    class ClaimTypeB final : public Claim {
         
         public:
 
-            ClaimType2(
+            ClaimTypeB(
                 const cnf::ResRule &rule, 
                 const std::vector<Lit> &vars, 
                 const std::vector<Lit> &blocking_vars,

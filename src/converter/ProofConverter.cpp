@@ -5,8 +5,8 @@
 #include <algorithm>
 
 #include "ProofConverter.h"
-#include "ClaimType1.h"
-#include "ClaimType2.h"
+#include "ClaimTypeA.h"
+#include "ClaimTypeB.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
 #include "../cnf/ResRule.h"
@@ -120,10 +120,10 @@ namespace converter {
             blocking_variables.push_back(this->blocking_vars[i + this->blocking_vars.size() - num_new_clauses + 1]);
         }
 
-        ClaimType1 c_1 = ClaimType1(*rule, variables, blocking_variables, false);
-        ClaimType1 c_2 = ClaimType1(*rule, variables, blocking_variables, true);
-        ClaimType2 c_3 = ClaimType2(*rule, variables, blocking_variables, false);
-        ClaimType2 c_4 = ClaimType2(*rule, variables, blocking_variables, true);
+        ClaimTypeA c_1 = ClaimTypeA(*rule, variables, blocking_variables, false);
+        ClaimTypeA c_2 = ClaimTypeA(*rule, variables, blocking_variables, true);
+        ClaimTypeB c_3 = ClaimTypeB(*rule, variables, blocking_variables, false);
+        ClaimTypeB c_4 = ClaimTypeB(*rule, variables, blocking_variables, true);
 
         // Generate the four claims
         constraintid claim_1 = c_1.write(*pl);
