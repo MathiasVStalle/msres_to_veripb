@@ -14,6 +14,7 @@ namespace converter {
         }
 
         const uint32_t num_clauses_1 = rule.getClause1().getLiterals().size() - 1; // -1 for the pivot variable
+        const uint32_t num_clauses_2 = rule.getClause2().getLiterals().size() - 1; // -1 for the pivot variable
         const std::vector<Lit> new_blocking_vars = std::vector<Lit>(blocking_vars.begin() + 2, blocking_vars.end());
 
         this->active_blocking_vars = {new_blocking_vars[0]}; // Add the first new blocking variables
@@ -24,14 +25,14 @@ namespace converter {
             this->unactive_original_blocking_var = blocking_vars[1];
 
             this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
-            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_1 + 1, new_blocking_vars.end());
+            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
         } else {
             this->pivot_literal = neg(vars.back());
             this->active_original_blocking_var = blocking_vars[1];
             this->unactive_original_blocking_var = blocking_vars[0];
 
-            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_1 + 1, new_blocking_vars.end());
-            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.begin() + num_clauses_1 + 1);
+            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
+            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
         }
     }
 

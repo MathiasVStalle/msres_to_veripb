@@ -47,12 +47,8 @@ namespace converter {
         cpder.add_constraint(-1);
         cpder.end();
 
-        // reverse get_unactive_blocking_vars()
-        std::vector<Lit> temp = get_unactive_blocking_vars();
-        std::reverse(temp.begin(), temp.end());
-
         // TODO: This should be put in a separete function
-        for (Lit sn : temp) {
+        for (Lit sn : get_unactive_blocking_vars()) {
             constraintid constraint = pl.get_reified_constraint_left_implication(variable(sn));
 
             // TODO: Add weakening restriction
@@ -149,7 +145,7 @@ namespace converter {
 
         uint32_t num_active_vars = get_active_blocking_vars().size() - 1;
         uint32_t num_unactive_vars = get_unactive_blocking_vars().size();
-        uint32_t offset = is_negated_pivot() ? 0 : num_unactive_vars;
+        uint32_t offset = is_negated_pivot() ? 0 : num_active_vars;
 
         std::vector<Lit> vars_without_pivot = get_vars();
         vars_without_pivot.pop_back(); // Remove the pivot variable

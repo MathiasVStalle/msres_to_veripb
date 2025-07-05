@@ -32,7 +32,7 @@ namespace converter {
         for (Lit sn : get_active_blocking_vars()) {
             cpder.add_literal_axiom(sn); 
         }
-        cpder.multiply((int32_t)get_unactive_blocking_vars().size()); // TODO: This should be changed
+        cpder.multiply((int32_t) get_unactive_blocking_vars().size());
         cpder.add_constraint(-1);
         cn_2 = cpder.end();
         pl.write_comment("Step 2");
@@ -70,12 +70,9 @@ namespace converter {
         constraintid id = pl.get_reified_constraint_left_implication(variable(get_unactive_original_blocking_var()));
         weaken(pl, id, vars_without_pivot, offset, offset + get_active_blocking_vars().size() - 1);
 
-        std::vector<Lit> temp = get_unactive_blocking_vars();
-        std::reverse(temp.begin(), temp.end());
-
         cpder.start_from_constraint(-2);
         cpder.add_constraint(-1);
-        for (Lit sn : temp) {
+        for (Lit sn : get_unactive_blocking_vars()) {
             cpder.add_literal_axiom(sn);
         }
         return cpder.end();

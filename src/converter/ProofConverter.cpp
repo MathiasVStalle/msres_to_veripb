@@ -80,6 +80,7 @@ namespace converter {
         delete rule;
     }
 
+
     // TODO: SpltRule is not yet implemented
     void ProofConverter::write_proof(const cnf::Rule* rule) {
         if (dynamic_cast<const cnf::ResRule*>(rule)) {
@@ -89,7 +90,6 @@ namespace converter {
             throw std::runtime_error("Unknown rule type");
         }
     }
-
 
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
@@ -138,7 +138,6 @@ namespace converter {
         assemble_proof(claim_1, claim_2, claim_3, claim_4, constraint_id_1, constraint_id_2, num_new_clauses);
         change_objective(constraint_id_1, constraint_id_2, num_new_clauses);
     }
-
 
     void ProofConverter::initialize_vars() {
         // Initialize the variables from the original clauses
@@ -311,5 +310,21 @@ namespace converter {
         }
 
         pl->write_objective_update_diff(c_old, c_new);
+    }
+
+    std::vector<VeriPB::Lit> ProofConverter::get_total_vars(
+        const std::vector<int32_t>& literals_1,
+        const std::vector<int32_t>& literals_2
+    ) {
+        std::vector<VeriPB::Lit> total_vars;
+
+        for (const auto& lit : literals_1) {
+            total_vars.push_back(this->vars[std::abs(lit)]);
+        }
+        for (const auto& lit : literals_2) {
+            total_vars.push_back(this->vars[std::abs(lit)]);
+        }
+
+        return total_vars;
     }
 }

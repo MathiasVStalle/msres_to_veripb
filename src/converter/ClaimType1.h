@@ -28,6 +28,7 @@ namespace converter {
 
         private:
         
+            // TODO: These functions should return a pointer to a dynamically allocated vector when working with large proofs
             std::vector<constraintid> build_iterative_subclaims(Prooflogger &pl);
             constraintid iterative_proofs_by_contradiction(Prooflogger &pl, std::vector<constraintid> &subclaims);
             std::vector<VeriPB::constraintid> build_conjunctive_subclaims(Prooflogger &pl);
