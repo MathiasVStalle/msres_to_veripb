@@ -13,8 +13,8 @@ namespace converter {
             throw std::runtime_error("Blocking variables must have at least 3 elements.");
         }
 
-        const uint32_t num_clauses_1 = rule.getClause1().getLiterals().size() - 1; // -1 for the pivot variable
-        const uint32_t num_clauses_2 = rule.getClause2().getLiterals().size() - 1; // -1 for the pivot variable
+        const uint32_t num_clauses_1 = rule.get_clause_1().get_literals().size() - 1; // -1 for the pivot variable
+        const uint32_t num_clauses_2 = rule.get_clause_2().get_literals().size() - 1; // -1 for the pivot variable
         const std::vector<Lit> new_blocking_vars = std::vector<Lit>(blocking_vars.begin() + 2, blocking_vars.end());
 
         this->active_blocking_vars = {new_blocking_vars[0]}; // Add the first new blocking variables

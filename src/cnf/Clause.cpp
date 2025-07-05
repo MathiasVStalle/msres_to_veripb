@@ -14,11 +14,11 @@ namespace cnf
 
     Clause::Clause(const Clause& other) : weight(other.weight), literals(other.literals) {}
 
-    int32_t Clause::getWeight() const {
+    int32_t Clause::get_weight() const {
         return weight;
     }
 
-    const std::unordered_set<int32_t>& Clause::getLiterals() const {
+    const std::unordered_set<int32_t>& Clause::get_literals() const {
         return literals;
     }
 

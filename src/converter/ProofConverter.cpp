@@ -97,15 +97,15 @@ namespace converter {
         this->write_new_clauses(rule);
         num_new_clauses = this->blocking_vars.size() - num_new_clauses;
 
-        uint32_t constraint_id_1 = constraint_ids.at(rule->getClause1());
-        uint32_t constraint_id_2 = constraint_ids.at(rule->getClause2());
+        uint32_t constraint_id_1 = constraint_ids.at(rule->get_clause_1());
+        uint32_t constraint_id_2 = constraint_ids.at(rule->get_clause_2());
 
         // TODO: Cleanup
-        const uint32_t clause_id_1 = constraint_ids[rule->getClause1()];
-        const uint32_t clause_id_2 = constraint_ids[rule->getClause2()];
+        const uint32_t clause_id_1 = constraint_ids[rule->get_clause_1()];
+        const uint32_t clause_id_2 = constraint_ids[rule->get_clause_2()];
         int32_t pivot = rule->get_pivot();
-        std::unordered_set<int32_t> literals_set_clause_1 = rule->getClause1().getLiterals();
-        std::unordered_set<int32_t> literals_set_clause_2 = rule->getClause2().getLiterals();
+        std::unordered_set<int32_t> literals_set_clause_1 = rule->get_clause_1().get_literals();
+        std::unordered_set<int32_t> literals_set_clause_2 = rule->get_clause_2().get_literals();
         literals_set_clause_1.erase(pivot);
         literals_set_clause_2.erase(-pivot);
         std::vector<int32_t> literals_clause_1(literals_set_clause_1.begin(), literals_set_clause_1.end());
@@ -142,7 +142,7 @@ namespace converter {
     void ProofConverter::initialize_vars() {
         // Initialize the variables from the original clauses
         for (const auto &[_, clause] : this->wcnf_clauses) {
-            for (const auto &literal : clause.getLiterals()) {
+            for (const auto &literal : clause.get_literals()) {
                 uint32_t var = std::abs(literal);
 
                 if (vars.find(var) == vars.end()) {
@@ -179,7 +179,7 @@ namespace converter {
             C.clear();
             C.add_RHS(1);
 
-            for (const auto &literal : clause.getLiterals())
+            for (const auto &literal : clause.get_literals())
             {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit lit = this->vars[var];
@@ -212,7 +212,7 @@ namespace converter {
 
             // Add the new clause to the proof logger
             C.clear();
-            for (const auto& literal : clause.getLiterals()) {
+            for (const auto& literal : clause.get_literals()) {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit new_lit = this->vars[var];
 

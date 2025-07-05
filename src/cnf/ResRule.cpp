@@ -24,8 +24,8 @@ namespace cnf
     std::vector<Clause> ResRule::apply() const {
 
         // find the two literals that are the same in both but with different signs
-        std::unordered_set<int32_t> literals_1 = clause_1.getLiterals();
-        std::unordered_set<int32_t> literals_2 = clause_2.getLiterals();
+        std::unordered_set<int32_t> literals_1 = clause_1.get_literals();
+        std::unordered_set<int32_t> literals_2 = clause_2.get_literals();
         int32_t common_literal = this->get_pivot();
 
         // Remove the common literal from both clauses
@@ -39,7 +39,7 @@ namespace cnf
         // Build the first new clause
         std::unordered_set<int32_t> new_literals = mod_literals_1;
         new_literals.insert(mod_literals_2.begin(), mod_literals_2.end());
-        Clause new_clause(std::min(clause_1.getWeight(), clause_2.getWeight()), new_literals);
+        Clause new_clause(std::min(clause_1.get_weight(), clause_2.get_weight()), new_literals);
         new_clauses.push_back(new_clause);
 
         // Build the first half of the resolution clauses
@@ -49,7 +49,7 @@ namespace cnf
             new_literals.insert(extention.begin(), extention.end());
             new_literals.insert(-lit);
 
-            int weight = std::min(clause_1.getWeight(), clause_2.getWeight());
+            int weight = std::min(clause_1.get_weight(), clause_2.get_weight());
 
             Clause new_clause(weight, new_literals);
             new_clauses.push_back(new_clause);
@@ -64,7 +64,7 @@ namespace cnf
             new_literals.insert(extention.begin(), extention.end());
             new_literals.insert(-lit);
 
-            int weight = std::min(clause_1.getWeight(), clause_2.getWeight());
+            int weight = std::min(clause_1.get_weight(), clause_2.get_weight());
 
             Clause new_clause(weight, new_literals);
             new_clauses.push_back(new_clause);
@@ -75,11 +75,11 @@ namespace cnf
         return new_clauses;
     }
 
-    const Clause& ResRule::getClause1() const {
+    const Clause& ResRule::get_clause_1() const {
         return clause_1;
     }
 
-    const Clause& ResRule::getClause2() const {
+    const Clause& ResRule::get_clause_2() const {
         return clause_2;
     }
 

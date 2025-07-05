@@ -58,14 +58,14 @@ namespace cnf
              * 
              * @return The first clause.
              */
-            const Clause& getClause1() const;
+            const Clause& get_clause_1() const;
 
             /**
              * Get the second clause in the resolution rule.
              * 
              * @return The second clause.
              */
-            const Clause& getClause2() const;
+            const Clause& get_clause_2() const;
 
             /**
              * Print the resolution rule to the standard output.
