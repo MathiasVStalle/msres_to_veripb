@@ -45,14 +45,14 @@ namespace cnf
              * 
              * @return The weight of the clause.
              */
-            int32_t getWeight() const;
+            int32_t get_weight() const;
 
             /**
              * Get the set of literals in the clause.
              *
              * @return The unordered_set of literals in the clause.
              */
-            const std::unordered_set<int32_t> &getLiterals() const;
+            const std::unordered_set<int32_t> &get_literals() const;
 
             /** 
              * Check if the clause is a unit clause.
@@ -84,7 +84,7 @@ namespace std {
         size_t operator()(const cnf::Clause& clause) const {
             size_t hash_value = 0;
             size_t prod = 1;
-            for (const auto& literal : clause.getLiterals()) {
+            for (const auto& literal : clause.get_literals()) {
                 size_t h = std::hash<int32_t>()(literal);
                 hash_value += h;
                 prod *= (h | 1); // Make sure we don't multiply by zero

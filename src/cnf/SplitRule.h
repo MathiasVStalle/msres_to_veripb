@@ -47,7 +47,7 @@ namespace cnf
              * 
              * @return The clause.
              */
-            const Clause& getClause() const;
+            const Clause& get_clause() const;
 
             /**
              * Print the split rule to the standard output.

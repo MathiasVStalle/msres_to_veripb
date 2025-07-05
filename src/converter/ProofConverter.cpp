@@ -4,8 +4,9 @@
 #include <utility>
 #include <algorithm>
 
-#include "ProofConvertor.h"
-
+#include "ProofConverter.h"
+#include "ClaimTypeA.h"
+#include "ClaimTypeB.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
 #include "../cnf/ResRule.h"
@@ -14,11 +15,12 @@
 
 using namespace VeriPB;
 
-namespace convertor {
+namespace converter {
 
-    ProofConvertor::ProofConvertor(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
+    ProofConverter::ProofConverter(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
         : msres_parser(msres_file), output_file(output_file) {
 
+        // Add the clauses from the WCNF file
         std::vector<cnf::Clause> clauses = parser::WCNFParser::parseWCNF(wcnf_file);
         for (int i = 0; i < clauses.size(); i++) {
             this->wcnf_clauses.emplace(i + 1, clauses[i]);
@@ -28,31 +30,16 @@ namespace convertor {
         this->pl->set_comments(true);
     }
 
-    // Flag: Segmentation fault
-    ProofConvertor::~ProofConvertor() {
-        if (this->pl != nullptr) {
-            delete this->pl;
-            this->pl = nullptr;
-        }
+    // TODO: Segmentation fault
+    ProofConverter::~ProofConverter() {
+        // if (this->pl != nullptr) {
+        //     delete this->pl;
+        //     this->pl = nullptr;
+        // }
     }
 
-    void ProofConvertor::write_proof() {
-        // Initializing all the variables from the original clauses
-        for (const auto& pair : this->wcnf_clauses) {
-            const cnf::Clause& clause = pair.second;
-
-            for (const auto& literal : clause.getLiterals()) {
-                uint32_t var = std::abs(literal);
-
-                if (this->vars.find(var) == this->vars.end()) {
-                    VeriPB::Var new_var{.v = var, .only_known_in_proof = false};
-                    VeriPB::Lit new_lit{.v = new_var, .negated = false};
-                    
-                    this->vars[var] = new_lit;
-                    this->var_mgr.store_variable_name(variable(new_lit), "x" + std::to_string(var));
-                }
-            }
-        }
+    void ProofConverter::write_proof() {
+        initialize_vars();
 
 
         uint32_t unit_clauses = std::count_if(
@@ -69,7 +56,7 @@ namespace convertor {
         this->pl->set_n_orig_constraints(this->wcnf_clauses.size() - unit_clauses);
 
         //TODO: Reification clauses
-        this->reificate();
+        this->reificate_original_clauses();
         this->pl->flush_proof();
 
         // Write the proof
@@ -81,7 +68,6 @@ namespace convertor {
             if (rule == nullptr) {
                 break;
             }
-            rule->print();
             this->write_proof(rule);
             pl->write_comment("Rule: ");
             pl->write_comment("");
@@ -94,8 +80,9 @@ namespace convertor {
         delete rule;
     }
 
+
     // TODO: SpltRule is not yet implemented
-    void ProofConvertor::write_proof(const cnf::Rule* rule) {
+    void ProofConverter::write_proof(const cnf::Rule* rule) {
         if (dynamic_cast<const cnf::ResRule*>(rule)) {
             const cnf::ResRule* res_rule = dynamic_cast<const cnf::ResRule*>(rule);
             this->write_res_rule(res_rule);
@@ -104,50 +91,72 @@ namespace convertor {
         }
     }
 
-    void ProofConvertor::write_res_rule(const cnf::ResRule* rule) {
+    void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
         uint32_t num_new_clauses = this->blocking_vars.size();
         this->write_new_clauses(rule);
         num_new_clauses = this->blocking_vars.size() - num_new_clauses;
 
-        uint32_t constraint_id_1 = constraint_ids.at(rule->getClause1());
-        uint32_t constraint_id_2 = constraint_ids.at(rule->getClause2());
+        uint32_t constraint_id_1 = constraint_ids.at(rule->get_clause_1());
+        uint32_t constraint_id_2 = constraint_ids.at(rule->get_clause_2());
+
+        // TODO: Cleanup
+        const uint32_t clause_id_1 = constraint_ids[rule->get_clause_1()];
+        const uint32_t clause_id_2 = constraint_ids[rule->get_clause_2()];
+        int32_t pivot = rule->get_pivot();
+        std::unordered_set<int32_t> literals_set_clause_1 = rule->get_clause_1().get_literals();
+        std::unordered_set<int32_t> literals_set_clause_2 = rule->get_clause_2().get_literals();
+        literals_set_clause_1.erase(pivot);
+        literals_set_clause_2.erase(-pivot);
+        std::vector<int32_t> literals_clause_1(literals_set_clause_1.begin(), literals_set_clause_1.end());
+        std::vector<int32_t> literals_clause_2(literals_set_clause_2.begin(), literals_set_clause_2.end());
+        std::vector<Lit> variables = get_total_vars(literals_clause_1, literals_clause_2);
+        variables.push_back(this->vars[std::abs(pivot)]); // Add the pivot variable
+
+        std::vector<Lit> blocking_variables;
+        blocking_variables.push_back(this->blocking_vars[clause_id_1]);
+        blocking_variables.push_back(this->blocking_vars[clause_id_2]);
+        for (uint32_t i = 0; i < num_new_clauses; i++) {
+            blocking_variables.push_back(this->blocking_vars[i + this->blocking_vars.size() - num_new_clauses + 1]);
+        }
+
+        ClaimTypeA c_1 = ClaimTypeA(*rule, variables, blocking_variables, false);
+        ClaimTypeA c_2 = ClaimTypeA(*rule, variables, blocking_variables, true);
+        ClaimTypeB c_3 = ClaimTypeB(*rule, variables, blocking_variables, false);
+        ClaimTypeB c_4 = ClaimTypeB(*rule, variables, blocking_variables, true);
 
         // Generate the four claims
-        constraintid claim_1 = this->claim_1(
-            constraint_id_1,
-            constraint_id_2,
-            *rule,
-            rule->apply()
-        );
+        constraintid claim_1 = c_1.write(*pl);
         pl->write_comment("__Claim 1__");
-        constraintid claim_2 = this->claim_2(
-            constraint_id_1,
-            constraint_id_2,
-            *rule,
-            rule->apply()
-        );
+        constraintid claim_2 = c_2.write(*pl);
         pl->write_comment("__Claim 2__");
-        constraintid claim_3 = this->claim_3(
-            constraint_id_1,
-            constraint_id_2,
-            *rule,
-            rule->apply()
-        );
+        constraintid claim_3 = c_3.write(*pl);
         pl->write_comment("__Claim 3__");
-        constraintid claim_4 = this->claim_4(
-            constraint_id_1,
-            constraint_id_2,
-            *rule,
-            rule->apply()
-        );
+        constraintid claim_4 = c_4.write(*pl);
         pl->write_comment("__Claim 4__");
 
         assemble_proof(claim_1, claim_2, claim_3, claim_4, constraint_id_1, constraint_id_2, num_new_clauses);
         change_objective(constraint_id_1, constraint_id_2, num_new_clauses);
     }
 
-    void ProofConvertor::reificate() {
+    void ProofConverter::initialize_vars() {
+        // Initialize the variables from the original clauses
+        for (const auto &[_, clause] : this->wcnf_clauses) {
+            for (const auto &literal : clause.get_literals()) {
+                uint32_t var = std::abs(literal);
+
+                if (vars.find(var) == vars.end()) {
+                    VeriPB::Var new_var{.v = var, .only_known_in_proof = false};
+                    VeriPB::Lit new_lit{.v = new_var, .negated = false};
+
+                    this->vars[var] = new_lit;
+                    this->var_mgr.store_variable_name(variable(new_lit), "x" + std::to_string(var));
+                }
+            }
+        }
+    }
+
+    void ProofConverter::reificate_original_clauses() {
         // Saving the reification of the original clauses
         for (int i = 1; i <= this->wcnf_clauses.size(); i++) {
             const cnf::Clause& clause = this->wcnf_clauses.at(i);
@@ -170,7 +179,7 @@ namespace convertor {
             C.clear();
             C.add_RHS(1);
 
-            for (const auto &literal : clause.getLiterals())
+            for (const auto &literal : clause.get_literals())
             {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit lit = this->vars[var];
@@ -186,7 +195,7 @@ namespace convertor {
         }
     }
 
-    void ProofConvertor::write_new_clauses(const cnf::Rule* rule) {
+    void ProofConverter::write_new_clauses(const cnf::Rule* rule) {
         std::vector<cnf::Clause> new_clauses = rule->apply();
 
         uint32_t curr_clause_id = this->blocking_vars.size();
@@ -203,7 +212,7 @@ namespace convertor {
 
             // Add the new clause to the proof logger
             C.clear();
-            for (const auto& literal : clause.getLiterals()) {
+            for (const auto& literal : clause.get_literals()) {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit new_lit = this->vars[var];
 
@@ -219,7 +228,7 @@ namespace convertor {
         }
     }
 
-    void ProofConvertor::assemble_proof(
+    void ProofConverter::assemble_proof(
         VeriPB::constraintid claim_1, 
         VeriPB::constraintid claim_2,
         VeriPB::constraintid claim_3,
@@ -288,7 +297,7 @@ namespace convertor {
         pl->move_to_coreset_by_id(-1);
     }
 
-    void ProofConvertor::change_objective(uint32_t clause_id_1, uint32_t clause_id_2, uint32_t num_new_clauses) {
+    void ProofConverter::change_objective(uint32_t clause_id_1, uint32_t clause_id_2, uint32_t num_new_clauses) {
         // Objective aanpassen
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
@@ -301,5 +310,21 @@ namespace convertor {
         }
 
         pl->write_objective_update_diff(c_old, c_new);
+    }
+
+    std::vector<VeriPB::Lit> ProofConverter::get_total_vars(
+        const std::vector<int32_t>& literals_1,
+        const std::vector<int32_t>& literals_2
+    ) {
+        std::vector<VeriPB::Lit> total_vars;
+
+        for (const auto& lit : literals_1) {
+            total_vars.push_back(this->vars[std::abs(lit)]);
+        }
+        for (const auto& lit : literals_2) {
+            total_vars.push_back(this->vars[std::abs(lit)]);
+        }
+
+        return total_vars;
     }
 }

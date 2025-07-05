@@ -16,16 +16,16 @@ namespace cnf
     SplitRule::~SplitRule() {}
 
     std::vector<Clause> SplitRule::apply() const {
-        std::unordered_set<int32_t> literals_1 = clause.getLiterals();
-        std::unordered_set<int32_t> literals_2 = clause.getLiterals();
+        std::unordered_set<int32_t> literals_1 = clause.get_literals();
+        std::unordered_set<int32_t> literals_2 = clause.get_literals();
 
         literals_1.insert(get_pivot());
         literals_2.insert(-get_pivot());
 
-        return {Clause(clause.getWeight(), literals_1), Clause(clause.getWeight(), literals_2)};
+        return {Clause(clause.get_weight(), literals_1), Clause(clause.get_weight(), literals_2)};
     }
 
-    const Clause& SplitRule::getClause() const {
+    const Clause& SplitRule::get_clause() const {
         return clause;
     }
 

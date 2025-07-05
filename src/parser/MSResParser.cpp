@@ -100,8 +100,8 @@ namespace parser
 
                     // TODO: This should be fixed int the converter. When the pivot has a different sign than the one in the first clause, it doesn't work.
                     if (
-                        clause_1.getLiterals().find(std::stoi(pivot_str)) == clause_1.getLiterals().end() ||
-                        clause_2.getLiterals().find(-std::stoi(pivot_str)) == clause_2.getLiterals().end()
+                        clause_1.get_literals().find(std::stoi(pivot_str)) == clause_1.get_literals().end() ||
+                        clause_2.get_literals().find(-std::stoi(pivot_str)) == clause_2.get_literals().end()
                     ) {
                         // Switch the clauses
                         std::swap(clause_1, clause_2);
