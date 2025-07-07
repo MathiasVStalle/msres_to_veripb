@@ -15,6 +15,17 @@ namespace converter {
     class Claim {
         private:
 
+            struct LitHash {
+                std::size_t operator()(const Lit &lit) const {
+                    return lit.v.v ^ (lit.negated ? 1 : 0);
+                }
+            };
+            struct LitEqual {
+                bool operator()(const Lit &lit1, const Lit &lit2) const {
+                    return lit1.v.v == lit2.v.v && lit1.negated == lit2.negated;
+                }
+            };
+
             const bool negated_pivot;
             const std::vector<Lit> vars;
             const std::vector<Lit> blocking_vars;
@@ -28,6 +39,9 @@ namespace converter {
             std::vector<Lit> unactive_blocking_vars;
 
             std::vector<constraintid> active_constraints;
+
+            std::unordered_map<Lit, uint32_t, LitHash, LitEqual> duplicate_vars;
+            std::unordered_map<Lit, uint32_t, LitHash, LitEqual> possible_pivots;
 
         public:
 
@@ -68,6 +82,10 @@ namespace converter {
 
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, constraintid claim_1, constraintid claim_2);
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, std::vector<VeriPB::constraintid> &claims);
+
+        private:
+
+            void initialize_duplicate_vars(const cnf::ResRule &rule);
     };
 }
 

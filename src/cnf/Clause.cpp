@@ -6,7 +6,14 @@
 
 namespace cnf
 {
-    Clause::Clause(const std::unordered_set<int32_t>& literals) : weight(0), literals(literals) {}
+    Clause::Clause(const std::unordered_set<int32_t>& literals) : weight(0), literals(literals) {
+        for (const auto& lit : literals) {
+            if (literals.find(-lit) != literals.end()) {
+                tautology = true;
+                break;
+            }
+        }
+    }
 
     Clause::Clause(int32_t weight, const std::unordered_set<int32_t>& literals) : weight(weight), literals(literals) {}
    
@@ -37,4 +44,12 @@ namespace cnf
     bool Clause::operator==(const Clause& other) const {
         return weight == other.weight && literals == other.literals;
     }   
+
+    bool Clause::is_tautology() const {
+        return tautology;
+    }
+
+    bool Clause::is_hard_clause() const {
+        return weight == 0;
+    }
 }

@@ -34,6 +34,8 @@ namespace converter {
             this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
             this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
         }
+
+        this->initialize_duplicate_vars(rule);
     }
 
 
@@ -96,7 +98,18 @@ namespace converter {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_constraint(id);
         for (int i = 0; i < variables.size(); i++) {
-            if (i < begin || i > end) {
+            if ((i < begin || i > end)) {
+
+                // TODO: This does not check if the duplicate is in the same range
+                // if (
+                //     duplicate_vars.find(variables[i]) != duplicate_vars.end()
+                //     || possible_pivots.find(variables[i]) != possible_pivots.end()
+                //     || duplicate_vars.find(neg(variables[i])) != duplicate_vars.end()
+                //     || possible_pivots.find(neg(variables[i])) != possible_pivots.end()
+                // ) {
+                //     continue;
+                // }
+
                 cpder.weaken(variable(variables[i]));
             }
         }
@@ -196,5 +209,51 @@ namespace converter {
         add_all_prev(pl, claims.size());
 
         return pl.end_proof_by_contradiction();
+    }
+
+
+    void Claim::initialize_duplicate_vars(const cnf::ResRule &rule) {
+        duplicate_vars.clear();
+        const auto& clause_1 = rule.get_clause_1().get_literals();
+        const auto& clause_2 = rule.get_clause_2().get_literals();
+        const int32_t pivot = rule.get_pivot();
+
+        std::vector<int32_t> active_vars = negated_pivot ? 
+            std::vector<int32_t>(clause_1.begin(), clause_1.end()) :
+            std::vector<int32_t>(clause_2.begin(), clause_2.end());
+
+        std::unordered_set<int32_t> unactive_vars = negated_pivot ? 
+            std::unordered_set<int32_t>(clause_2.begin(), clause_2.end()) :
+            std::unordered_set<int32_t>(clause_1.begin(), clause_1.end());
+    
+        uint32_t index = negated_pivot ? 0 : clause_1.size() - 1;
+
+        for (int32_t l : active_vars) {
+            if (l == pivot || l == -pivot) continue;
+
+            Lit var = vars[index];
+            Lit lit = active_vars[index] < 0 ? neg(var) : var;
+
+            if (unactive_vars.find(l) != unactive_vars.end()) {
+                duplicate_vars[lit] = index;
+            } else 
+            if (unactive_vars.find(-l) != unactive_vars.end()) {
+                possible_pivots[lit] = index;
+            }
+
+            index++;
+        }
+
+        std::cout << "Duplicate and possible pivot variables initialized:" << std::endl;
+        for (auto& var : vars) {
+            std::cout << "Variable: " << var.v.v << std::endl;
+        }
+        for (const auto& lit : duplicate_vars) {
+            std::cout << "Duplicate variable: " << lit.first.v.v << (lit.first.negated ? " (negated)" : "") << " at index " << lit.second << std::endl;
+        }
+        for (const auto& lit : possible_pivots) {
+            std::cout << "Possible pivot variable: " << lit.first.v.v << (lit.first.negated ? " (negated)" : "") << " at index " << lit.second << std::endl;
+        }
+        std::cout << std::endl;
     }
 }

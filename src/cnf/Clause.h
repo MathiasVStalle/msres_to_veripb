@@ -8,6 +8,7 @@ namespace cnf
 {
     class Clause {
         private:
+            bool tautology;
             int32_t weight;
             std::unordered_set<int32_t> literals;
 
@@ -60,6 +61,20 @@ namespace cnf
              * @return True if the clause is a unit clause, false otherwise.
              */
             bool is_unit_clause() const;
+
+            /**
+             * Check if the clause is a tautology.
+             * 
+             * @return True if the clause is a tautology, false otherwise.
+             */
+            bool is_tautology() const;
+
+            /**
+             * Check if the clause is a hard clause.
+             * 
+             * @return True if the clause is a hard clause (weight == 0), false otherwise.
+             */
+            bool is_hard_clause() const;
 
             /**
              * Print the clause to the standard output.
