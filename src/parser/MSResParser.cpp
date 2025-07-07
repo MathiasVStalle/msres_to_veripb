@@ -78,10 +78,7 @@ namespace parser
             if (type == "msres")
             {
                 std::string rest = iss.str().substr(iss.tellg());
-
-                // The regex matches the format "<clause_1> | <clause_2>"
-                // std::regex pattern("\\s*<\\s*(.*?)\\s*\\|\\s*(.*?)\\s*>\\s*");
-
+                
                 // Regex matches the pattern "< clause_1 | pivot | clause_2 >"
                 std::regex pattern("\\s*<\\s*(.*?)\\s*\\|\\s*(.*?)\\s*\\|\\s*(.*?)\\s*>\\s*");
 

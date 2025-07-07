@@ -115,6 +115,8 @@ namespace converter {
                 const std::vector<int32_t>& literals_1, 
                 const std::vector<int32_t>& literals_2
             );
+
+            void clause_to_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);
         };
 }
 

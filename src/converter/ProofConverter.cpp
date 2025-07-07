@@ -211,18 +211,7 @@ namespace converter {
             this->constraint_ids[clause] = i + curr_clause_id + 1;
 
             // Add the new clause to the proof logger
-            C.clear();
-            for (const auto& literal : clause.get_literals()) {
-                uint32_t var = std::abs(literal);
-                VeriPB::Lit new_lit = this->vars[var];
-
-                if (literal < 0) {
-                    C.add_literal(neg(new_lit), 1);
-                } else {
-                    C.add_literal(new_lit, 1);
-                }
-            }
-            C.add_RHS(1);
+            clause_to_constraint(clause, C);
             this->pl->reification_literal_right_implication(neg(lit), C, true);
             this->pl->reification_literal_left_implication(neg(lit), C, true);
         }
@@ -326,5 +315,25 @@ namespace converter {
         }
 
         return total_vars;
+    }
+
+    void ProofConverter::clause_to_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C) {
+        C.clear();
+        C.add_RHS(1);
+
+        if (clause.is_tautology()) {
+            return;
+        }
+
+        for (const auto& literal : clause.get_literals()) {
+            uint32_t var = std::abs(literal);
+            VeriPB::Lit lit = vars[var];
+
+            if (literal < 0) {
+                C.add_literal(neg(lit), 1);
+            } else {
+                C.add_literal(lit, 1);
+            }
+        }
     }
 }

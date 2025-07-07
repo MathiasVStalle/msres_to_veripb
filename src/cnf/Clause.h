@@ -8,7 +8,7 @@ namespace cnf
 {
     class Clause {
         private:
-            bool tautology;
+            bool tautology = false;
             int32_t weight;
             std::unordered_set<int32_t> literals;
 
