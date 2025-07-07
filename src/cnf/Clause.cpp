@@ -7,12 +7,9 @@
 namespace cnf
 {
     Clause::Clause(const std::unordered_set<int32_t>& literals) : weight(0), literals(literals) {
-        tautology = false;
         for (const auto& lit : literals) {
-            if (literals.find(-lit) != literals.end()) {
-                tautology = true;
-                break;
-            }
+            if (!tautology && literals.find(-lit) != literals.end()) tautology = true;
+            if (!has_double && literals.find(lit) != literals.end()) has_double = true;
         }
     }
 

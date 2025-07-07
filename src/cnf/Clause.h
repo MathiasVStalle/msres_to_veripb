@@ -9,6 +9,7 @@ namespace cnf
     class Clause {
         private:
             bool tautology = false;
+            bool has_double = false;
             int32_t weight;
             std::unordered_set<int32_t> literals;
 
@@ -68,6 +69,10 @@ namespace cnf
              * @return True if the clause is a tautology, false otherwise.
              */
             bool is_tautology() const;
+
+            bool has_double_literal() const {
+                return has_double;
+            }
 
             /**
              * Check if the clause is a hard clause.

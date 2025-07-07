@@ -26,6 +26,7 @@ namespace converter {
 
             this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
             this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
+            this->active_vars = std::vector<Lit>(vars.begin(), vars.begin() + num_clauses_1);
         } else {
             this->pivot_literal = neg(vars.back());
             this->active_original_blocking_var = blocking_vars[1];
@@ -33,6 +34,11 @@ namespace converter {
 
             this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
             this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
+            this->active_vars = std::vector<Lit>(vars.begin() + num_clauses_1, vars.end() - 1);
+        }
+
+        for (const Lit &var : this->active_vars) {
+            std::cout << "Active var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
         }
 
         this->initialize_duplicate_vars(rule);
@@ -101,14 +107,12 @@ namespace converter {
             if ((i < begin || i > end)) {
 
                 // TODO: This does not check if the duplicate is in the same range
-                // if (
-                //     duplicate_vars.find(variables[i]) != duplicate_vars.end()
-                //     || possible_pivots.find(variables[i]) != possible_pivots.end()
-                //     || duplicate_vars.find(neg(variables[i])) != duplicate_vars.end()
-                //     || possible_pivots.find(neg(variables[i])) != possible_pivots.end()
-                // ) {
-                //     continue;
-                // }
+                if (
+                    duplicate_vars.find(variable(variables[i])) != duplicate_vars.end()
+                    || possible_pivots.find(variable(variables[i])) != possible_pivots.end()
+                ) {
+                    continue;
+                }
 
                 cpder.weaken(variable(variables[i]));
             }
@@ -214,46 +218,44 @@ namespace converter {
 
     void Claim::initialize_duplicate_vars(const cnf::ResRule &rule) {
         duplicate_vars.clear();
+        possible_pivots.clear();
+
         const auto& clause_1 = rule.get_clause_1().get_literals();
         const auto& clause_2 = rule.get_clause_2().get_literals();
+
         const int32_t pivot = rule.get_pivot();
 
-        std::vector<int32_t> active_vars = negated_pivot ? 
+        std::vector<int32_t> active_variables = negated_pivot ? 
             std::vector<int32_t>(clause_1.begin(), clause_1.end()) :
             std::vector<int32_t>(clause_2.begin(), clause_2.end());
 
-        std::unordered_set<int32_t> unactive_vars = negated_pivot ? 
+        std::unordered_set<int32_t> unactive_variables = negated_pivot ? 
             std::unordered_set<int32_t>(clause_2.begin(), clause_2.end()) :
             std::unordered_set<int32_t>(clause_1.begin(), clause_1.end());
     
         uint32_t index = negated_pivot ? 0 : clause_1.size() - 1;
 
-        for (int32_t l : active_vars) {
+        for (int32_t l : active_variables) {
             if (l == pivot || l == -pivot) continue;
 
-            Lit var = vars[index];
-            Lit lit = active_vars[index] < 0 ? neg(var) : var;
+            Var var = variable(vars[index]);
 
-            if (unactive_vars.find(l) != unactive_vars.end()) {
-                duplicate_vars[lit] = index;
+            if (unactive_variables.find(l) != unactive_variables.end()) {
+                duplicate_vars[var] = index;
             } else 
-            if (unactive_vars.find(-l) != unactive_vars.end()) {
-                possible_pivots[lit] = index;
+            if (unactive_variables.find(-l) != unactive_variables.end()) {
+                possible_pivots[var] = index;
             }
 
             index++;
         }
+    }
 
-        std::cout << "Duplicate and possible pivot variables initialized:" << std::endl;
-        for (auto& var : vars) {
-            std::cout << "Variable: " << var.v.v << std::endl;
-        }
-        for (const auto& lit : duplicate_vars) {
-            std::cout << "Duplicate variable: " << lit.first.v.v << (lit.first.negated ? " (negated)" : "") << " at index " << lit.second << std::endl;
-        }
-        for (const auto& lit : possible_pivots) {
-            std::cout << "Possible pivot variable: " << lit.first.v.v << (lit.first.negated ? " (negated)" : "") << " at index " << lit.second << std::endl;
-        }
-        std::cout << std::endl;
+    bool Claim::is_possible_pivot(const Lit &lit) const {
+        return possible_pivots.find(variable(lit)) != possible_pivots.end();
+    }
+
+    bool Claim::is_duplicate(const Lit &lit) const {
+        return duplicate_vars.find(variable(lit)) != duplicate_vars.end();
     }
 }

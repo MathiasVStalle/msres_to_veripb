@@ -73,6 +73,14 @@ namespace converter {
 
         // Initial constraint
         for (uint32_t i = 0; i < get_active_blocking_vars().size() - 1; i++) {
+            if (is_duplicate(get_vars()[i + offset]) || is_possible_pivot(get_vars()[i + offset])) {
+                CuttingPlanesDerivation cpder(&pl, false);
+                cpder.start_from_constraint(get_active_constraints()[i + 1]);
+                cpder.add_literal_axiom(get_vars()[i + offset]);
+                cpder.end();
+                continue;
+            }
+
             weaken_all_except(pl, get_active_constraints()[i + 1], get_vars(), i + offset, (num_active_vars - 1) + offset);
         }
         constraintid initial = add_all_prev_from_literal(pl, num_active_vars, neg(get_active_blocking_vars()[0]));
@@ -82,7 +90,15 @@ namespace converter {
 
         // Reapeat for the reamining constraints
         for (uint32_t i = 0; i < num_active_vars; i++) {
-            weaken_all_except(pl, get_active_constraints()[0], vars_without_pivot, i + offset);
+            if (is_duplicate(get_vars()[i + offset]) || is_possible_pivot(get_vars()[i + offset])) {
+                CuttingPlanesDerivation cpder(&pl, false);
+                cpder.start_from_constraint(get_active_constraints()[0]);
+                cpder.add_literal_axiom(get_vars()[i + offset]);
+                cpder.end();
+                continue;
+            } else {
+                weaken_all_except(pl, get_active_constraints()[0], vars_without_pivot, i + offset);
+            }
 
             for (uint32_t j = 0; j < num_active_vars; j++) {
                 if (i == j) continue;

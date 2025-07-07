@@ -11,21 +11,21 @@
 using namespace VeriPB;
 
 namespace converter {
-    // Abstract base class for claims in the proof converter.
     class Claim {
         private:
 
-            struct LitHash {
-                std::size_t operator()(const Lit &lit) const {
-                    return lit.v.v ^ (lit.negated ? 1 : 0);
+            struct VarHash {
+                std::size_t operator()(const Var &var) const {
+                    return var.v;
                 }
             };
-            struct LitEqual {
-                bool operator()(const Lit &lit1, const Lit &lit2) const {
-                    return lit1.v.v == lit2.v.v && lit1.negated == lit2.negated;
+            struct VarEqual {
+                bool operator()(const Var &var1, const Var &var2) const {
+                    return var1.v == var2.v;
                 }
             };
 
+            // TODO: Name vars --> lit or change type Lit --> Var
             const bool negated_pivot;
             const std::vector<Lit> vars;
             const std::vector<Lit> blocking_vars;
@@ -38,10 +38,11 @@ namespace converter {
             std::vector<Lit> active_blocking_vars;
             std::vector<Lit> unactive_blocking_vars;
 
+            std::vector<Lit> active_vars;
             std::vector<constraintid> active_constraints;
 
-            std::unordered_map<Lit, uint32_t, LitHash, LitEqual> duplicate_vars;
-            std::unordered_map<Lit, uint32_t, LitHash, LitEqual> possible_pivots;
+            std::unordered_map<Var, uint32_t, VarHash, VarEqual> duplicate_vars;
+            std::unordered_map<Var, uint32_t, VarHash, VarEqual> possible_pivots;
 
         public:
 
@@ -66,6 +67,7 @@ namespace converter {
             const std::vector<Lit>& get_active_blocking_vars() const;
             const std::vector<Lit>& get_unactive_blocking_vars() const;
             const std::vector<constraintid>& get_active_constraints() const;
+            const std::vector<Lit>& get_active_vars() const;
 
             void set_active_constraints(const std::vector<constraintid> &active_constraints);
 
@@ -82,6 +84,9 @@ namespace converter {
 
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, constraintid claim_1, constraintid claim_2);
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, std::vector<VeriPB::constraintid> &claims);
+
+            bool is_duplicate(const Lit &lit) const;
+            bool is_possible_pivot(const Lit &lit) const;
 
         private:
 

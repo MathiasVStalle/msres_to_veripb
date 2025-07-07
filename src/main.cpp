@@ -44,16 +44,6 @@ int main(int argc, char *argv[]) {
     std::string wcnf_file = argv[1];
     std::string msres_file = argv[2];
     std::string output_file = argv[3];
-
-
-    // parser::MSResParser msres_parser(msres_file);
-    // cnf::Rule *rule = msres_parser.next_rule();
-    // cnf::Clause dummy_clause_1 = rule->operator[](0);
-    // cnf::Clause dummy_clause_2 = rule->operator[](1);
-    // 
-    // dummy_clause_1.print();
-    // dummy_clause_2.print();
-
     
     std::cout << "Stop" << std::endl;
     
