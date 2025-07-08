@@ -62,10 +62,7 @@ namespace cnf
              *
              * @return The unordered_set of duplicate literals in the clause.
              */
-            const std::unordered_set<int32_t> &get_duplicate_literals() const {
-                return duplicate_literals;
-            }
-
+            const std::unordered_set<int32_t> &get_duplicate_literals() const;
             /** 
              * Check if the clause is a unit clause.
              * 

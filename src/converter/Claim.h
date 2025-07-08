@@ -4,7 +4,10 @@
 #include <vector>
 #include <tuple>
 #include <unordered_set>
+#include <functional>
+#include <memory>
 
+#include "Hash.h"
 #include "../cnf/ResRule.h"
 
 #include "VeriPbSolverTypes.h"
@@ -18,8 +21,8 @@ namespace converter {
 
             // TODO: Name vars --> lit or change type Lit --> Var
             const bool negated_pivot;
-            const std::vector<Lit> vars;
-            const std::vector<Lit> blocking_vars;
+            std::vector<Lit> vars;
+            std::vector<Lit> blocking_vars;
 
             Lit pivot_literal;
 
@@ -43,7 +46,13 @@ namespace converter {
 
         protected:
 
+            /** 
+             * Check if the pivot literal is negated.
+             * 
+             * @return True if the pivot literal is negated, false otherwise.
+             */
             bool is_negated_pivot() const;
+
             const std::vector<Lit>& get_vars() const;
             const std::vector<Lit>& get_blocking_vars() const;
             const Lit& get_pivot_literal() const;
@@ -77,6 +86,8 @@ namespace converter {
         private:
 
             void initialize_duplicate_vars(const cnf::ResRule &rule);
+            
+            std::vector<VeriPB::Lit> get_total_vars(const std::vector<int32_t>& literals_1, const std::vector<int32_t>& literals_2, std::function<VeriPB::Lit(int32_t)> variable_supplier);
     };
 }
 
