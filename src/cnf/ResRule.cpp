@@ -24,20 +24,20 @@ namespace cnf
     std::vector<Clause> ResRule::apply() const {
 
         // find the two literals that are the same in both but with different signs
-        std::unordered_set<int32_t> literals_1 = clause_1.get_literals();
-        std::unordered_set<int32_t> literals_2 = clause_2.get_literals();
+        std::unordered_multiset<int32_t> literals_1 = clause_1.get_literals();
+        std::unordered_multiset<int32_t> literals_2 = clause_2.get_literals();
         int32_t common_literal = this->get_pivot();
 
         // Remove the common literal from both clauses
-        std::unordered_set<int32_t> mod_literals_1 = literals_1;
-        std::unordered_set<int32_t> mod_literals_2 = literals_2;
+        std::unordered_multiset<int32_t> mod_literals_1 = literals_1;
+        std::unordered_multiset<int32_t> mod_literals_2 = literals_2;
         mod_literals_1.erase(common_literal);
         mod_literals_2.erase(-common_literal);
 
         std::vector<Clause> new_clauses;
 
         // Build the first new clause
-        std::unordered_set<int32_t> new_literals = mod_literals_1;
+        std::unordered_multiset<int32_t> new_literals = mod_literals_1;
         new_literals.insert(mod_literals_2.begin(), mod_literals_2.end());
         Clause new_clause(std::min(clause_1.get_weight(), clause_2.get_weight()), new_literals);
         new_clauses.push_back(new_clause);

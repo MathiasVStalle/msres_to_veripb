@@ -42,7 +42,7 @@ namespace parser
         double weight;
         iss >> weight;
 
-        std::unordered_set<int32_t> literals;
+        std::unordered_multiset<int32_t> literals;
         int literal;
         while (iss >> literal && literal != 0)
         {

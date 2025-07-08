@@ -18,8 +18,9 @@ namespace converter {
                 const cnf::ResRule &rule, 
                 const std::vector<Lit> &vars, 
                 const std::vector<Lit> &blocking_vars,
+                const std::unordered_set<Lit, LitHash, LitEqual> &tautologies,
                 const bool negated_pivot
-            ) : Claim(rule, vars, blocking_vars, negated_pivot) {}
+            ) : Claim(rule, vars, blocking_vars, tautologies, negated_pivot) {}
 
             constraintid write(Prooflogger &pl) override;
     };

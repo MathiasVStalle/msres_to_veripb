@@ -6,8 +6,9 @@ namespace converter {
         const cnf::ResRule &rule, 
         const std::vector<Lit> &vars, 
         const std::vector<Lit> &blocking_vars,
+        const std::unordered_set<Lit, LitHash, LitEqual> &tautologies,
         const bool negated_pivot
-    ) : negated_pivot(negated_pivot), vars(vars), blocking_vars(blocking_vars) 
+    ) : negated_pivot(negated_pivot), vars(vars), blocking_vars(blocking_vars), tautologies(tautologies)
     {
         if (blocking_vars.size() < 3) {
             throw std::runtime_error("Blocking variables must have at least 3 elements.");
@@ -40,8 +41,6 @@ namespace converter {
         for (const Lit &var : this->active_vars) {
             std::cout << "Active var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
         }
-
-        this->initialize_duplicate_vars(rule);
     }
 
 
@@ -105,15 +104,6 @@ namespace converter {
         cpder.start_from_constraint(id);
         for (int i = 0; i < variables.size(); i++) {
             if ((i < begin || i > end)) {
-
-                // TODO: This does not check if the duplicate is in the same range
-                if (
-                    duplicate_vars.find(variable(variables[i])) != duplicate_vars.end()
-                    || possible_pivots.find(variable(variables[i])) != possible_pivots.end()
-                ) {
-                    continue;
-                }
-
                 cpder.weaken(variable(variables[i]));
             }
         }
@@ -257,5 +247,9 @@ namespace converter {
 
     bool Claim::is_duplicate(const Lit &lit) const {
         return duplicate_vars.find(variable(lit)) != duplicate_vars.end();
+    }
+
+    bool Claim::is_tautology(const Lit &lit) const {
+        return tautologies.find(lit) != tautologies.end();
     }
 }

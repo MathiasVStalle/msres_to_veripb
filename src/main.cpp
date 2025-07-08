@@ -7,6 +7,7 @@
 #include "./parser/MSResParser.h"
 #include "./parser/WCNFParser.h"
 #include "./converter/ProofConverter.h"
+#include "./converter/ProofConstraint.h"
 
 int check_proofs_are_same(const std::string& output_file, const std::string& test_file) {
     std::ifstream output_stream(output_file);
@@ -50,5 +51,5 @@ int main(int argc, char *argv[]) {
     converter::ProofConverter proof_convertor(wcnf_file, msres_file, output_file);
     proof_convertor.write_proof();
 
-    return 0; //check_proofs_are_same(output_file, "example/test/test.pbp");
+    return check_proofs_are_same(output_file, "example/test/test.pbp");
 }

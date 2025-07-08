@@ -2,6 +2,8 @@
 #define CLAIM_H
 
 #include <vector>
+#include <tuple>
+#include <unordered_set>
 
 #include "../cnf/ResRule.h"
 
@@ -13,17 +15,6 @@ using namespace VeriPB;
 namespace converter {
     class Claim {
         private:
-
-            struct VarHash {
-                std::size_t operator()(const Var &var) const {
-                    return var.v;
-                }
-            };
-            struct VarEqual {
-                bool operator()(const Var &var1, const Var &var2) const {
-                    return var1.v == var2.v;
-                }
-            };
 
             // TODO: Name vars --> lit or change type Lit --> Var
             const bool negated_pivot;
@@ -41,18 +32,12 @@ namespace converter {
             std::vector<Lit> active_vars;
             std::vector<constraintid> active_constraints;
 
+            std::unordered_set<Lit, LitHash, LitEqual> tautologies;
             std::unordered_map<Var, uint32_t, VarHash, VarEqual> duplicate_vars;
             std::unordered_map<Var, uint32_t, VarHash, VarEqual> possible_pivots;
 
         public:
-
-            // TODO: var should be given separatly
-            Claim(
-                const cnf::ResRule &rule,
-                const std::vector<Lit> &vars, 
-                const std::vector<Lit> &blocking_vars,
-                const bool negated_pivot
-            );
+            Claim(const cnf::ResRule &rule, const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, const std::function<VeriPB::Lit(int32_t)> &variable_supplier, bool negated_pivot);
 
             virtual constraintid write(Prooflogger &pl) = 0;
 
@@ -87,6 +72,7 @@ namespace converter {
 
             bool is_duplicate(const Lit &lit) const;
             bool is_possible_pivot(const Lit &lit) const;
+            bool is_tautology(const Lit &lit) const;
 
         private:
 

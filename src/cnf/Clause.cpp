@@ -6,14 +6,17 @@
 
 namespace cnf
 {
-    Clause::Clause(const std::unordered_set<int32_t>& literals) : weight(0), literals(literals) {
+    Clause::Clause(const std::unordered_multiset<int32_t>& literals) : weight(0), literals(literals) {
         for (const auto& lit : literals) {
             if (!tautology && literals.find(-lit) != literals.end()) tautology = true;
-            if (!has_double && literals.find(lit) != literals.end()) has_double = true;
+            if (!has_double && literals.find(lit) != literals.end()) {
+                has_double = true;
+                duplicate_literals.insert(lit);
+            }
         }
     }
 
-    Clause::Clause(int32_t weight, const std::unordered_set<int32_t>& literals) : weight(weight), literals(literals) {}
+    Clause::Clause(int32_t weight, const std::unordered_multiset<int32_t>& literals) : weight(weight), literals(literals) {}
    
     Clause::~Clause() {}
 
@@ -23,8 +26,12 @@ namespace cnf
         return weight;
     }
 
-    const std::unordered_set<int32_t>& Clause::get_literals() const {
+    const std::unordered_multiset<int32_t>& Clause::get_literals() const {
         return literals;
+    }
+
+    const std::unordered_set<int32_t>& Clause::get_duplicate_literals() const {
+        return duplicate_literals;
     }
 
     bool Clause::is_unit_clause() const {
