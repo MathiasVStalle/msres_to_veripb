@@ -16,21 +16,26 @@ namespace converter {
         std::unordered_multiset<int32_t> literals_1 = clauses[0].second.get_literals();
         std::unordered_multiset<int32_t> literals_2 = clauses[1].second.get_literals();
 
-        //if (literals_1.erase(pivot) == 0 && literals_1.erase(-pivot) == 0)
-        //    throw std::runtime_error("Pivot literal not found in the first clause.");
-//
-        //if (literals_2.erase(pivot) == 0 && literals_2.erase(-pivot) == 0)
-        //    throw std::runtime_error("Pivot literal not found in the second clause.");
+        if (literals_1.erase(pivot) == 0 && literals_1.erase(-pivot) == 0)
+            throw std::runtime_error("Pivot literal not found in the first clause.");
+
+        if (literals_2.erase(pivot) == 0 && literals_2.erase(-pivot) == 0)
+            throw std::runtime_error("Pivot literal not found in the second clause.");
 
         std::vector<int32_t> literals_1_vec(literals_1.begin(), literals_1.end());
         std::vector<int32_t> literals_2_vec(literals_2.begin(), literals_2.end());
+
+        for (auto &lit : literals_1_vec) {
+            std::cout << "Literals 1: " << lit << std::endl;
+        }
+        for (auto &lit : literals_2_vec) {
+            std::cout << "Literals 2: " << lit << std::endl;
+        }
 
         vars = get_total_vars(literals_1_vec, literals_2_vec, variable_supplier);
         vars.push_back(variable_supplier(pivot));
 
 
-        std::vector<Lit> blocking_vars;
-        blocking_vars.reserve(clauses.size());
         for (const auto &clause : clauses) {
             blocking_vars.push_back(clause.first);
         }
@@ -39,6 +44,7 @@ namespace converter {
         uint32_t num_clauses_1 = literals_1.size();
         uint32_t num_clauses_2 = literals_2.size();
 
+        this->active_blocking_vars = { new_blocking_vars[0] };
 
         if (negated_pivot) {
            this->pivot_literal = vars.back();
@@ -63,10 +69,44 @@ namespace converter {
         // }
         // std::cout << std::endl;
 
-        // Print vars
-        for (const auto &lit : vars) {
-            std::cout << "Var: " << lit.v.v << (lit.negated ? " (negated)" : "") << std::endl;
+        // Print the active variables for debugging
+        for (const Lit &var : this->active_vars)
+        {
+            std::cout << "Active var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
         }
+
+        // Print the inactive variables for debugging
+        for (const Lit &var : this->unactive_blocking_vars)
+        {
+            std::cout << "Unactive var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the active blocking variables for debugging
+        for (const Lit &var : this->active_blocking_vars)
+        {
+            std::cout << "Active blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the unactive blocking variables for debugging
+        for (const Lit &var : this->unactive_blocking_vars)
+        {
+            std::cout << "Unactive blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the variables for debugging
+        for (const Lit &var : this->vars)
+        {
+            std::cout << "Var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the blocking variables for debugging
+        for (const Lit &var : this->blocking_vars)
+        {
+            std::cout << "Blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        std::cout << std::endl;
+
         std::cout << std::endl;
     }
 

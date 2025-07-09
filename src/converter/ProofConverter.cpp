@@ -207,6 +207,7 @@ namespace converter {
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         C.add_literal(neg(blocking_vars[&clause_1]), 1);
         C.add_literal(neg(blocking_vars[&clause_2]), 1);
+
         for (auto& clause : new_clauses) {
             C.add_literal(neg(blocking_vars[&clause]), 1);
         }
@@ -214,7 +215,7 @@ namespace converter {
 
         CuttingPlanesDerivation cpder(pl, false);
         VeriPB::constraintid cn = proof_by_contradiction(claim_1, claim_2, C);
-        pl->move_to_coreset_by_id(cn);
+        pl->move_to_coreset_by_id(-1);
 
         // s1 + s2 <= s3 + s4 + ... + s_n
         C.clear();
@@ -226,7 +227,7 @@ namespace converter {
         C.add_RHS(2);
 
         cn = proof_by_contradiction(claim_3, claim_4, C);
-        pl->move_to_coreset_by_id(cn);
+        pl->move_to_coreset_by_id(-1);
     }
 
     void ProofConverter::change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses) {
@@ -236,7 +237,7 @@ namespace converter {
         c_old.add_literal(neg(blocking_vars[&clause_1]), 1);
         c_old.add_literal(neg(blocking_vars[&clause_2]), 1);
         for (auto& clause : new_clauses) {
-            c_old.add_literal(blocking_vars[&clause], 1);
+            c_new.add_literal(blocking_vars[&clause], 1);
         }
         pl->write_objective_update_diff(c_old, c_new);
     }
@@ -262,6 +263,8 @@ namespace converter {
     }
 
     VeriPB::constraintid ProofConverter::proof_by_contradiction(VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C) {
+        
+        pl->write_comment("__Proof by contradiction__");
         CuttingPlanesDerivation cpder(pl, false);
         pl->start_proof_by_contradiction(C);
 
