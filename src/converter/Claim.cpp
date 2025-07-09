@@ -4,38 +4,110 @@ namespace converter {
 
     Claim::Claim(
         const cnf::ResRule &rule, 
-        const std::vector<Lit> &vars, 
-        const std::vector<Lit> &blocking_vars,
-        const bool negated_pivot
-    ) : negated_pivot(negated_pivot), vars(vars), blocking_vars(blocking_vars) 
-    {
-        if (blocking_vars.size() < 3) {
-            throw std::runtime_error("Blocking variables must have at least 3 elements.");
+        const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, 
+        const std::function<VeriPB::Lit(int32_t)> &variable_supplier, 
+        bool negated_pivot
+    ) : negated_pivot(negated_pivot) {
+        if (clauses.size() < 3) {
+            throw std::runtime_error("Claim must have at least two clauses.");
         }
 
-        const uint32_t num_clauses_1 = rule.get_clause_1().get_literals().size() - 1; // -1 for the pivot variable
-        const uint32_t num_clauses_2 = rule.get_clause_2().get_literals().size() - 1; // -1 for the pivot variable
-        const std::vector<Lit> new_blocking_vars = std::vector<Lit>(blocking_vars.begin() + 2, blocking_vars.end());
+        int32_t pivot = rule.get_pivot();
+        std::unordered_multiset<int32_t> literals_1 = clauses[0].second.get_literals();
+        std::unordered_multiset<int32_t> literals_2 = clauses[1].second.get_literals();
 
-        this->active_blocking_vars = {new_blocking_vars[0]}; // Add the first new blocking variables
+        if (literals_1.erase(pivot) == 0 && literals_1.erase(-pivot) == 0)
+            throw std::runtime_error("Pivot literal not found in the first clause.");
+
+        if (literals_2.erase(pivot) == 0 && literals_2.erase(-pivot) == 0)
+            throw std::runtime_error("Pivot literal not found in the second clause.");
+
+        std::vector<int32_t> literals_1_vec(literals_1.begin(), literals_1.end());
+        std::vector<int32_t> literals_2_vec(literals_2.begin(), literals_2.end());
+
+        for (auto &lit : literals_1_vec) {
+            std::cout << "Literals 1: " << lit << std::endl;
+        }
+        for (auto &lit : literals_2_vec) {
+            std::cout << "Literals 2: " << lit << std::endl;
+        }
+
+        vars = get_total_vars(literals_1_vec, literals_2_vec, variable_supplier);
+        vars.push_back(variable_supplier(pivot));
+
+
+        for (const auto &clause : clauses) {
+            blocking_vars.push_back(clause.first);
+        }
+        std::vector<Lit> new_blocking_vars = std::vector<Lit>(blocking_vars.begin() + 2, blocking_vars.end());
+
+        uint32_t num_clauses_1 = literals_1.size();
+        uint32_t num_clauses_2 = literals_2.size();
+
+        this->active_blocking_vars = { new_blocking_vars[0] };
 
         if (negated_pivot) {
-            this->pivot_literal = vars.back();
-            this->active_original_blocking_var = blocking_vars[0];
-            this->unactive_original_blocking_var = blocking_vars[1];
-
-            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
-            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
+           this->pivot_literal = vars.back();
+           this->active_original_blocking_var = blocking_vars[0];
+           this->unactive_original_blocking_var = blocking_vars[1];
+    
+           this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
+           this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
+           this->active_vars = std::vector<Lit>(vars.begin(), vars.begin() + num_clauses_1);
         } else {
-            this->pivot_literal = neg(vars.back());
-            this->active_original_blocking_var = blocking_vars[1];
-            this->unactive_original_blocking_var = blocking_vars[0];
-
-            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
-            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
+           this->pivot_literal = neg(vars.back());
+           this->active_original_blocking_var = blocking_vars[1];
+           this->unactive_original_blocking_var = blocking_vars[0];
+    
+           this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
+           this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
+           this->active_vars = std::vector<Lit>(vars.begin() + num_clauses_1, vars.end() - 1);
         }
 
-        this->initialize_duplicate_vars(rule);
+        // for (const auto &lit : blocking_vars) {
+        //     std::cout << "Blocking var: " << lit.v.v << (lit.negated ? " (negated)" : "") << std::endl;
+        // }
+        // std::cout << std::endl;
+
+        // Print the active variables for debugging
+        for (const Lit &var : this->active_vars)
+        {
+            std::cout << "Active var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the inactive variables for debugging
+        for (const Lit &var : this->unactive_blocking_vars)
+        {
+            std::cout << "Unactive var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the active blocking variables for debugging
+        for (const Lit &var : this->active_blocking_vars)
+        {
+            std::cout << "Active blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the unactive blocking variables for debugging
+        for (const Lit &var : this->unactive_blocking_vars)
+        {
+            std::cout << "Unactive blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the variables for debugging
+        for (const Lit &var : this->vars)
+        {
+            std::cout << "Var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        // Print the blocking variables for debugging
+        for (const Lit &var : this->blocking_vars)
+        {
+            std::cout << "Blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
+        }
+
+        std::cout << std::endl;
+
+        std::cout << std::endl;
     }
 
 
@@ -99,17 +171,6 @@ namespace converter {
         cpder.start_from_constraint(id);
         for (int i = 0; i < variables.size(); i++) {
             if ((i < begin || i > end)) {
-
-                // TODO: This does not check if the duplicate is in the same range
-                // if (
-                //     duplicate_vars.find(variables[i]) != duplicate_vars.end()
-                //     || possible_pivots.find(variables[i]) != possible_pivots.end()
-                //     || duplicate_vars.find(neg(variables[i])) != duplicate_vars.end()
-                //     || possible_pivots.find(neg(variables[i])) != possible_pivots.end()
-                // ) {
-                //     continue;
-                // }
-
                 cpder.weaken(variable(variables[i]));
             }
         }
@@ -214,46 +275,62 @@ namespace converter {
 
     void Claim::initialize_duplicate_vars(const cnf::ResRule &rule) {
         duplicate_vars.clear();
+        possible_pivots.clear();
+
         const auto& clause_1 = rule.get_clause_1().get_literals();
         const auto& clause_2 = rule.get_clause_2().get_literals();
+
         const int32_t pivot = rule.get_pivot();
 
-        std::vector<int32_t> active_vars = negated_pivot ? 
+        std::vector<int32_t> active_variables = negated_pivot ? 
             std::vector<int32_t>(clause_1.begin(), clause_1.end()) :
             std::vector<int32_t>(clause_2.begin(), clause_2.end());
 
-        std::unordered_set<int32_t> unactive_vars = negated_pivot ? 
+        std::unordered_set<int32_t> unactive_variables = negated_pivot ? 
             std::unordered_set<int32_t>(clause_2.begin(), clause_2.end()) :
             std::unordered_set<int32_t>(clause_1.begin(), clause_1.end());
     
         uint32_t index = negated_pivot ? 0 : clause_1.size() - 1;
 
-        for (int32_t l : active_vars) {
+        for (int32_t l : active_variables) {
             if (l == pivot || l == -pivot) continue;
 
-            Lit var = vars[index];
-            Lit lit = active_vars[index] < 0 ? neg(var) : var;
+            Var var = variable(vars[index]);
 
-            if (unactive_vars.find(l) != unactive_vars.end()) {
-                duplicate_vars[lit] = index;
+            if (unactive_variables.find(l) != unactive_variables.end()) {
+                duplicate_vars[var] = index;
             } else 
-            if (unactive_vars.find(-l) != unactive_vars.end()) {
-                possible_pivots[lit] = index;
+            if (unactive_variables.find(-l) != unactive_variables.end()) {
+                possible_pivots[var] = index;
             }
 
             index++;
         }
+    }
 
-        std::cout << "Duplicate and possible pivot variables initialized:" << std::endl;
-        for (auto& var : vars) {
-            std::cout << "Variable: " << var.v.v << std::endl;
+    bool Claim::is_possible_pivot(const Lit &lit) const {
+        return possible_pivots.find(variable(lit)) != possible_pivots.end();
+    }
+
+    bool Claim::is_duplicate(const Lit &lit) const {
+        return duplicate_vars.find(variable(lit)) != duplicate_vars.end();
+    }
+
+    bool Claim::is_tautology(const Lit &lit) const {
+        return tautologies.find(lit) != tautologies.end();
+    }
+
+    std::vector<Lit> Claim::get_total_vars(const std::vector<int32_t>& literals_1, const std::vector<int32_t>& literals_2, std::function<VeriPB::Lit(int32_t)> variable_supplier) {
+        std::vector<Lit> total_vars;
+        total_vars.reserve(literals_1.size() + literals_2.size());
+
+        for (const auto& lit : literals_1) {
+            total_vars.push_back(variable_supplier(lit));
         }
-        for (const auto& lit : duplicate_vars) {
-            std::cout << "Duplicate variable: " << lit.first.v.v << (lit.first.negated ? " (negated)" : "") << " at index " << lit.second << std::endl;
+        for (const auto& lit : literals_2) {
+            total_vars.push_back(variable_supplier(lit));
         }
-        for (const auto& lit : possible_pivots) {
-            std::cout << "Possible pivot variable: " << lit.first.v.v << (lit.first.negated ? " (negated)" : "") << " at index " << lit.second << std::endl;
-        }
-        std::cout << std::endl;
+
+        return total_vars;
     }
 }

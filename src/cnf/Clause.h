@@ -9,8 +9,10 @@ namespace cnf
     class Clause {
         private:
             bool tautology = false;
+            bool has_double = false;
             int32_t weight;
-            std::unordered_set<int32_t> literals;
+            std::unordered_multiset<int32_t> literals;
+            std::unordered_set<int32_t> duplicate_literals;
 
         public:
             /**
@@ -19,7 +21,7 @@ namespace cnf
              *
              * @param literals The unordered_set of literals in the clause.
              */
-            Clause(const std::unordered_set<int32_t> &literals);
+            Clause(const std::unordered_multiset<int32_t> &literals);
 
             /**
              * Constructor for a soft clause.
@@ -27,7 +29,7 @@ namespace cnf
              * @param weight The weight of the clause.
              * @param literals The unordered_set of literals in the clause.
              */
-            Clause(int32_t weight, const std::unordered_set<int32_t> &literals);
+            Clause(int32_t weight, const std::unordered_multiset<int32_t> &literals);
 
             /**
              * Destructor for the Clause class.
@@ -53,8 +55,14 @@ namespace cnf
              *
              * @return The unordered_set of literals in the clause.
              */
-            const std::unordered_set<int32_t> &get_literals() const;
+            const std::unordered_multiset<int32_t> &get_literals() const;
 
+            /**
+             * Get the set of duplicate literals in the clause.
+             *
+             * @return The unordered_set of duplicate literals in the clause.
+             */
+            const std::unordered_set<int32_t> &get_duplicate_literals() const;
             /** 
              * Check if the clause is a unit clause.
              * 
@@ -68,6 +76,15 @@ namespace cnf
              * @return True if the clause is a tautology, false otherwise.
              */
             bool is_tautology() const;
+
+            /**
+             * Check if the clause has a double literal.
+             * 
+             * @return True if the clause has a double literal, false otherwise.
+             */
+            bool has_double_literal() const {
+                return has_double;
+            }
 
             /**
              * Check if the clause is a hard clause.

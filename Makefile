@@ -1,7 +1,7 @@
-CC ?= g++
+CXX ?= g++
 NAME := MSConvert
 
-CFLAGS = -std=c++17 -g "-I./lib/VeriPB_Prooflogger/core"
+CFLAGS = -std=c++20 -g "-I./lib/VeriPB_Prooflogger/core"
 LDFLAGS = -lstdc++ -lm
 
 SRC_DIR ?= ./src
@@ -31,10 +31,10 @@ build:
 	find $(SRC_DIR) -type d -exec mkdir -p $(BUILD_DIR)/{} \;
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.cpp | build
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "ProofConstraint.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
 #include "../cnf/ResRule.h"
@@ -24,18 +25,12 @@ namespace converter {
             std::string output_file;
             parser::MSResParser msres_parser;
 
-            // (n, c) where n is the constraint id and c is the clause
-            std::unordered_map<uint32_t, cnf::Clause> wcnf_clauses;
-            std::unordered_map<uint32_t, VeriPB::Lit> vars;
-
-            std::unordered_map<cnf::Clause, uint32_t> constraint_ids;
-            std::unordered_map<uint32_t, VeriPB::Lit> blocking_vars;
-
-            // The amount of constraints in each partial proof (reification of the wcnf clauses not included)
-            std::vector<uint32_t> proof_sizes;
-
             VeriPB::VarManagerWithVarRewriting var_mgr;
             VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t> *pl;
+
+            std::unordered_map<uint32_t, const cnf::Clause> wcnf_clauses;                                       // Maps clause ID to the clause
+            std::unordered_map<uint32_t, VeriPB::Lit> vars;                                                     // Maps variable ID to the literal
+            std::unordered_map<const cnf::Clause*, VeriPB::Lit, ClausePtrHash, ClausePtrEqual> blocking_vars;   // Maps clause to the blocking variable
 
         public:
             /**
@@ -92,31 +87,34 @@ namespace converter {
              * 
              * @param rule The rule to apply.
              */
-            void write_new_clauses(const cnf::Rule *rule);
+            void write_new_clauses(const cnf::Rule *rule, const std::vector<cnf::Clause> &new_clauses);
 
-            
+            /**
+             * Assembles a proof for the given claims and clauses.
+             * 
+             * @param claim_1 The first claim.
+             * @param claim_2 The second claim.
+             * @param claim_3 The third claim.
+             * @param claim_4 The fourth claim.
+             * @param clause_1 The first clause of the applies rule.
+             * @param clause_2 The second clause of the applies rule.
+             * @param new_clauses The new clauses to be added to the proof by the applied rule.
+             */
             void assemble_proof(
                 VeriPB::constraintid claim_1,
                 VeriPB::constraintid claim_2,
                 VeriPB::constraintid claim_3,
                 VeriPB::constraintid claim_4,
-                uint32_t clause_id_1,
-                uint32_t clause_id_2,
-                uint32_t num_new_clauses
+                const cnf::Clause &clause_1,
+                const cnf::Clause &clause_2,
+                const std::vector<cnf::Clause> &new_clauses
             );
 
-            void change_objective(
-                uint32_t clause_id_1,
-                uint32_t clause_id_2,
-                uint32_t num_new_clauses
-            );
-
-            std::vector<VeriPB::Lit> get_total_vars(
-                const std::vector<int32_t>& literals_1, 
-                const std::vector<int32_t>& literals_2
-            );
+            void change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses);
 
             void clause_to_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);
+
+            VeriPB::constraintid proof_by_contradiction(VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);
         };
 }
 

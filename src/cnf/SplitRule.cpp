@@ -16,8 +16,8 @@ namespace cnf
     SplitRule::~SplitRule() {}
 
     std::vector<Clause> SplitRule::apply() const {
-        std::unordered_set<int32_t> literals_1 = clause.get_literals();
-        std::unordered_set<int32_t> literals_2 = clause.get_literals();
+        std::unordered_multiset<int32_t> literals_1 = clause.get_literals();
+        std::unordered_multiset<int32_t> literals_2 = clause.get_literals();
 
         literals_1.insert(get_pivot());
         literals_2.insert(-get_pivot());

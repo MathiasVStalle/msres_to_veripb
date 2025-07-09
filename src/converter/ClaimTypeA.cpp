@@ -39,6 +39,9 @@ namespace converter {
         }
         C.add_RHS(get_active_blocking_vars().size());
 
+        std::cout << subclaims.size() << " subclaims" << std::endl;
+        pl.flush_proof();
+
         build_proof_by_contradiction(pl, C, subclaims);
 
         // Complete the final claim
@@ -73,7 +76,14 @@ namespace converter {
 
         // Initial constraint
         for (uint32_t i = 0; i < get_active_blocking_vars().size() - 1; i++) {
-            weaken_all_except(pl, get_active_constraints()[i + 1], get_vars(), i + offset, (num_active_vars - 1) + offset);
+            if (is_tautology(get_active_blocking_vars()[i + 1])) {
+                CuttingPlanesDerivation cpder(&pl, false);
+                cpder.start_from_constraint(get_active_constraints()[i + 1]);
+                cpder.add_literal_axiom(get_vars()[i + offset]);
+                cpder.end();
+            } else {
+                weaken_all_except(pl, get_active_constraints()[i + 1], get_vars(), i + offset, (num_active_vars - 1) + offset);
+            }
         }
         constraintid initial = add_all_prev_from_literal(pl, num_active_vars, neg(get_active_blocking_vars()[0]));
 
@@ -82,13 +92,28 @@ namespace converter {
 
         // Reapeat for the reamining constraints
         for (uint32_t i = 0; i < num_active_vars; i++) {
-            weaken_all_except(pl, get_active_constraints()[0], vars_without_pivot, i + offset);
+            if (is_tautology(get_active_blocking_vars()[0])) {
+                CuttingPlanesDerivation cpder(&pl, false);
+                cpder.start_from_constraint(get_active_constraints()[0]);
+                cpder.add_literal_axiom(get_vars()[i + offset]);
+                cpder.end();
+            } else {
+                weaken_all_except(pl, get_active_constraints()[0], vars_without_pivot, i + offset);
+            }
 
             for (uint32_t j = 0; j < num_active_vars; j++) {
                 if (i == j) continue;
 
                 uint32_t n = (j <= i) ? j : i;
-                weaken_all_except(pl, get_active_constraints()[j + 1], get_vars(), n + offset);
+
+                if (is_tautology(get_active_blocking_vars()[j + 1])) {
+                    CuttingPlanesDerivation cpder(&pl, false);
+                    cpder.start_from_constraint(get_active_constraints()[j + 1]);
+                    cpder.add_literal_axiom(get_vars()[n + offset]);
+                    cpder.end();
+                } else {
+                    weaken_all_except(pl, get_active_constraints()[j + 1], get_vars(), n + offset);
+                }
             }
 
             Lit sn = get_active_blocking_vars()[i + 1];
