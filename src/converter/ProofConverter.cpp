@@ -42,10 +42,17 @@ namespace converter {
     void ProofConverter::write_proof() {
         initialize_vars();
 
+        uint32_t n_original = this->wcnf_clauses.size();
+        for (const auto &[_, clause] : this->wcnf_clauses) {
+            if (clause.is_unit_clause()) {
+                n_original--;
+            }
+        }
+
         // Write the proof header
         this->var_mgr.set_number_original_variables(this->vars.size());
         this->pl->write_proof_header();
-        this->pl->set_n_orig_constraints(this->wcnf_clauses.size());
+        this->pl->set_n_orig_constraints(n_original);
 
         //TODO: Reification clauses
         this->reificate_original_clauses();
@@ -142,6 +149,8 @@ namespace converter {
     }
 
     void ProofConverter::reificate_original_clauses() {
+        std::vector<std::pair<VeriPB::Lit, VeriPB::Lit>> unit_clauses;
+
         // Saving the reification of the original clauses
         for (int i = 1; i <= wcnf_clauses.size(); i++) {
             const cnf::Clause& clause = wcnf_clauses.at(i);
@@ -150,6 +159,14 @@ namespace converter {
             VeriPB::Lit lit = create_literal(var, false);
             var_mgr.store_variable_name(var, "_b" + std::to_string(i));
             blocking_vars[&clause] = lit;
+
+            if (clause.is_unit_clause()) {
+                int32_t unit_lit_int = *clause.get_literals().begin();
+                VeriPB::Lit unit_lit = vars[std::abs(unit_lit_int)];
+                unit_lit = (unit_lit_int < 0) ? neg(unit_lit) : unit_lit;
+
+                unit_clauses.push_back(std::make_pair(lit, unit_lit));
+            }
             
             pl->store_reified_constraint_right_implication(var, i);
         }
@@ -174,6 +191,35 @@ namespace converter {
             }
 
             pl->reification_literal_left_implication(blocking_vars[&clause], C, true);
+
+            // Move to the coresets
+            // if (clause.is_unit_clause()) {
+            //     pl->move_to_coreset_by_id(-1);
+            // }
+        }
+
+        if (!unit_clauses.empty()) {
+            for (const auto &pair : unit_clauses) {
+                VeriPB::Lit blocking_lit = pair.first;
+                VeriPB::Lit unit_lit = pair.second;
+
+                // Add the right implication for the unit clause
+                C.clear();
+                C.add_literal(unit_lit, 1);
+                C.add_RHS(1);
+                pl->reification_literal_right_implication(blocking_lit, C, true);
+
+                // Move to the coresets
+                //pl->move_to_coreset_by_id(-1);
+
+
+                // Change the objective function to include the blocking variable instead of the unit literal
+                // LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+                // LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+                // c_old.add_literal(neg(unit_lit), 1);
+                // c_new.add_literal(blocking_lit, 1);
+                // pl->write_objective_update_diff(c_old, c_new);
+            }
         }
     }
 

@@ -20,7 +20,9 @@ namespace converter {
 
 
         subclaims = build_iterative_subclaims(pl);
+        pl.flush_proof();
         iterative_proofs_by_contradiction(pl, subclaims);
+        pl.flush_proof();
 
         // Complete the formula (1 ~x 1 b1 1 b2 ... 1 bn 1 s2 1 ~s3 1 ~s(n+1) ... 1 ~s(n+m) >= m)
         cpder.start_from_constraint(pl.get_reified_constraint_right_implication(variable(get_active_original_blocking_var())));
@@ -38,9 +40,6 @@ namespace converter {
             C.add_literal(neg(sn), 1);
         }
         C.add_RHS(get_active_blocking_vars().size());
-
-        std::cout << subclaims.size() << " subclaims" << std::endl;
-        pl.flush_proof();
 
         build_proof_by_contradiction(pl, C, subclaims);
 

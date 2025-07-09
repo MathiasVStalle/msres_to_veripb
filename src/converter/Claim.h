@@ -36,8 +36,6 @@ namespace converter {
             std::vector<constraintid> active_constraints;
 
             std::unordered_set<Lit, LitHash, LitEqual> tautologies;
-            std::unordered_map<Var, uint32_t, VarHash, VarEqual> duplicate_vars;
-            std::unordered_map<Var, uint32_t, VarHash, VarEqual> possible_pivots;
 
         public:
             Claim(const cnf::ResRule &rule, const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, const std::function<VeriPB::Lit(int32_t)> &variable_supplier, bool negated_pivot);

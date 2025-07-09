@@ -25,13 +25,6 @@ namespace converter {
         std::vector<int32_t> literals_1_vec(literals_1.begin(), literals_1.end());
         std::vector<int32_t> literals_2_vec(literals_2.begin(), literals_2.end());
 
-        for (auto &lit : literals_1_vec) {
-            std::cout << "Literals 1: " << lit << std::endl;
-        }
-        for (auto &lit : literals_2_vec) {
-            std::cout << "Literals 2: " << lit << std::endl;
-        }
-
         vars = get_total_vars(literals_1_vec, literals_2_vec, variable_supplier);
         vars.push_back(variable_supplier(pivot));
 
@@ -63,51 +56,6 @@ namespace converter {
            this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
            this->active_vars = std::vector<Lit>(vars.begin() + num_clauses_1, vars.end() - 1);
         }
-
-        // for (const auto &lit : blocking_vars) {
-        //     std::cout << "Blocking var: " << lit.v.v << (lit.negated ? " (negated)" : "") << std::endl;
-        // }
-        // std::cout << std::endl;
-
-        // Print the active variables for debugging
-        for (const Lit &var : this->active_vars)
-        {
-            std::cout << "Active var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
-        }
-
-        // Print the inactive variables for debugging
-        for (const Lit &var : this->unactive_blocking_vars)
-        {
-            std::cout << "Unactive var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
-        }
-
-        // Print the active blocking variables for debugging
-        for (const Lit &var : this->active_blocking_vars)
-        {
-            std::cout << "Active blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
-        }
-
-        // Print the unactive blocking variables for debugging
-        for (const Lit &var : this->unactive_blocking_vars)
-        {
-            std::cout << "Unactive blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
-        }
-
-        // Print the variables for debugging
-        for (const Lit &var : this->vars)
-        {
-            std::cout << "Var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
-        }
-
-        // Print the blocking variables for debugging
-        for (const Lit &var : this->blocking_vars)
-        {
-            std::cout << "Blocking var: " << var.v.v << (var.negated ? " (negated)" : "") << std::endl;
-        }
-
-        std::cout << std::endl;
-
-        std::cout << std::endl;
     }
 
 
@@ -252,9 +200,9 @@ namespace converter {
     }
 
     constraintid Claim::build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, std::vector<VeriPB::constraintid> &claims) {
-        if (claims.size() < 2) {
-            throw std::runtime_error("At least two claims are required to build a proof by contradiction.");
-        }
+        // if (claims.size() < 2) {
+        //     throw std::runtime_error("At least two claims are required to build a proof by contradiction.");
+        // }
         
         constraintid constraint = pl.start_proof_by_contradiction(C);
 
