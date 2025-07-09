@@ -1,0 +1,973 @@
+Running VeriPB version 2.2.2.post63+git.e70eaf1b.dirty
+
+=== begin trace ===
+  Objective: min 1 ~_b4 1 ~_b3 1 ~_b2 1 ~_b1 0 
+  ConstraintId 001: 1 ~_b1 1 x1 1 x2 1 x3 >= 1
+  ConstraintId 002: 1 ~_b2 1 ~x1 1 x4 1 x5 >= 1
+  ConstraintId 003: 1 ~_b3 1 x6 1 x7 1 x8 >= 1
+  ConstraintId 004: 1 ~_b4 1 ~x7 1 x9 >= 1
+line 002: f
+line 003: * _b1 <- 1 x3 1 x2 1 x1 >= 1
+line 004: red 3 _b1 1 ~x3 1 ~x2 1 ~x1 >=  3; _b1 1
+  ** proofgoals from formula **
+  proofgoal 001: 1 x1 1 x2 1 x3 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x1 1 ~x2 1 ~x3 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: 1 ~_b1 >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 005: 3 _b1 1 ~x1 1 ~x2 1 ~x3 >= 3
+line 005: * _b2 <- 1 x5 1 x4 1 ~x1 >= 1
+line 006: red 3 _b2 1 ~x5 1 ~x4 1 x1 >=  3; _b2 1
+  ** proofgoals from formula **
+  proofgoal 002: 1 ~x1 1 x4 1 x5 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x1 1 ~x4 1 ~x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: 1 ~_b2 >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 006: 3 _b2 1 x1 1 ~x4 1 ~x5 >= 3
+line 007: * _b3 <- 1 x8 1 x7 1 x6 >= 1
+line 008: red 3 _b3 1 ~x8 1 ~x7 1 ~x6 >=  3; _b3 1
+  ** proofgoals from formula **
+  proofgoal 003: 1 x6 1 x7 1 x8 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x6 1 ~x7 1 ~x8 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: 1 ~_b3 >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 007: 3 _b3 1 ~x6 1 ~x7 1 ~x8 >= 3
+line 009: * _b4 <- 1 x9 1 ~x7 >= 1
+line 010: red 2 _b4 1 ~x9 1 x7 >=  2; _b4 1
+  ** proofgoals from formula **
+  proofgoal 004: 1 ~x7 1 x9 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x7 1 ~x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: 1 ~_b4 >= 0
+    automatically proved #1, constraint is trivial.
+  ConstraintId 008: 2 _b4 1 x7 1 ~x9 >= 2
+line 011: * ~_p5 -> 1 x2 1 x3 1 x5 1 x4 >= 1
+line 012: red 1 _p5 1 x2 1 x3 1 x5 1 x4 >= 1; _p5 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x2 1 x3 1 x4 1 x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 009: 1 _p5 1 x2 1 x3 1 x4 1 x5 >= 1
+line 013: * ~_p5 <- 1 x2 1 x3 1 x5 1 x4 >= 1
+line 014: red 4 ~_p5 1 ~x2 1 ~x3 1 ~x5 1 ~x4 >=  4; _p5 0
+  ** proofgoals from formula **
+  proofgoal 009: 1 x2 1 x3 1 x4 1 x5 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x2 1 ~x3 1 ~x4 1 ~x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 010: 4 ~_p5 1 ~x2 1 ~x3 1 ~x4 1 ~x5 >= 4
+line 015: * ~_p6 -> 1 x1 1 x2 1 x3 1 ~x5 >= 1
+line 016: red 1 _p6 1 x1 1 x2 1 x3 1 ~x5 >= 1; _p6 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x1 1 x2 1 x3 1 ~x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 011: 1 _p6 1 x1 1 x2 1 x3 1 ~x5 >= 1
+line 017: * ~_p6 <- 1 x1 1 x2 1 x3 1 ~x5 >= 1
+line 018: red 4 ~_p6 1 ~x1 1 ~x2 1 ~x3 1 x5 >=  4; _p6 0
+  ** proofgoals from formula **
+  proofgoal 011: 1 x1 1 x2 1 x3 1 ~x5 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x1 1 ~x2 1 ~x3 1 x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 012: 4 ~_p6 1 ~x1 1 ~x2 1 ~x3 1 x5 >= 4
+line 019: * ~_p7 -> 1 x1 1 x2 1 x3 1 x5 1 ~x4 >= 1
+line 020: red 1 _p7 1 x1 1 x2 1 x3 1 x5 1 ~x4 >= 1; _p7 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x1 1 x2 1 x3 1 ~x4 1 x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 013: 1 _p7 1 x1 1 x2 1 x3 1 ~x4 1 x5 >= 1
+line 021: * ~_p7 <- 1 x1 1 x2 1 x3 1 x5 1 ~x4 >= 1
+line 022: red 5 ~_p7 1 ~x1 1 ~x2 1 ~x3 1 ~x5 1 x4 >=  5; _p7 0
+  ** proofgoals from formula **
+  proofgoal 013: 1 x1 1 x2 1 x3 1 ~x4 1 x5 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x1 1 ~x2 1 ~x3 1 x4 1 ~x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 014: 5 ~_p7 1 ~x1 1 ~x2 1 ~x3 1 x4 1 ~x5 >= 5
+line 023: * ~_p8 -> 1 ~x1 1 x4 1 x5 1 ~x3 >= 1
+line 024: red 1 _p8 1 ~x1 1 x4 1 x5 1 ~x3 >= 1; _p8 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x1 1 ~x3 1 x4 1 x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 015: 1 _p8 1 ~x1 1 ~x3 1 x4 1 x5 >= 1
+line 025: * ~_p8 <- 1 ~x1 1 x4 1 x5 1 ~x3 >= 1
+line 026: red 4 ~_p8 1 x1 1 ~x4 1 ~x5 1 x3 >=  4; _p8 0
+  ** proofgoals from formula **
+  proofgoal 015: 1 ~x1 1 ~x3 1 x4 1 x5 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x1 1 x3 1 ~x4 1 ~x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 016: 4 ~_p8 1 x1 1 x3 1 ~x4 1 ~x5 >= 4
+line 027: * ~_p9 -> 1 ~x1 1 x4 1 x5 1 x3 1 ~x2 >= 1
+line 028: red 1 _p9 1 ~x1 1 x4 1 x5 1 x3 1 ~x2 >= 1; _p9 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x1 1 ~x2 1 x3 1 x4 1 x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 017: 1 _p9 1 ~x1 1 ~x2 1 x3 1 x4 1 x5 >= 1
+line 029: * ~_p9 <- 1 ~x1 1 x4 1 x5 1 x3 1 ~x2 >= 1
+line 030: red 5 ~_p9 1 x1 1 ~x4 1 ~x5 1 ~x3 1 x2 >=  5; _p9 0
+  ** proofgoals from formula **
+  proofgoal 017: 1 ~x1 1 ~x2 1 x3 1 x4 1 x5 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x1 1 x2 1 ~x3 1 ~x4 1 ~x5 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 018: 5 ~_p9 1 x1 1 x2 1 ~x3 1 ~x4 1 ~x5 >= 5
+line 031: p 16 x5 w x4 w x1 w s
+  ConstraintId 019: 1 ~_p8 1 x3 >= 1
+line 032: p 18 x3 w x5 w x4 w x1 w s
+  ConstraintId 020: 1 ~_p9 1 x2 >= 1
+line 033: p ~_p5 -1 + -2 + s
+  ConstraintId 021: 1 ~_p5 1 ~_p8 1 ~_p9 1 x2 1 x3 >= 2
+line 034: * Initial constraint
+line 035: *
+line 036: p 10 x2 w x5 w x4 w s
+  ConstraintId 022: 1 ~_p5 1 ~x3 >= 1
+line 037: p 18 x2 w x5 w x4 w x1 w s
+  ConstraintId 023: 1 ~_p9 1 ~x3 >= 1
+line 038: p ~_p8 -1 + -2 + s
+  ConstraintId 024: 1 ~_p5 1 ~_p8 1 ~_p9 2 ~x3 >= 2
+line 039: * Subclaim 0
+line 040: *
+line 041: p 10 x3 w x5 w x4 w s
+  ConstraintId 025: 1 ~_p5 1 ~x2 >= 1
+line 042: p 16 x2 w x5 w x4 w x1 w s
+  ConstraintId 026: 1 ~_p8 1 x3 >= 1
+line 043: p ~_p9 -1 + -2 + s
+  ConstraintId 027: 1 ~_p5 1 ~_p8 1 ~_p9 1 ~x2 1 x3 >= 2
+line 044: * Subclaim 1
+line 045: *
+line 046: * Proof by contradiction1
+line 047: *
+line 048: red 1 ~_p5 1 ~_p8 1 ~_p9 1 x3 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_p5 1 ~_p8 1 ~_p9 1 x3 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 028: 1 _p5 1 _p8 1 _p9 1 ~x3 >= 3
+line 049: 	proofgoal #1
+  ConstraintId 029: 1 _p5 1 _p8 1 _p9 1 ~x3 >= 3
+line 050: p 21 -1 + s
+  ConstraintId 030: 1 x2 >= 1
+line 051: p 27 -2 + s
+  ConstraintId 031: 1 ~x2 >= 1
+line 052: p -1 -2 + s
+  ConstraintId 032: >= 1
+line 053: 	end -1
+  ConstraintId  - : deleting 29, 30, 31, 32
+line 054: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 033: 1 ~_p5 1 ~_p8 1 ~_p9 1 x3 >= 2
+  ConstraintId  - : deleting 28
+line 055: p -1 x3 +
+  ConstraintId 034: 1 ~_p5 1 ~_p8 1 ~_p9 2 x3 >= 2
+line 056: * Proof by contradiction0
+line 057: *
+line 058: red 1 ~_p5 1 ~_p8 1 ~_p9 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_p5 1 ~_p8 1 ~_p9 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 035: 1 _p5 1 _p8 1 _p9 >= 2
+line 059: 	proofgoal #1
+  ConstraintId 036: 1 _p5 1 _p8 1 _p9 >= 2
+line 060: p 34 -1 + s
+  ConstraintId 037: 1 x3 >= 1
+line 061: p 24 -2 + s
+  ConstraintId 038: 1 ~x3 >= 1
+line 062: p -1 -2 + s
+  ConstraintId 039: >= 1
+line 063: 	end -1
+  ConstraintId  - : deleting 36, 37, 38, 39
+line 064: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 040: 1 ~_p5 1 ~_p8 1 ~_p9 >= 2
+  ConstraintId  - : deleting 35
+line 065: p 2 -1 +
+  ConstraintId 041: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 1 ~x1 1 x4 1 x5 >= 3
+line 066: p 10 x3 w x2 w x4 w s
+  ConstraintId 042: 1 ~_p5 1 ~x5 >= 1
+line 067: p 16 x3 w x2 w x4 w x1 w s
+  ConstraintId 043: 1 ~_p8 1 ~x5 >= 1
+line 068: p 18 x3 w x2 w x4 w x1 w s
+  ConstraintId 044: 1 ~_p9 1 ~x5 >= 1
+line 069: p -1 -2 + -3 + s
+  ConstraintId 045: 1 ~_p5 1 ~_p8 1 ~_p9 3 ~x5 >= 3
+line 070: p -1 ~_b2 + ~x1 +
+  ConstraintId 046: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 1 ~x1 3 ~x5 >= 3
+line 071: p 10 x3 w x2 w x5 w s
+  ConstraintId 047: 1 ~_p5 1 ~x4 >= 1
+line 072: p 16 x3 w x2 w x5 w x1 w s
+  ConstraintId 048: 1 ~_p8 1 ~x4 >= 1
+line 073: p 18 x3 w x2 w x5 w x1 w s
+  ConstraintId 049: 1 ~_p9 1 ~x4 >= 1
+line 074: p -1 -2 + -3 + s
+  ConstraintId 050: 1 ~_p5 1 ~_p8 1 ~_p9 3 ~x4 >= 3
+line 075: p -1 ~_b2 + ~x1 +
+  ConstraintId 051: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 1 ~x1 3 ~x4 >= 3
+line 076: red 1 ~x1 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 >= 3; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 1 ~x1 >= 3
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 052: 1 _b2 1 _p5 1 _p8 1 _p9 1 x1 >= 3
+line 077: 	proofgoal #1
+  ConstraintId 053: 1 _b2 1 _p5 1 _p8 1 _p9 1 x1 >= 3
+line 078: p 53 46 + s
+  ConstraintId 054: 1 ~x5 >= 1
+line 079: p 53 51 + s
+  ConstraintId 055: 1 ~x4 >= 1
+line 080: p 53 41 + s
+  ConstraintId 056: 1 x4 1 x5 >= 1
+line 081: p -1 -2 + -3 + s
+  ConstraintId 057: >= 1
+line 082: 	end -1
+  ConstraintId  - : deleting 53, 54, 55, 56, 57
+line 083: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 058: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 1 ~x1 >= 3
+  ConstraintId  - : deleting 52
+line 084: p ~x1 2 * -1 +
+  ConstraintId 059: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 3 ~x1 >= 3
+line 085: p 12 x3 w x2 w x5 w x4 w s
+  ConstraintId 060: 1 ~_p6 1 ~x1 >= 1
+line 086: p 14 x3 w x2 w x5 w x4 w s
+  ConstraintId 061: 1 ~_p7 1 ~x1 >= 1
+line 087: p ~_b1 -1 + -2 + -3 + s
+  ConstraintId 062: 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 5 ~x1 >= 5
+line 088: * Claim 1
+line 089: *
+line 090: * __Claim 1__
+line 091: p 12 x3 w x2 w x1 w s
+  ConstraintId 063: 1 ~_p6 1 x5 >= 1
+line 092: p 14 x3 w x2 w x5 w x1 w s
+  ConstraintId 064: 1 ~_p7 1 x4 >= 1
+line 093: p ~_p5 -1 + -2 + s
+  ConstraintId 065: 1 ~_p5 1 ~_p6 1 ~_p7 1 x4 1 x5 >= 2
+line 094: * Initial constraint
+line 095: *
+line 096: p 10 x3 w x2 w x4 w s
+  ConstraintId 066: 1 ~_p5 1 ~x5 >= 1
+line 097: p 14 x3 w x2 w x4 w x1 w s
+  ConstraintId 067: 1 ~_p7 1 ~x5 >= 1
+line 098: p ~_p6 -1 + -2 + s
+  ConstraintId 068: 1 ~_p5 1 ~_p6 1 ~_p7 2 ~x5 >= 2
+line 099: * Subclaim 0
+line 100: *
+line 101: p 10 x3 w x2 w x5 w s
+  ConstraintId 069: 1 ~_p5 1 ~x4 >= 1
+line 102: p 12 x3 w x2 w x4 w x1 w s
+  ConstraintId 070: 1 ~_p6 1 x5 >= 1
+line 103: p ~_p7 -1 + -2 + s
+  ConstraintId 071: 1 ~_p5 1 ~_p6 1 ~_p7 1 ~x4 1 x5 >= 2
+line 104: * Subclaim 1
+line 105: *
+line 106: * Proof by contradiction1
+line 107: *
+line 108: red 1 ~_p5 1 ~_p6 1 ~_p7 1 x5 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_p5 1 ~_p6 1 ~_p7 1 x5 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 072: 1 _p5 1 _p6 1 _p7 1 ~x5 >= 3
+line 109: 	proofgoal #1
+  ConstraintId 073: 1 _p5 1 _p6 1 _p7 1 ~x5 >= 3
+line 110: p 65 -1 + s
+  ConstraintId 074: 1 x4 >= 1
+line 111: p 71 -2 + s
+  ConstraintId 075: 1 ~x4 >= 1
+line 112: p -1 -2 + s
+  ConstraintId 076: >= 1
+line 113: 	end -1
+  ConstraintId  - : deleting 73, 74, 75, 76
+line 114: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 077: 1 ~_p5 1 ~_p6 1 ~_p7 1 x5 >= 2
+  ConstraintId  - : deleting 72
+line 115: p -1 x5 +
+  ConstraintId 078: 1 ~_p5 1 ~_p6 1 ~_p7 2 x5 >= 2
+line 116: * Proof by contradiction0
+line 117: *
+line 118: red 1 ~_p5 1 ~_p6 1 ~_p7 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_p5 1 ~_p6 1 ~_p7 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 079: 1 _p5 1 _p6 1 _p7 >= 2
+line 119: 	proofgoal #1
+  ConstraintId 080: 1 _p5 1 _p6 1 _p7 >= 2
+line 120: p 78 -1 + s
+  ConstraintId 081: 1 x5 >= 1
+line 121: p 68 -2 + s
+  ConstraintId 082: 1 ~x5 >= 1
+line 122: p -1 -2 + s
+  ConstraintId 083: >= 1
+line 123: 	end -1
+  ConstraintId  - : deleting 80, 81, 82, 83
+line 124: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 084: 1 ~_p5 1 ~_p6 1 ~_p7 >= 2
+  ConstraintId  - : deleting 79
+line 125: p 1 -1 +
+  ConstraintId 085: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 1 x1 1 x2 1 x3 >= 3
+line 126: p 10 x2 w x5 w x4 w s
+  ConstraintId 086: 1 ~_p5 1 ~x3 >= 1
+line 127: p 12 x2 w x5 w x4 w x1 w s
+  ConstraintId 087: 1 ~_p6 1 ~x3 >= 1
+line 128: p 14 x2 w x5 w x4 w x1 w s
+  ConstraintId 088: 1 ~_p7 1 ~x3 >= 1
+line 129: p -1 -2 + -3 + s
+  ConstraintId 089: 1 ~_p5 1 ~_p6 1 ~_p7 3 ~x3 >= 3
+line 130: p -1 ~_b1 + x1 +
+  ConstraintId 090: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 1 x1 3 ~x3 >= 3
+line 131: p 10 x3 w x5 w x4 w s
+  ConstraintId 091: 1 ~_p5 1 ~x2 >= 1
+line 132: p 12 x3 w x5 w x4 w x1 w s
+  ConstraintId 092: 1 ~_p6 1 ~x2 >= 1
+line 133: p 14 x3 w x5 w x4 w x1 w s
+  ConstraintId 093: 1 ~_p7 1 ~x2 >= 1
+line 134: p -1 -2 + -3 + s
+  ConstraintId 094: 1 ~_p5 1 ~_p6 1 ~_p7 3 ~x2 >= 3
+line 135: p -1 ~_b1 + x1 +
+  ConstraintId 095: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 1 x1 3 ~x2 >= 3
+line 136: red 1 x1 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 >= 3; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 1 x1 >= 3
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 096: 1 _b1 1 _p5 1 _p6 1 _p7 1 ~x1 >= 3
+line 137: 	proofgoal #1
+  ConstraintId 097: 1 _b1 1 _p5 1 _p6 1 _p7 1 ~x1 >= 3
+line 138: p 97 90 + s
+  ConstraintId 098: 1 ~x3 >= 1
+line 139: p 97 95 + s
+  ConstraintId 099: 1 ~x2 >= 1
+line 140: p 97 85 + s
+  ConstraintId 100: 1 x2 1 x3 >= 1
+line 141: p -1 -2 + -3 + s
+  ConstraintId 101: >= 1
+line 142: 	end -1
+  ConstraintId  - : deleting 97, 98, 99, 100, 101
+line 143: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 102: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 1 x1 >= 3
+  ConstraintId  - : deleting 96
+line 144: p x1 2 * -1 +
+  ConstraintId 103: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 3 x1 >= 3
+line 145: p 16 x3 w x2 w x5 w x4 w s
+  ConstraintId 104: 1 ~_p8 1 x1 >= 1
+line 146: p 18 x3 w x2 w x5 w x4 w s
+  ConstraintId 105: 1 ~_p9 1 x1 >= 1
+line 147: p ~_b2 -1 + -2 + -3 + s
+  ConstraintId 106: 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 5 x1 >= 5
+line 148: * Claim 1
+line 149: *
+line 150: * __Claim 2__
+line 151: p 9 17 + s 15 + s
+  ConstraintId 107: 1 _p5 1 _p8 1 _p9 1 ~x1 1 x4 1 x5 >= 1
+line 152: p 6 x1 w s
+  ConstraintId 108: 2 _b2 1 ~x4 1 ~x5 >= 2
+line 153: p ~x1 _p5 + _p8 + _p9 + 2 * -1 +
+  ConstraintId 109: 2 _b2 2 _p5 2 _p8 2 _p9 2 ~x1 1 ~x4 1 ~x5 >= 2
+line 154: * Step 2
+line 155: *
+line 156: red 1 ~x1 1 _b2 1 _p5 1 _p8 1 _p9 >= 1; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 _b2 1 _p5 1 _p8 1 _p9 1 ~x1 >= 1
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 110: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 1 x1 >= 5
+line 157: 	proofgoal #1
+  ConstraintId 111: 1 ~_b2 1 ~_p5 1 ~_p8 1 ~_p9 1 x1 >= 5
+line 158: p -1 2 * 109 + s
+  ConstraintId 112: 1 ~x4 1 ~x5 >= 2
+line 159: p -2 107 + s
+  ConstraintId 113: 1 ~_b2 1 x4 1 x5 >= 2
+line 160: p -2 -1 +
+  ConstraintId 114: 1 ~_b2 >= 2
+line 161: 	end -1
+  ConstraintId  - : deleting 111, 112, 113, 114
+line 162: end
+  ConstraintId 115: 1 _b2 1 _p5 1 _p8 1 _p9 1 ~x1 >= 1
+  ConstraintId  - : deleting 110
+line 163: p 5 x3 w x2 w s
+  ConstraintId 116: 1 _b1 1 ~x1 >= 1
+line 164: p -2 -1 + _p6 + _p7 +
+  ConstraintId 117: 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 2 ~x1 >= 2
+line 165: * __Claim 3__
+line 166: p 9 13 + s 11 + s
+  ConstraintId 118: 1 _p5 1 _p6 1 _p7 1 x1 1 x2 1 x3 >= 1
+line 167: p 5 x1 w s
+  ConstraintId 119: 2 _b1 1 ~x2 1 ~x3 >= 2
+line 168: p x1 _p5 + _p6 + _p7 + 2 * -1 +
+  ConstraintId 120: 2 _b1 2 _p5 2 _p6 2 _p7 2 x1 1 ~x2 1 ~x3 >= 2
+line 169: * Step 2
+line 170: *
+line 171: red 1 x1 1 _b1 1 _p5 1 _p6 1 _p7 >= 1; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 _b1 1 _p5 1 _p6 1 _p7 1 x1 >= 1
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 121: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 1 ~x1 >= 5
+line 172: 	proofgoal #1
+  ConstraintId 122: 1 ~_b1 1 ~_p5 1 ~_p6 1 ~_p7 1 ~x1 >= 5
+line 173: p -1 2 * 120 + s
+  ConstraintId 123: 1 ~x2 1 ~x3 >= 2
+line 174: p -2 118 + s
+  ConstraintId 124: 1 ~_b1 1 x2 1 x3 >= 2
+line 175: p -2 -1 +
+  ConstraintId 125: 1 ~_b1 >= 2
+line 176: 	end -1
+  ConstraintId  - : deleting 122, 123, 124, 125
+line 177: end
+  ConstraintId 126: 1 _b1 1 _p5 1 _p6 1 _p7 1 x1 >= 1
+  ConstraintId  - : deleting 121
+line 178: p 6 x5 w x4 w s
+  ConstraintId 127: 1 _b2 1 x1 >= 1
+line 179: p -2 -1 + _p8 + _p9 +
+  ConstraintId 128: 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 2 x1 >= 2
+line 180: * __Claim 4__
+line 181: * __Proof by contradiction__
+line 182: red 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 >= 5; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 >= 5
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 129: 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 >= 3
+line 183: 	proofgoal #1
+  ConstraintId 130: 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 >= 3
+line 184: p -1 62 + s
+  ConstraintId 131: 1 ~x1 >= 1
+line 185: p -2 106 + s
+  ConstraintId 132: 1 x1 >= 1
+line 186: p -2 -1 +
+  ConstraintId 133: >= 1
+line 187: 	end -1
+  ConstraintId  - : deleting 130, 131, 132, 133
+line 188: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 134: 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 >= 5
+  ConstraintId  - : deleting 129
+line 189: core id  -1
+line 190: * __Proof by contradiction__
+line 191: red 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 135: 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 >= 6
+line 192: 	proofgoal #1
+  ConstraintId 136: 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 >= 6
+line 193: p -1 117 + s
+  ConstraintId 137: 1 ~x1 >= 1
+line 194: p -2 128 + s
+  ConstraintId 138: 1 x1 >= 1
+line 195: p -2 -1 +
+  ConstraintId 139: >= 1
+line 196: 	end -1
+  ConstraintId  - : deleting 136, 137, 138, 139
+line 197: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 140: 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 >= 2
+  ConstraintId  - : deleting 135
+line 198: core id  -1
+line 199: obju diff -1 ~_b1 -1 ~_b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9;
+  ** proofgoal from new objective >= old objective **
+  proofgoal #1: 1 _b1 1 _b2 1 _p5 1 _p6 1 _p7 1 _p8 1 _p9 >= 2
+  ** proofgoal from old objective >= new objective **
+  proofgoal #2: 1 ~_b1 1 ~_b2 1 ~_p5 1 ~_p6 1 ~_p7 1 ~_p8 1 ~_p9 >= 5
+    automatically proved #1 by finding constraint in database
+    automatically proved #2 by finding constraint in database
+  Objective update to: min 1 ~_b4 1 ~_b3 1 _p8 1 _p7 1 _p5 1 _p9 1 _p6 0 
+line 200: * Rule:
+line 201: *
+line 202: *
+line 203: * ~_p10 -> 1 x6 1 x8 1 x9 >= 1
+line 204: red 1 _p10 1 x6 1 x8 1 x9 >= 1; _p10 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x6 1 x8 1 x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 141: 1 _p10 1 x6 1 x8 1 x9 >= 1
+line 205: * ~_p10 <- 1 x6 1 x8 1 x9 >= 1
+line 206: red 3 ~_p10 1 ~x6 1 ~x8 1 ~x9 >=  3; _p10 0
+  ** proofgoals from formula **
+  proofgoal 141: 1 x6 1 x8 1 x9 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x6 1 ~x8 1 ~x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 142: 3 ~_p10 1 ~x6 1 ~x8 1 ~x9 >= 3
+line 207: * ~_p11 -> 1 x6 1 x7 1 ~x9 1 x8 >= 1
+line 208: red 1 _p11 1 x6 1 x7 1 ~x9 1 x8 >= 1; _p11 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x6 1 x7 1 x8 1 ~x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 143: 1 _p11 1 x6 1 x7 1 x8 1 ~x9 >= 1
+line 209: * ~_p11 <- 1 x6 1 x7 1 ~x9 1 x8 >= 1
+line 210: red 4 ~_p11 1 ~x6 1 ~x7 1 x9 1 ~x8 >=  4; _p11 0
+  ** proofgoals from formula **
+  proofgoal 143: 1 x6 1 x7 1 x8 1 ~x9 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x6 1 ~x7 1 ~x8 1 x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 144: 4 ~_p11 1 ~x6 1 ~x7 1 ~x8 1 x9 >= 4
+line 211: * ~_p12 -> 1 ~x7 1 x9 1 ~x8 >= 1
+line 212: red 1 _p12 1 ~x7 1 x9 1 ~x8 >= 1; _p12 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x7 1 ~x8 1 x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 145: 1 _p12 1 ~x7 1 ~x8 1 x9 >= 1
+line 213: * ~_p12 <- 1 ~x7 1 x9 1 ~x8 >= 1
+line 214: red 3 ~_p12 1 x7 1 ~x9 1 x8 >=  3; _p12 0
+  ** proofgoals from formula **
+  proofgoal 145: 1 ~x7 1 ~x8 1 x9 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x7 1 x8 1 ~x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 146: 3 ~_p12 1 x7 1 x8 1 ~x9 >= 3
+line 215: * ~_p13 -> 1 ~x7 1 x9 1 x8 1 ~x6 >= 1
+line 216: red 1 _p13 1 ~x7 1 x9 1 x8 1 ~x6 >= 1; _p13 1
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~x6 1 ~x7 1 x8 1 x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 147: 1 _p13 1 ~x6 1 ~x7 1 x8 1 x9 >= 1
+line 217: * ~_p13 <- 1 ~x7 1 x9 1 x8 1 ~x6 >= 1
+line 218: red 4 ~_p13 1 x7 1 ~x9 1 ~x8 1 x6 >=  4; _p13 0
+  ** proofgoals from formula **
+  proofgoal 147: 1 ~x6 1 ~x7 1 x8 1 x9 >= 1
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 x6 1 x7 1 ~x8 1 ~x9 >= 0
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+    automatically proved #1, constraint is trivial.
+    automatically proved #2, constraint is trivial.
+  ConstraintId 148: 4 ~_p13 1 x6 1 x7 1 ~x8 1 ~x9 >= 4
+line 219: p 146 x9 w x7 w s
+  ConstraintId 149: 1 ~_p12 1 x8 >= 1
+line 220: p 148 x8 w x9 w x7 w s
+  ConstraintId 150: 1 ~_p13 1 x6 >= 1
+line 221: p ~_p10 -1 + -2 + s
+  ConstraintId 151: 1 ~_p10 1 ~_p12 1 ~_p13 1 x6 1 x8 >= 2
+line 222: * Initial constraint
+line 223: *
+line 224: p 142 x6 w x9 w s
+  ConstraintId 152: 1 ~_p10 1 ~x8 >= 1
+line 225: p 148 x6 w x9 w x7 w s
+  ConstraintId 153: 1 ~_p13 1 ~x8 >= 1
+line 226: p ~_p12 -1 + -2 + s
+  ConstraintId 154: 1 ~_p10 1 ~_p12 1 ~_p13 2 ~x8 >= 2
+line 227: * Subclaim 0
+line 228: *
+line 229: p 142 x8 w x9 w s
+  ConstraintId 155: 1 ~_p10 1 ~x6 >= 1
+line 230: p 146 x6 w x9 w x7 w s
+  ConstraintId 156: 1 ~_p12 1 x8 >= 1
+line 231: p ~_p13 -1 + -2 + s
+  ConstraintId 157: 1 ~_p10 1 ~_p12 1 ~_p13 1 ~x6 1 x8 >= 2
+line 232: * Subclaim 1
+line 233: *
+line 234: * Proof by contradiction1
+line 235: *
+line 236: red 1 ~_p10 1 ~_p12 1 ~_p13 1 x8 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_p10 1 ~_p12 1 ~_p13 1 x8 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 158: 1 _p10 1 _p12 1 _p13 1 ~x8 >= 3
+line 237: 	proofgoal #1
+  ConstraintId 159: 1 _p10 1 _p12 1 _p13 1 ~x8 >= 3
+line 238: p 151 -1 + s
+  ConstraintId 160: 1 x6 >= 1
+line 239: p 157 -2 + s
+  ConstraintId 161: 1 ~x6 >= 1
+line 240: p -1 -2 + s
+  ConstraintId 162: >= 1
+line 241: 	end -1
+  ConstraintId  - : deleting 159, 160, 161, 162
+line 242: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 163: 1 ~_p10 1 ~_p12 1 ~_p13 1 x8 >= 2
+  ConstraintId  - : deleting 158
+line 243: p -1 x8 +
+  ConstraintId 164: 1 ~_p10 1 ~_p12 1 ~_p13 2 x8 >= 2
+line 244: * Proof by contradiction0
+line 245: *
+line 246: red 1 ~_p10 1 ~_p12 1 ~_p13 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_p10 1 ~_p12 1 ~_p13 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 165: 1 _p10 1 _p12 1 _p13 >= 2
+line 247: 	proofgoal #1
+  ConstraintId 166: 1 _p10 1 _p12 1 _p13 >= 2
+line 248: p 164 -1 + s
+  ConstraintId 167: 1 x8 >= 1
+line 249: p 154 -2 + s
+  ConstraintId 168: 1 ~x8 >= 1
+line 250: p -1 -2 + s
+  ConstraintId 169: >= 1
+line 251: 	end -1
+  ConstraintId  - : deleting 166, 167, 168, 169
+line 252: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 170: 1 ~_p10 1 ~_p12 1 ~_p13 >= 2
+  ConstraintId  - : deleting 165
+line 253: p 4 -1 +
+  ConstraintId 171: 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 1 ~x7 1 x9 >= 3
+line 254: p 142 x8 w x6 w s
+  ConstraintId 172: 1 ~_p10 1 ~x9 >= 1
+line 255: p 146 x8 w x6 w x7 w s
+  ConstraintId 173: 1 ~_p12 1 ~x9 >= 1
+line 256: p 148 x8 w x6 w x7 w s
+  ConstraintId 174: 1 ~_p13 1 ~x9 >= 1
+line 257: p -1 -2 + -3 + s
+  ConstraintId 175: 1 ~_p10 1 ~_p12 1 ~_p13 3 ~x9 >= 3
+line 258: p -1 ~_b4 + ~x7 +
+  ConstraintId 176: 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 1 ~x7 3 ~x9 >= 3
+line 259: red 1 ~x7 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 >= 3; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 1 ~x7 >= 3
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 177: 1 _b4 1 _p10 1 _p12 1 _p13 1 x7 >= 3
+line 260: 	proofgoal #1
+  ConstraintId 178: 1 _b4 1 _p10 1 _p12 1 _p13 1 x7 >= 3
+line 261: p 178 176 + s
+  ConstraintId 179: 1 ~x9 >= 1
+line 262: p 178 171 + s
+  ConstraintId 180: 1 x9 >= 1
+line 263: p -1 -2 + s
+  ConstraintId 181: >= 1
+line 264: 	end -1
+  ConstraintId  - : deleting 178, 179, 180, 181
+line 265: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 182: 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 1 ~x7 >= 3
+  ConstraintId  - : deleting 177
+line 266: p ~x7 1 * -1 +
+  ConstraintId 183: 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 2 ~x7 >= 3
+line 267: p 144 x8 w x6 w x9 w s
+  ConstraintId 184: 1 ~_p11 1 ~x7 >= 1
+line 268: p ~_b3 -1 + -2 + s
+  ConstraintId 185: 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 3 ~x7 >= 4
+line 269: * Claim 1
+line 270: *
+line 271: * __Claim 1__
+line 272: p 144 x8 w x6 w x7 w s
+  ConstraintId 186: 1 ~_p11 1 x9 >= 1
+line 273: p ~_p10 -1 + s
+  ConstraintId 187: 1 ~_p10 1 ~_p11 1 x9 >= 1
+line 274: * Initial constraint
+line 275: *
+line 276: p 142 x8 w x6 w s
+  ConstraintId 188: 1 ~_p10 1 ~x9 >= 1
+line 277: p ~_p11 -1 + s
+  ConstraintId 189: 1 ~_p10 1 ~_p11 1 ~x9 >= 1
+line 278: * Subclaim 0
+line 279: *
+line 280: * Proof by contradiction0
+line 281: *
+line 282: red 1 ~_p10 1 ~_p11 >= 1; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_p10 1 ~_p11 >= 1
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 190: 1 _p10 1 _p11 >= 2
+line 283: 	proofgoal #1
+  ConstraintId 191: 1 _p10 1 _p11 >= 2
+line 284: p 187 -1 + s
+  ConstraintId 192: 1 x9 >= 1
+line 285: p 189 -2 + s
+  ConstraintId 193: 1 ~x9 >= 1
+line 286: p -1 -2 + s
+  ConstraintId 194: >= 1
+line 287: 	end -1
+  ConstraintId  - : deleting 191, 192, 193, 194
+line 288: end
+  ConstraintId 195: 1 ~_p10 1 ~_p11 >= 1
+  ConstraintId  - : deleting 190
+line 289: p 3 -1 +
+  ConstraintId 196: 1 ~_b3 1 ~_p10 1 ~_p11 1 x6 1 x7 1 x8 >= 2
+line 290: p 142 x6 w x9 w s
+  ConstraintId 197: 1 ~_p10 1 ~x8 >= 1
+line 291: p 144 x6 w x9 w x7 w s
+  ConstraintId 198: 1 ~_p11 1 ~x8 >= 1
+line 292: p -1 -2 + s
+  ConstraintId 199: 1 ~_p10 1 ~_p11 2 ~x8 >= 2
+line 293: p -1 ~_b3 + x7 +
+  ConstraintId 200: 1 ~_b3 1 ~_p10 1 ~_p11 1 x7 2 ~x8 >= 2
+line 294: p 142 x8 w x9 w s
+  ConstraintId 201: 1 ~_p10 1 ~x6 >= 1
+line 295: p 144 x8 w x9 w x7 w s
+  ConstraintId 202: 1 ~_p11 1 ~x6 >= 1
+line 296: p -1 -2 + s
+  ConstraintId 203: 1 ~_p10 1 ~_p11 2 ~x6 >= 2
+line 297: p -1 ~_b3 + x7 +
+  ConstraintId 204: 1 ~_b3 1 ~_p10 1 ~_p11 2 ~x6 1 x7 >= 2
+line 298: red 1 x7 1 ~_b3 1 ~_p10 1 ~_p11 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_b3 1 ~_p10 1 ~_p11 1 x7 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 205: 1 _b3 1 _p10 1 _p11 1 ~x7 >= 3
+line 299: 	proofgoal #1
+  ConstraintId 206: 1 _b3 1 _p10 1 _p11 1 ~x7 >= 3
+line 300: p 206 200 + s
+  ConstraintId 207: 1 ~x8 >= 1
+line 301: p 206 204 + s
+  ConstraintId 208: 1 ~x6 >= 1
+line 302: p 206 196 + s
+  ConstraintId 209: 1 x6 1 x8 >= 1
+line 303: p -1 -2 + -3 + s
+  ConstraintId 210: >= 1
+line 304: 	end -1
+  ConstraintId  - : deleting 206, 207, 208, 209, 210
+line 305: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 211: 1 ~_b3 1 ~_p10 1 ~_p11 1 x7 >= 2
+  ConstraintId  - : deleting 205
+line 306: p x7 1 * -1 +
+  ConstraintId 212: 1 ~_b3 1 ~_p10 1 ~_p11 2 x7 >= 2
+line 307: p 146 x8 w x6 w x9 w s
+  ConstraintId 213: 1 ~_p12 1 x7 >= 1
+line 308: p 148 x8 w x6 w x9 w s
+  ConstraintId 214: 1 ~_p13 1 x7 >= 1
+line 309: p ~_b4 -1 + -2 + -3 + s
+  ConstraintId 215: 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 4 x7 >= 4
+line 310: * Claim 1
+line 311: *
+line 312: * __Claim 2__
+line 313: p 141 147 + s 145 + s
+  ConstraintId 216: 1 _p10 1 _p12 1 _p13 1 ~x7 1 x9 >= 1
+line 314: p 8 x7 w s
+  ConstraintId 217: 1 _b4 1 ~x9 >= 1
+line 315: p ~x7 _p10 + _p12 + _p13 + 1 * -1 +
+  ConstraintId 218: 1 _b4 1 _p10 1 _p12 1 _p13 1 ~x7 1 ~x9 >= 1
+line 316: * Step 2
+line 317: *
+line 318: red 1 ~x7 1 _b4 1 _p10 1 _p12 1 _p13 >= 1; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 _b4 1 _p10 1 _p12 1 _p13 1 ~x7 >= 1
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 219: 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 1 x7 >= 5
+line 319: 	proofgoal #1
+  ConstraintId 220: 1 ~_b4 1 ~_p10 1 ~_p12 1 ~_p13 1 x7 >= 5
+line 320: p -1 1 * 218 + s
+  ConstraintId 221: 1 ~x9 >= 1
+line 321: p -2 216 + s
+  ConstraintId 222: 1 ~_b4 1 x9 >= 2
+line 322: p -2 -1 +
+  ConstraintId 223: 1 ~_b4 >= 2
+line 323: 	end -1
+  ConstraintId  - : deleting 220, 221, 222, 223
+line 324: end
+  ConstraintId 224: 1 _b4 1 _p10 1 _p12 1 _p13 1 ~x7 >= 1
+  ConstraintId  - : deleting 219
+line 325: p 7 x8 w x6 w s
+  ConstraintId 225: 1 _b3 1 ~x7 >= 1
+line 326: p -2 -1 + _p11 +
+  ConstraintId 226: 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 2 ~x7 >= 2
+line 327: * __Claim 3__
+line 328: p 141 143 + s
+  ConstraintId 227: 1 _p10 1 _p11 1 x6 1 x7 1 x8 >= 1
+line 329: p 7 x7 w s
+  ConstraintId 228: 2 _b3 1 ~x6 1 ~x8 >= 2
+line 330: p x7 _p10 + _p11 + 2 * -1 +
+  ConstraintId 229: 2 _b3 2 _p10 2 _p11 1 ~x6 2 x7 1 ~x8 >= 2
+line 331: * Step 2
+line 332: *
+line 333: red 1 x7 1 _b3 1 _p10 1 _p11 >= 1; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 _b3 1 _p10 1 _p11 1 x7 >= 1
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 230: 1 ~_b3 1 ~_p10 1 ~_p11 1 ~x7 >= 4
+line 334: 	proofgoal #1
+  ConstraintId 231: 1 ~_b3 1 ~_p10 1 ~_p11 1 ~x7 >= 4
+line 335: p -1 2 * 229 + s
+  ConstraintId 232: 1 ~x6 1 ~x8 >= 2
+line 336: p -2 227 + s
+  ConstraintId 233: 1 ~_b3 1 x6 1 x8 >= 2
+line 337: p -2 -1 +
+  ConstraintId 234: 1 ~_b3 >= 2
+line 338: 	end -1
+  ConstraintId  - : deleting 231, 232, 233, 234
+line 339: end
+  ConstraintId 235: 1 _b3 1 _p10 1 _p11 1 x7 >= 1
+  ConstraintId  - : deleting 230
+line 340: p 8 x9 w s
+  ConstraintId 236: 1 _b4 1 x7 >= 1
+line 341: p -2 -1 + _p12 + _p13 +
+  ConstraintId 237: 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 2 x7 >= 2
+line 342: * __Claim 4__
+line 343: * __Proof by contradiction__
+line 344: red 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 >= 4; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 >= 4
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 238: 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 >= 3
+line 345: 	proofgoal #1
+  ConstraintId 239: 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 >= 3
+line 346: p -1 185 + s
+  ConstraintId 240: 1 ~x7 >= 1
+line 347: p -2 215 + s
+  ConstraintId 241: 1 x7 >= 1
+line 348: p -2 -1 +
+  ConstraintId 242: >= 1
+line 349: 	end -1
+  ConstraintId  - : deleting 239, 240, 241, 242
+line 350: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 243: 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 >= 4
+  ConstraintId  - : deleting 238
+line 351: core id  -1
+line 352: * __Proof by contradiction__
+line 353: red 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 >= 2; ; begin
+  ** proofgoals from formula **
+  ** proofgoal from satisfying added constraint **
+  proofgoal #1: 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 >= 2
+  ** proofgoals from order **
+  ** proofgoals from objective **
+  proofgoal #2: >= 0
+  ConstraintId 244: 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 >= 5
+line 354: 	proofgoal #1
+  ConstraintId 245: 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 >= 5
+line 355: p -1 226 + s
+  ConstraintId 246: 1 ~x7 >= 1
+line 356: p -2 237 + s
+  ConstraintId 247: 1 x7 >= 1
+line 357: p -2 -1 +
+  ConstraintId 248: >= 1
+line 358: 	end -1
+  ConstraintId  - : deleting 245, 246, 247, 248
+line 359: end
+    automatically proved #2, constraint is trivial.
+  ConstraintId 249: 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 >= 2
+  ConstraintId  - : deleting 244
+line 360: core id  -1
+line 361: obju diff -1 ~_b3 -1 ~_b4 1 _p10 1 _p11 1 _p12 1 _p13;
+  ** proofgoal from new objective >= old objective **
+  proofgoal #1: 1 _b3 1 _b4 1 _p10 1 _p11 1 _p12 1 _p13 >= 2
+  ** proofgoal from old objective >= new objective **
+  proofgoal #2: 1 ~_b3 1 ~_b4 1 ~_p10 1 ~_p11 1 ~_p12 1 ~_p13 >= 4
+    automatically proved #1 by finding constraint in database
+    automatically proved #2 by finding constraint in database
+  Objective update to: min 1 _p8 1 _p7 1 _p5 1 _p9 1 _p6 1 _p12 1 _p11 1 _p10 1 _p13 0 
+line 362: * Rule:
+line 363: *
+line 364: *
+line 365: output NONE
+line 366: conclusion NONE
+s VERIFIED NO CONCLUSION
+line 367: end pseudo-Boolean proof
+=== end trace ===
+
+Verification succeeded.
