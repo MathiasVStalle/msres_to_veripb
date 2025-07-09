@@ -86,6 +86,7 @@ namespace converter {
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
         std::vector<cnf::Clause> new_clauses = rule->apply();
+
         this->write_new_clauses(rule, new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
@@ -162,7 +163,7 @@ namespace converter {
             C.clear();
             C.add_RHS(1);
 
-            for (const auto &literal : clause.get_literals()) {
+            for (const auto &literal : clause.get_literals_set()) {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit lit = vars[var];
 
@@ -179,9 +180,7 @@ namespace converter {
 
     void ProofConverter::write_new_clauses(const cnf::Rule* rule, const std::vector<cnf::Clause>& new_clauses) {
         VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
-        for (int i = 0; i < new_clauses.size(); i++) {
-            const cnf::Clause& clause = new_clauses[i];
-
+        for (auto& clause : new_clauses) {
             // Add the new blocking variable
             VeriPB::Var var = var_mgr.new_variable_only_in_proof();
             VeriPB::Lit lit = create_literal(var, false);
@@ -189,6 +188,13 @@ namespace converter {
 
             // Add the new clause to the proof logger
             clause_to_constraint(clause, C);
+
+            // if (clause.is_tautology()) {
+            //     pl->reification_literal_right_implication(lit, C, true);
+            //     pl->reification_literal_left_implication(lit, C, true);
+            //     continue;
+            // }
+
             pl->reification_literal_right_implication(neg(lit), C, true);
             pl->reification_literal_left_implication(neg(lit), C, true);
         }

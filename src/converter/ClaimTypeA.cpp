@@ -39,9 +39,6 @@ namespace converter {
         }
         C.add_RHS(get_active_blocking_vars().size());
 
-        std::cout << subclaims.size() << " subclaims" << std::endl;
-        pl.flush_proof();
-
         build_proof_by_contradiction(pl, C, subclaims);
 
         // Complete the final claim

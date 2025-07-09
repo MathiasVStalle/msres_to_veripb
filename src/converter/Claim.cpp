@@ -25,13 +25,6 @@ namespace converter {
         std::vector<int32_t> literals_1_vec(literals_1.begin(), literals_1.end());
         std::vector<int32_t> literals_2_vec(literals_2.begin(), literals_2.end());
 
-        for (auto &lit : literals_1_vec) {
-            std::cout << "Literals 1: " << lit << std::endl;
-        }
-        for (auto &lit : literals_2_vec) {
-            std::cout << "Literals 2: " << lit << std::endl;
-        }
-
         vars = get_total_vars(literals_1_vec, literals_2_vec, variable_supplier);
         vars.push_back(variable_supplier(pivot));
 

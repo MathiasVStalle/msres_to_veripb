@@ -23,7 +23,7 @@ run: all
 
 .PHONY: test
 test: all
-	./$(TARGET) example/test/test.wcnf example/test/test.msres temp.pbp
+	./$(TARGET) example/duplicate/test.wcnf example/duplicate/test.msres temp.pbp
 
 .PHONY: build
 build:

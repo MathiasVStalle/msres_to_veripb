@@ -7,20 +7,33 @@
 namespace cnf
 {
     Clause::Clause(const std::unordered_multiset<int32_t>& literals) : weight(0), literals(literals) {
-        for (const auto& lit : literals) {
-            if (!tautology && literals.find(-lit) != literals.end()) tautology = true;
-            if (!has_double && literals.find(lit) != literals.end()) {
-                has_double = true;
-                duplicate_literals.insert(lit);
+        for (const auto &lit : literals) {
+            if (literals.find(-lit) != literals.end()) {
+                this->tautology = true;
+            }
+            if (literals.find(lit) != literals.end()) {
+                this->has_double = true;
+                this->duplicate_literals.insert(lit);
             }
         }
     }
 
-    Clause::Clause(int32_t weight, const std::unordered_multiset<int32_t>& literals) : weight(weight), literals(literals) {}
+    Clause::Clause(int32_t weight, const std::unordered_multiset<int32_t>& literals) : weight(weight), literals(literals) {
+        for (const auto &lit : literals) {
+            if (literals.find(-lit) != literals.end()) {
+                this->tautology = true;
+            }
+            if (literals.find(lit) != literals.end()) {
+                this->has_double = true;
+                this->duplicate_literals.insert(lit);
+            }
+        }
+    }
    
     Clause::~Clause() {}
 
-    Clause::Clause(const Clause& other) : weight(other.weight), literals(other.literals) {}
+    Clause::Clause(const Clause& other) 
+    : weight(other.weight), literals(other.literals), duplicate_literals(other.duplicate_literals), tautology(other.tautology), has_double(other.has_double) {}
 
     int32_t Clause::get_weight() const {
         return weight;
