@@ -30,6 +30,8 @@ namespace cnf
         return literals;
     }
 
+    
+
     const std::unordered_set<int32_t>& Clause::get_duplicate_literals() const {
         return duplicate_literals;
     }

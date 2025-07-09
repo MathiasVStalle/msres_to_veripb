@@ -250,7 +250,7 @@ namespace converter {
             return;
         }
 
-        for (const auto& literal : clause.get_literals()) {
+        for (const auto& literal : clause.get_literals_set()) {
             uint32_t var = std::abs(literal);
             VeriPB::Lit lit = vars[var];
 
