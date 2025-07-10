@@ -25,6 +25,10 @@ namespace parser
              */
             cnf::Clause parseClause(const std::string &line);
 
+            cnf::Rule* parseResRule(const std::string &line);
+
+            cnf::Rule* parseSplitRule(const std::string &line);
+
         public:
             /**
              * Constructor for MSResParser.
