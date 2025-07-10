@@ -35,12 +35,9 @@ namespace converter {
         C.add_literal(get_pivot_literal(), 1);
         C.add_literal(neg(get_active_original_blocking_var()), 1);
         for (auto &sn : get_active_blocking_vars()) {
-            C.add_literal(neg(sn), 1);
+            C.add_literal(sn, 1);
         }
         C.add_RHS(get_active_blocking_vars().size());
-
-        std::cout << subclaims.size() << " subclaims" << std::endl;
-        pl.flush_proof();
 
         build_proof_by_contradiction(pl, C, subclaims);
 
@@ -85,7 +82,7 @@ namespace converter {
                 weaken_all_except(pl, get_active_constraints()[i + 1], get_vars(), i + offset, (num_active_vars - 1) + offset);
             }
         }
-        constraintid initial = add_all_prev_from_literal(pl, num_active_vars, neg(get_active_blocking_vars()[0]));
+        constraintid initial = add_all_prev_from_literal(pl, num_active_vars, get_active_blocking_vars()[0]);
 
         pl.write_comment("Initial constraint");
         pl.write_comment("");
@@ -117,7 +114,7 @@ namespace converter {
             }
 
             Lit sn = get_active_blocking_vars()[i + 1];
-            constraintid curr_constraint = add_all_prev_from_literal(pl, num_active_vars, neg(sn));
+            constraintid curr_constraint = add_all_prev_from_literal(pl, num_active_vars, sn);
             result.push_back(curr_constraint);
 
             pl.write_comment("Subclaim " + std::to_string(i));
@@ -140,7 +137,7 @@ namespace converter {
             // Build the constraint
             Constraint<Lit, uint32_t, uint32_t> C;
             for (Lit sn : get_active_blocking_vars()) {
-                C.add_literal(neg(sn), 1);
+                C.add_literal(sn, 1);
             }
             for (int j = 0; j < i; j++) {
                 C.add_literal(get_vars()[offset + j], 1);

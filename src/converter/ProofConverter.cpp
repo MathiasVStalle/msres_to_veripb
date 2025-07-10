@@ -189,8 +189,8 @@ namespace converter {
 
             // Add the new clause to the proof logger
             clause_to_constraint(clause, C);
-            pl->reification_literal_right_implication(neg(lit), C, true);
-            pl->reification_literal_left_implication(neg(lit), C, true);
+            pl->reification_literal_right_implication(lit, C, true);
+            pl->reification_literal_left_implication(lit, C, true);
         }
     }
 
@@ -209,7 +209,7 @@ namespace converter {
         C.add_literal(neg(blocking_vars[&clause_2]), 1);
 
         for (auto& clause : new_clauses) {
-            C.add_literal(neg(blocking_vars[&clause]), 1);
+            C.add_literal(blocking_vars[&clause], 1);
         }
         C.add_RHS(new_clauses.size());
 
@@ -222,7 +222,7 @@ namespace converter {
         C.add_literal(blocking_vars[&clause_1], 1);
         C.add_literal(blocking_vars[&clause_2], 1);
         for (auto& clause : new_clauses) {
-            C.add_literal(blocking_vars[&clause], 1);
+            C.add_literal(neg(blocking_vars[&clause]), 1);
         }
         C.add_RHS(2);
 
@@ -237,7 +237,7 @@ namespace converter {
         c_old.add_literal(neg(blocking_vars[&clause_1]), 1);
         c_old.add_literal(neg(blocking_vars[&clause_2]), 1);
         for (auto& clause : new_clauses) {
-            c_new.add_literal(blocking_vars[&clause], 1);
+            c_new.add_literal(neg(blocking_vars[&clause]), 1);
         }
         pl->write_objective_update_diff(c_old, c_new);
     }

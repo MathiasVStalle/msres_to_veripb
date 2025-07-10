@@ -30,7 +30,7 @@ namespace converter {
 
         cpder.start_from_literal_axiom(get_pivot_literal());
         for (Lit sn : get_active_blocking_vars()) {
-            cpder.add_literal_axiom(sn); 
+            cpder.add_literal_axiom(neg(sn)); 
         }
         cpder.multiply((int32_t) get_unactive_blocking_vars().size());
         cpder.add_constraint(-1);
@@ -43,7 +43,7 @@ namespace converter {
         C.add_literal(get_pivot_literal(), 1);
         C.add_literal(get_active_original_blocking_var(), 1);
         for (Lit sn : get_active_blocking_vars()) {
-            C.add_literal(sn, 1);
+            C.add_literal(neg(sn), 1);
         }
         C.add_RHS(1);
 
@@ -73,7 +73,7 @@ namespace converter {
         cpder.start_from_constraint(-2);
         cpder.add_constraint(-1);
         for (Lit sn : get_unactive_blocking_vars()) {
-            cpder.add_literal_axiom(sn);
+            cpder.add_literal_axiom(neg(sn));
         }
         return cpder.end();
     }
