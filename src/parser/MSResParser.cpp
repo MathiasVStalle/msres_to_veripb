@@ -138,8 +138,19 @@ namespace parser
     // TODO: Hard clauses
     cnf::Clause MSResParser::parseClause(const std::string &line) {
         std::istringstream iss(line);
-        double weight;
-        iss >> weight;
+        std::string weight_str;
+        iss >> weight_str;
+
+        int weight;
+        if (weight_str == "h" || weight_str == "H") {
+            weight = 0;
+        } else {
+            try {
+                weight = std::stoi(weight_str);
+            } catch (const std::invalid_argument&) {
+                throw std::runtime_error("Invalid weight (not a number or 'h'): " + weight_str);
+            }
+        }
 
         std::unordered_multiset<int32_t> literals;
         double literal;

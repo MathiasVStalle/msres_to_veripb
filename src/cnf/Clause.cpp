@@ -22,7 +22,8 @@ namespace cnf
    
     Clause::~Clause() {}
 
-    Clause::Clause(const Clause& other) : weight(other.weight), literals(other.literals) {}
+    Clause::Clause(const Clause& other) : 
+    weight(other.weight), literals(other.literals), duplicate_literals(other.duplicate_literals), tautology(other.tautology), has_double(other.has_double) {}
 
     int32_t Clause::get_weight() const {
         return weight;

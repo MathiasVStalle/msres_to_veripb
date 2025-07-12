@@ -283,6 +283,8 @@ namespace converter {
         c_old.add_literal(neg(blocking_vars[&clause_1]), 1);
         c_old.add_literal(neg(blocking_vars[&clause_2]), 1);
         for (auto& clause : new_clauses) {
+            if (clause.is_hard_clause()) continue;
+
             c_new.add_literal(neg(blocking_vars[&clause]), 1);
         }
         pl->write_objective_update_diff(c_old, c_new);

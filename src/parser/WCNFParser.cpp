@@ -13,10 +13,7 @@
 
 namespace parser 
 {
-    // TODO: Add functionality to handle hard clauses
-    // TODO: Error handling for invalid line types
-    std::vector<cnf::Clause> WCNFParser::parseWCNF(const std::string& filename) 
-    {
+    std::vector<cnf::Clause> WCNFParser::parseWCNF(const std::string& filename) {
         std::ifstream file(filename);
         if (!file.is_open()) {
             throw std::runtime_error("Could not open file: " + filename);
@@ -35,8 +32,19 @@ namespace parser
 
             // Parse the clause
             std::istringstream iss(line);
+            std::string weight_str;
+            iss >> weight_str;
+
             int weight;
-            iss >> weight;
+            if (weight_str == "h" || weight_str == "H") {
+                weight = 0;
+            } else {
+                try {
+                    weight = std::stoi(weight_str);
+                } catch (const std::invalid_argument&) {
+                    throw std::runtime_error("Invalid weight (not a number or 'h'): " + weight_str);
+                }
+            }
 
             std::unordered_multiset<int32_t> literals;
             int literal;
