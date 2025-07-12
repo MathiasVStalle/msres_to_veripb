@@ -28,7 +28,7 @@ namespace converter {
             VeriPB::VarManagerWithVarRewriting var_mgr;
             VeriPB::ProofloggerOpt<VeriPB::Lit, uint32_t, uint32_t> *pl;
 
-            std::unordered_map<uint32_t, const cnf::Clause> wcnf_clauses;                                       // Maps clause ID to the clause
+            std::unordered_map<uint32_t, const cnf::Clause> wcnf_clauses;                                       // Maps clause ID to the clause of the WCNF file
             std::unordered_map<uint32_t, VeriPB::Lit> vars;                                                     // Maps variable ID to the literal
             std::unordered_map<const cnf::Clause*, VeriPB::Lit, ClausePtrHash, ClausePtrEqual> blocking_vars;   // Maps clause to the blocking variable
 
