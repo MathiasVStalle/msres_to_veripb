@@ -166,9 +166,9 @@ namespace converter {
                 unit_lit = (unit_lit_int < 0) ? neg(unit_lit) : unit_lit;
 
                 unit_clauses.push_back(std::make_pair(lit, unit_lit));
+            } else {
+                pl->store_reified_constraint_right_implication(var, i);
             }
-            
-            pl->store_reified_constraint_right_implication(var, i);
         }
 
         // Saving the reification in the other direction
@@ -193,9 +193,9 @@ namespace converter {
             pl->reification_literal_left_implication(blocking_vars[&clause], C, true);
 
             // Move to the coresets
-            // if (clause.is_unit_clause()) {
-            //     pl->move_to_coreset_by_id(-1);
-            // }
+            if (clause.is_unit_clause()) {
+                pl->move_to_coreset_by_id(-1);
+            }
         }
 
         if (!unit_clauses.empty()) {
@@ -210,15 +210,15 @@ namespace converter {
                 pl->reification_literal_right_implication(blocking_lit, C, true);
 
                 // Move to the coresets
-                //pl->move_to_coreset_by_id(-1);
+                pl->move_to_coreset_by_id(-1);
 
 
                 // Change the objective function to include the blocking variable instead of the unit literal
-                // LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
-                // LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-                // c_old.add_literal(neg(unit_lit), 1);
-                // c_new.add_literal(blocking_lit, 1);
-                // pl->write_objective_update_diff(c_old, c_new);
+                LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+                LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+                c_old.add_literal(neg(unit_lit), 1);
+                c_new.add_literal(neg(blocking_lit), 1);
+                pl->write_objective_update_diff(c_old, c_new);
             }
         }
     }
@@ -291,10 +291,6 @@ namespace converter {
     void ProofConverter::clause_to_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C) {
         C.clear();
         C.add_RHS(1);
-
-        if (clause.is_tautology()) {
-            return;
-        }
 
         for (const auto& literal : clause.get_literals()) {
             uint32_t var = std::abs(literal);
