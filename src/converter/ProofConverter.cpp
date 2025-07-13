@@ -292,7 +292,7 @@ namespace converter {
         for (auto& clause : new_clauses) {
             if (clause.is_hard_clause()) continue;
 
-            c_new.add_literal(neg(blocking_vars[&clause]), 1);
+            c_new.add_literal(neg(blocking_vars[&clause]), 1); // TODO: Don't add tautologies
         }
         pl->write_objective_update_diff(c_old, c_new);
     }

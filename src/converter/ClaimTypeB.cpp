@@ -8,21 +8,17 @@ namespace converter {
         constraintid cn_1;
         constraintid cn_2;
         constraintid cnneg;
-        uint32_t offset = is_negated_pivot() ? get_unactive_blocking_vars().size() : 0;
+        uint32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
 
         CuttingPlanesDerivation cpder(&pl, false);
 
         std::vector<Lit> vars_without_pivot = get_vars();
         vars_without_pivot.pop_back(); // Remove the pivot variable
 
-        std::vector<constraintid> active_constraints;
-        for (const Lit &sn : get_active_blocking_vars()) {
-            active_constraints.push_back(pl.get_reified_constraint_right_implication(variable(sn)));
-        }
-        set_active_constraints(active_constraints);
+        std::unordered_set<Lit, LitHash, LitEqual> literals_to_add;
+        cn_1 = add_all_and_saturate(pl, get_active_blocking_vars(), literals_to_add);
 
-        cn_1 = add_all_and_saturate(pl, get_active_constraints());
-
+        // TODO: Hard clause
         cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(get_active_original_blocking_var())));
         cpder.weaken(variable(get_pivot_literal()));
         cpder.saturate();
@@ -30,9 +26,10 @@ namespace converter {
 
         cpder.start_from_literal_axiom(get_pivot_literal());
         for (Lit sn : get_active_blocking_vars()) {
+            if (is_tautology(sn)) continue;
             cpder.add_literal_axiom(neg(sn)); 
         }
-        cpder.multiply((int32_t) get_unactive_blocking_vars().size());
+        cpder.multiply((int32_t) get_inactive_blocking_vars().size());
         cpder.add_constraint(-1);
         cn_2 = cpder.end();
         pl.write_comment("Step 2");
@@ -51,7 +48,7 @@ namespace converter {
         pl.start_proof_by_contradiction(C);
 
         cpder.start_from_constraint(-1);
-        cpder.multiply((int32_t) get_unactive_blocking_vars().size());
+        cpder.multiply((int32_t) get_inactive_blocking_vars().size());
         cpder.add_constraint(cn_2);
         cpder.saturate();
         cpder.end();
@@ -72,7 +69,7 @@ namespace converter {
 
         cpder.start_from_constraint(-2);
         cpder.add_constraint(-1);
-        for (Lit sn : get_unactive_blocking_vars()) {
+        for (Lit sn : get_inactive_blocking_vars()) {
             cpder.add_literal_axiom(neg(sn));
         }
         return cpder.end();

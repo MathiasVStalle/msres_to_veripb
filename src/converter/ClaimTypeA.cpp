@@ -50,7 +50,7 @@ namespace converter {
         cpder.end();
 
         // TODO: This should be put in a separete function
-        for (Lit sn : get_unactive_blocking_vars()) {
+        for (Lit sn : get_inactive_blocking_vars()) {
             if (is_tautology(sn)) {
                 cpder.start_from_constraint(get_tautology(sn));
                 cpder.add_literal_axiom(get_pivot_literal());
@@ -62,7 +62,7 @@ namespace converter {
             weaken_all_except(pl, constraint, get_vars(), get_vars().size() - 1); // TODO: Add weakening restriction
         }
 
-        constraintid result = add_all_prev_from_literal(pl, get_unactive_blocking_vars().size() + 1, neg(get_unactive_original_blocking_var())); // Also add the constraint that adds the pivot variable
+        constraintid result = add_all_prev_from_literal(pl, get_inactive_blocking_vars().size() + 1, neg(get_unactive_original_blocking_var())); // Also add the constraint that adds the pivot variable
 
         pl.write_comment("Claim 1");
         pl.write_comment("");
@@ -75,7 +75,7 @@ namespace converter {
 
         std::vector<constraintid> result;
 
-        uint32_t offset = is_negated_pivot() ? get_unactive_blocking_vars().size() : 0;
+        uint32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
         uint32_t num_active_vars = get_active_constraints().size() - 1;
 
         // Initial constraint
@@ -139,7 +139,7 @@ namespace converter {
         constraintid subclaim_1 = subclaims.back();
         constraintid subclaim_2;
         for (int i = subclaims.size() - 2; i >= 0; i--) {
-            uint32_t offset = is_negated_pivot() ? get_unactive_blocking_vars().size() : 0;
+            uint32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
             subclaim_2 = subclaims[i];
 
             // Build the constraint
@@ -176,7 +176,7 @@ namespace converter {
         CuttingPlanesDerivation cpder(&pl, false);
 
         uint32_t num_active_vars = get_active_blocking_vars().size() - 1;
-        uint32_t num_unactive_vars = get_unactive_blocking_vars().size();
+        uint32_t num_unactive_vars = get_inactive_blocking_vars().size();
         uint32_t offset = is_negated_pivot() ? 0 : num_active_vars;
 
         std::vector<Lit> vars_without_pivot = get_vars();
