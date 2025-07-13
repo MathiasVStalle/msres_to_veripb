@@ -16,8 +16,14 @@ namespace converter {
         
 
         public:
-            ClaimTypeA(const cnf::ResRule &rule, const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, const std::function<VeriPB::Lit(int32_t)> &variable_supplier, bool negated_pivot)
-            : Claim(rule, clauses, variable_supplier, negated_pivot) {}
+            ClaimTypeA(
+                const cnf::ResRule &rule, 
+                const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, 
+                const std::function<VeriPB::Lit(int32_t)> &variable_supplier, 
+                const std::function<bool(VeriPB::Lit)> &tautology_predicate,
+                const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier,
+                bool negated_pivot
+            ) : Claim(rule, clauses, variable_supplier, tautology_predicate, tautology_supplier, negated_pivot) {}
 
             constraintid write(Prooflogger &pl) override;
 

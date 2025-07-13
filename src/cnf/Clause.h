@@ -58,6 +58,15 @@ namespace cnf
             const std::unordered_multiset<int32_t> &get_literals() const;
 
             /**
+             * Get the set of literals in the clause as an unordered_set.
+             *
+             * @return The unordered_set of literals in the clause.
+             */
+            const std::unordered_set<int32_t> get_literals_set() const {
+                return std::unordered_set<int32_t>(literals.begin(), literals.end());
+            }
+
+            /**
              * Get the set of duplicate literals in the clause.
              *
              * @return The unordered_set of duplicate literals in the clause.

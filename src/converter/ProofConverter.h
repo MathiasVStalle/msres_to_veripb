@@ -7,6 +7,7 @@
 #include <unordered_set>
 
 #include "ProofConstraint.h"
+#include "Hash.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
 #include "../cnf/ResRule.h"
@@ -32,6 +33,8 @@ namespace converter {
             std::unordered_map<uint32_t, VeriPB::Lit> vars;                                                     // Maps variable ID to the literal
             std::unordered_map<const cnf::Clause*, VeriPB::Lit, ClausePtrHash, ClausePtrEqual> blocking_vars;   // Maps clause to the blocking variable
 
+            std::unordered_map<VeriPB::Lit, VeriPB::constraintid, LitHash, LitEqual> tautologies;               // Maps blocking literal to the unit literal
+        
         public:
             /**
              * Constructor for ProofConvertor.

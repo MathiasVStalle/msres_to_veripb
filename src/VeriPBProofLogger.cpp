@@ -23,3 +23,4 @@ template void VeriPB::CuttingPlanesDerivation::add_literal_axiom<VeriPB::Lit, un
 template void VeriPB::CuttingPlanesDerivation::add<unsigned int>(VeriPB::CuttingPlanesDerivation const*, unsigned int const&);
 template long VeriPB::Prooflogger::start_proof_by_contradiction<VeriPB::Constraint<VeriPB::Lit, unsigned int, unsigned int> >(VeriPB::Constraint<VeriPB::Lit, unsigned int, unsigned int> const&);
 template void VeriPB::ProofloggerOpt<VeriPB::Lit, unsigned int, unsigned int>::write_objective_update_diff_for_literal<VeriPB::Lit>(VeriPB::Lit&, unsigned int, unsigned int, bool);
+template long VeriPB::Prooflogger::redundance_based_strengthening_unit_clause<VeriPB::Lit>(VeriPB::Lit const &);

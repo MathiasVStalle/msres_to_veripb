@@ -110,12 +110,14 @@ namespace converter {
             );
         }
 
-        std::function<VeriPB::Lit(int32_t)> lambda = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
+        std::function<VeriPB::Lit(int32_t)> var_supplier = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
+        std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.contains(lit); };
+        std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
 
-        ClaimTypeA c_1 = ClaimTypeA(*rule, clauses, lambda, false);
-        ClaimTypeA c_2 = ClaimTypeA(*rule, clauses, lambda, true);
-        ClaimTypeB c_3 = ClaimTypeB(*rule, clauses, lambda, false);
-        ClaimTypeB c_4 = ClaimTypeB(*rule, clauses, lambda, true);
+        ClaimTypeA c_1 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, false);
+        ClaimTypeA c_2 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, true);
+        ClaimTypeB c_3 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, false);
+        ClaimTypeB c_4 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, true);
         
         // Generate the four claims
         constraintid claim_1 = c_1.write(*pl);
@@ -179,7 +181,7 @@ namespace converter {
             C.clear();
             C.add_RHS(1);
 
-            for (const auto &literal : clause.get_literals()) {
+            for (const auto &literal : clause.get_literals_set()) {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit lit = vars[var];
 
@@ -232,6 +234,11 @@ namespace converter {
             VeriPB::Var var = var_mgr.new_variable_only_in_proof();
             VeriPB::Lit lit = create_literal(var, false);
             blocking_vars[&clause] = lit;
+
+            if (clause.is_tautology()) {
+                tautologies[lit] = pl->redundance_based_strengthening_unit_clause(lit);
+                continue;
+            }
 
             // Add the new clause to the proof logger
             clause_to_constraint(clause, C);
@@ -294,7 +301,7 @@ namespace converter {
         C.clear();
         C.add_RHS(1);
 
-        for (const auto& literal : clause.get_literals()) {
+        for (const auto& literal : clause.get_literals_set()) {
             uint32_t var = std::abs(literal);
             VeriPB::Lit lit = vars[var];
 

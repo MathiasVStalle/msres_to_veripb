@@ -18,13 +18,16 @@ using namespace VeriPB;
 namespace converter {
     class Claim {
         private:
+            const std::function<bool(VeriPB::Lit)> &tautology_predicate;
+            const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier;
 
             // TODO: Name vars --> lit or change type Lit --> Var
             const bool negated_pivot;
-            std::vector<Lit> vars;
-            std::vector<Lit> blocking_vars;
-
             Lit pivot_literal;
+
+            std::vector<Lit> vars;          // TODO: Remove and use literals if possible
+            std::vector<Lit> literals; 
+            std::vector<Lit> blocking_vars;
 
             Lit active_original_blocking_var;
             Lit unactive_original_blocking_var;
@@ -34,11 +37,17 @@ namespace converter {
 
             std::vector<Lit> active_vars;
             std::vector<constraintid> active_constraints;
-
-            std::unordered_set<Lit, LitHash, LitEqual> tautologies;
+            
+            std::unordered_set<Var, VarHash, VarEqual> common_vars;
 
         public:
-            Claim(const cnf::ResRule &rule, const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, const std::function<VeriPB::Lit(int32_t)> &variable_supplier, bool negated_pivot);
+            Claim(
+                const cnf::ResRule &rule,
+                const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses,
+                const std::function<VeriPB::Lit(int32_t)> &variable_supplier,
+                const std::function<bool(VeriPB::Lit)> &tautology_predicate,
+                const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier,
+                bool negated_pivot);
 
             virtual constraintid write(Prooflogger &pl) = 0;
 
@@ -53,6 +62,7 @@ namespace converter {
 
             const std::vector<Lit>& get_vars() const;
             const std::vector<Lit>& get_blocking_vars() const;
+            const std::vector<Lit>& get_literals() const;
             const Lit& get_pivot_literal() const;
             const Lit& get_active_original_blocking_var() const;
             const Lit& get_unactive_original_blocking_var() const;
@@ -77,15 +87,17 @@ namespace converter {
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, constraintid claim_1, constraintid claim_2);
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, std::vector<VeriPB::constraintid> &claims);
 
-            bool is_duplicate(const Lit &lit) const;
-            bool is_possible_pivot(const Lit &lit) const;
-            bool is_tautology(const Lit &lit) const;
+            bool is_tautology(const Lit &lit) const {
+                return tautology_predicate(lit);
+            }
+
+            constraintid get_tautology(const Lit &lit) const {
+                return tautology_supplier(lit);
+            }
 
         private:
-
-            void initialize_duplicate_vars(const cnf::ResRule &rule);
             
-            std::vector<VeriPB::Lit> get_total_vars(const std::vector<int32_t>& literals_1, const std::vector<int32_t>& literals_2, std::function<VeriPB::Lit(int32_t)> variable_supplier);
+            void initialize_vars(int32_t pivot, const std::vector<int32_t>& literals_1, const std::vector<int32_t>& literals_2, std::function<VeriPB::Lit(int32_t)> variable_supplier);
     };
 }
 
