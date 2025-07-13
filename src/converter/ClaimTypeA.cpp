@@ -148,7 +148,7 @@ namespace converter {
                 C.add_literal(sn, 1);
             }
             for (int j = 0; j < i; j++) {
-                C.add_literal(get_vars()[offset + j], 1);
+                C.add_literal(get_literals()[offset + j], 1);
             }
             C.add_RHS(subclaims.size() - 1);
 
@@ -160,7 +160,7 @@ namespace converter {
             // Add the missing literal to the result for the next iteration
             if (i != 0) {
                 cpder.start_from_constraint(-1);
-                cpder.add_literal_axiom(get_vars()[offset + i - 1]);
+                cpder.add_literal_axiom(get_literals()[offset + i - 1]);
                 cpder.end();
             }
 
