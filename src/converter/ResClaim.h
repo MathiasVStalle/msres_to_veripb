@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 
+#include "Claim.h"
 #include "Hash.h"
 #include "../cnf/ResRule.h"
 
@@ -16,7 +17,7 @@
 using namespace VeriPB;
 
 namespace converter {
-    class ResClaim {
+    class ResClaim : public Claim {
         private:
             const std::function<bool(VeriPB::Lit)> &tautology_predicate;
             const std::function<bool(VeriPB::Lit)> &hard_clause_predicate;
@@ -24,7 +25,6 @@ namespace converter {
             const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier;
 
             // TODO: Name vars --> lit or change type Lit --> Var
-            const bool negated_pivot;
             Lit pivot_literal;
 
             std::vector<Lit> vars;                          // TODO: Remove and use literals if possible
@@ -52,16 +52,7 @@ namespace converter {
                 const std::function<bool(VeriPB::Lit)> &hard_clause_predicate,
                 bool negated_pivot);
 
-            virtual constraintid write(Prooflogger &pl) = 0;
-
         protected:
-
-            /** 
-             * Check if the pivot literal is negated.
-             * 
-             * @return True if the pivot literal is negated, false otherwise.
-             */
-            bool is_negated_pivot() const;
 
             const std::vector<Lit>& get_vars() const;
             const std::vector<Lit>& get_blocking_vars() const;

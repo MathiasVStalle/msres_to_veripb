@@ -10,7 +10,7 @@ namespace converter {
         const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier,
         const std::function<bool(VeriPB::Lit)> &hard_clause_predicate,
         bool negated_pivot
-    ) : negated_pivot(negated_pivot), tautology_predicate(tautology_predicate), tautology_supplier(tautology_supplier), hard_clause_predicate(hard_clause_predicate) {
+    ) : Claim(negated_pivot), tautology_predicate(tautology_predicate), tautology_supplier(tautology_supplier), hard_clause_predicate(hard_clause_predicate) {
         if (clauses.size() < 3) {
             throw std::runtime_error("Claim must have at least two clauses.");
         }
@@ -67,11 +67,6 @@ namespace converter {
                 common_vars.insert(variable(variable_supplier(lit)));
             }
         }
-    }
-
-
-    bool ResClaim::is_negated_pivot() const {
-        return negated_pivot;
     }
 
     const std::vector<Lit> &ResClaim::get_vars() const {
@@ -159,7 +154,7 @@ namespace converter {
     constraintid ResClaim::add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals, std::unordered_set<Lit, LitHash, LitEqual> &result) {
         CuttingPlanesDerivation cpder(&pl, false);
 
-        int32_t offset = negated_pivot ? get_inactive_blocking_vars().size() : 0;
+        int32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
 
         cpder.start_from_literal_axiom(get_active_original_blocking_var());
 

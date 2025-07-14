@@ -7,7 +7,6 @@
 #include "./parser/MSResParser.h"
 #include "./parser/WCNFParser.h"
 #include "./converter/ProofConverter.h"
-#include "./converter/ProofConstraint.h"
 
 int check_proofs_are_same(const std::string& output_file, const std::string& test_file) {
     std::ifstream output_stream(output_file);
