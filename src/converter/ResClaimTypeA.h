@@ -1,9 +1,9 @@
-#ifndef CLAIM_TYPE_A_H
-#define CLAIM_TYPE_A_H
+#ifndef RES_CLAIM_TYPE_A_H
+#define RES_CLAIM_TYPE_A_H
 
 #include <vector>
 
-#include "Claim.h"
+#include "ResClaim.h"
 #include "../cnf/ResRule.h"
 
 #include "VeriPbSolverTypes.h"
@@ -12,11 +12,11 @@
 using namespace VeriPB;
 
 namespace converter {
-    class ClaimTypeA final : public Claim {
+    class ResClaimTypeA final : public ResClaim {
         
 
         public:
-            ClaimTypeA(
+            ResClaimTypeA(
                 const cnf::ResRule &rule, 
                 const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, 
                 const std::function<VeriPB::Lit(int32_t)> &variable_supplier, 
@@ -24,7 +24,7 @@ namespace converter {
                 const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier,
                 const std::function<bool(VeriPB::Lit)> &hard_clause_predicate,
                 bool negated_pivot
-            ) : Claim(rule, clauses, variable_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, negated_pivot) {}
+            ) : ResClaim(rule, clauses, variable_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, negated_pivot) {}
 
             constraintid write(Prooflogger &pl) override;
 

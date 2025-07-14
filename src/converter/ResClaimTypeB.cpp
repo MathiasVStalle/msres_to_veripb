@@ -1,9 +1,9 @@
 #include <algorithm>
-#include "ClaimTypeB.h"
+#include "ResClaimTypeB.h"
 
 namespace converter {
 
-    VeriPB::constraintid ClaimTypeB::write(Prooflogger &pl) {
+    VeriPB::constraintid ResClaimTypeB::write(Prooflogger &pl) {
         const int32_t RHS = get_blocking_vars().size() - 3;
         constraintid cn_1;
         constraintid cn_2;

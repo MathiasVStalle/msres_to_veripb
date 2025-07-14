@@ -6,8 +6,8 @@
 
 #include "Hash.h"
 #include "ProofConverter.h"
-#include "ClaimTypeA.h"
-#include "ClaimTypeB.h"
+#include "ResClaimTypeA.h"
+#include "ResClaimTypeB.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
 #include "../cnf/ResRule.h"
@@ -115,10 +115,10 @@ namespace converter {
         std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
         std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
 
-        ClaimTypeA c_1 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
-        ClaimTypeA c_2 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
-        ClaimTypeB c_3 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
-        ClaimTypeB c_4 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+        ResClaimTypeA c_1 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+        ResClaimTypeA c_2 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+        ResClaimTypeB c_3 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+        ResClaimTypeB c_4 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
         
         // Generate the four claims
         constraintid claim_1 = c_1.write(*pl);
@@ -190,6 +190,7 @@ namespace converter {
             C.clear();
             C.add_RHS(1);
 
+            // TODO: use clause_to_constraint function
             for (const auto &literal : clause.get_literals_set()) {
                 uint32_t var = std::abs(literal);
                 VeriPB::Lit lit = vars[var];
@@ -315,6 +316,22 @@ namespace converter {
                 C.add_literal(neg(lit), 1);
             } else {
                 C.add_literal(lit, 1);
+            }
+        }
+    }
+
+    void ProofConverter::clause_to_neg_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C) {
+        C.clear();
+        C.add_RHS(clause.get_literals().size()); // TODO: Use get_literals_set() instead
+
+        for (const auto& literal : clause.get_literals_set()) {
+            uint32_t var = std::abs(literal);
+            VeriPB::Lit lit = vars[var];
+
+            if (literal < 0) {
+                C.add_literal(lit, 1);
+            } else {
+                C.add_literal(neg(lit), 1);
             }
         }
     }

@@ -1,8 +1,8 @@
 #include <algorithm>
-#include "ClaimTypeA.h"
+#include "ResClaimTypeA.h"
 
 namespace converter {
-    VeriPB::constraintid ClaimTypeA::write(Prooflogger &pl) {
+    VeriPB::constraintid ResClaimTypeA::write(Prooflogger &pl) {
         const int32_t RHS = get_blocking_vars().size() - 4;
 
         std::vector<Lit> vars_without_pivot = get_vars();
@@ -74,7 +74,7 @@ namespace converter {
         return result;
     }
 
-    std::vector<constraintid> ClaimTypeA::build_iterative_subclaims(Prooflogger &pl) {
+    std::vector<constraintid> ResClaimTypeA::build_iterative_subclaims(Prooflogger &pl) {
         std::vector<Lit> vars_without_pivot = get_vars();
         vars_without_pivot.pop_back(); // Remove the pivot variable
 
@@ -138,7 +138,7 @@ namespace converter {
         return result;
     }
 
-    VeriPB::constraintid ClaimTypeA::iterative_proofs_by_contradiction(Prooflogger &pl, std::vector<constraintid> &subclaims) {
+    VeriPB::constraintid ResClaimTypeA::iterative_proofs_by_contradiction(Prooflogger &pl, std::vector<constraintid> &subclaims) {
         CuttingPlanesDerivation cpder(&pl, false);
 
         constraintid subclaim_1 = subclaims.back();
@@ -175,7 +175,7 @@ namespace converter {
         return subclaim_1;
     }
 
-    std::vector<VeriPB::constraintid> ClaimTypeA::build_conjunctive_subclaims(Prooflogger &pl) {
+    std::vector<VeriPB::constraintid> ResClaimTypeA::build_conjunctive_subclaims(Prooflogger &pl) {
         pl.write_comment("Conjunctive subclaims");
         pl.write_comment("");
         CuttingPlanesDerivation cpder(&pl, false);

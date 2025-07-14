@@ -1,8 +1,8 @@
-#include "Claim.h"
+#include "ResClaim.h"
 
 namespace converter {
 
-    Claim::Claim(
+    ResClaim::ResClaim(
         const cnf::ResRule &rule, 
         const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, 
         const std::function<VeriPB::Lit(int32_t)> &variable_supplier,
@@ -70,52 +70,52 @@ namespace converter {
     }
 
 
-    bool Claim::is_negated_pivot() const {
+    bool ResClaim::is_negated_pivot() const {
         return negated_pivot;
     }
 
-    const std::vector<Lit> &Claim::get_vars() const {
+    const std::vector<Lit> &ResClaim::get_vars() const {
         return vars;
     }
 
-    const std::vector<Lit> &Claim::get_literals() const {
+    const std::vector<Lit> &ResClaim::get_literals() const {
         return literals;
     }
 
-    const std::vector<Lit> &Claim::get_blocking_vars() const {
+    const std::vector<Lit> &ResClaim::get_blocking_vars() const {
         return blocking_vars;
     }
 
-    const Lit &Claim::get_pivot_literal() const {
+    const Lit &ResClaim::get_pivot_literal() const {
         return pivot_literal;
     }
 
-    const Lit &Claim::get_active_original_blocking_var() const {
+    const Lit &ResClaim::get_active_original_blocking_var() const {
         return active_original_blocking_var;
     }
 
-    const Lit &Claim::get_inactive_original_blocking_var() const {
+    const Lit &ResClaim::get_inactive_original_blocking_var() const {
         return inactive_original_blocking_var;
     }
 
-    const std::vector<Lit> &Claim::get_active_blocking_vars() const {
+    const std::vector<Lit> &ResClaim::get_active_blocking_vars() const {
         return active_blocking_vars;
     }
 
-    const std::vector<Lit> &Claim::get_inactive_blocking_vars() const {
+    const std::vector<Lit> &ResClaim::get_inactive_blocking_vars() const {
         return inactive_blocking_vars;
     }
 
-    const std::vector<constraintid> &Claim::get_active_constraints() const {
+    const std::vector<constraintid> &ResClaim::get_active_constraints() const {
         return active_constraints;
     }
 
-    void Claim::set_active_constraints(const std::vector<constraintid> &active_constraints) {
+    void ResClaim::set_active_constraints(const std::vector<constraintid> &active_constraints) {
         this->active_constraints = active_constraints;
     }
 
 
-    constraintid Claim::weaken(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end) {
+    constraintid ResClaim::weaken(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_constraint(id);
         for (int i = begin; i < end; i++) {
@@ -125,11 +125,11 @@ namespace converter {
         return cpder.end();
     }
 
-    constraintid Claim::weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t except) {
+    constraintid ResClaim::weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t except) {
         return weaken_all_except(pl, id, variables, except, except);
     }
 
-    constraintid Claim::weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end) {
+    constraintid ResClaim::weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_constraint(id);
 
@@ -144,7 +144,7 @@ namespace converter {
         return cpder.end();
     }
 
-    constraintid Claim::add_all(Prooflogger &pl, const std::vector<constraintid> &constraints) {
+    constraintid ResClaim::add_all(Prooflogger &pl, const std::vector<constraintid> &constraints) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_constraint(constraints[0]);
         for (size_t i = 1; i < constraints.size(); i++) {
@@ -156,7 +156,7 @@ namespace converter {
 
     // TODO: Move this to ClaimTypeB
     // TODO: Remove blockingliterals with active_blocking_literals
-    constraintid Claim::add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals, std::unordered_set<Lit, LitHash, LitEqual> &result) {
+    constraintid ResClaim::add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals, std::unordered_set<Lit, LitHash, LitEqual> &result) {
         CuttingPlanesDerivation cpder(&pl, false);
 
         int32_t offset = negated_pivot ? get_inactive_blocking_vars().size() : 0;
@@ -181,7 +181,7 @@ namespace converter {
         return cpder.end();
     }
 
-    constraintid Claim::add_all_from_literal(Prooflogger &pl, const std::vector<constraintid> &constraints, const Lit lit) {
+    constraintid ResClaim::add_all_from_literal(Prooflogger &pl, const std::vector<constraintid> &constraints, const Lit lit) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_literal_axiom(lit);
         for (size_t i = 0; i < constraints.size(); i++) {
@@ -191,7 +191,7 @@ namespace converter {
         return cpder.end();
     }
 
-    constraintid Claim::add_all_prev(Prooflogger &pl, uint32_t range) {
+    constraintid ResClaim::add_all_prev(Prooflogger &pl, uint32_t range) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_constraint(-1);
         for (int32_t i = 1; i < range; i++) {
@@ -201,7 +201,7 @@ namespace converter {
         return cpder.end();
     }
 
-    constraintid Claim::add_all_prev_from_literal(Prooflogger &pl, uint32_t range, const Lit lit) {
+    constraintid ResClaim::add_all_prev_from_literal(Prooflogger &pl, uint32_t range, const Lit lit) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_literal_axiom(lit);
         for (int32_t i = 0; i < range; i++) {
@@ -211,7 +211,7 @@ namespace converter {
         return cpder.end();
     }
 
-    constraintid Claim::build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, constraintid claim_1, constraintid claim_2) {
+    constraintid ResClaim::build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, constraintid claim_1, constraintid claim_2) {
         pl.start_proof_by_contradiction(C);
 
         CuttingPlanesDerivation cpder(&pl, false);
@@ -234,7 +234,7 @@ namespace converter {
         return pl.end_proof_by_contradiction();
     }
 
-    constraintid Claim::build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, std::vector<VeriPB::constraintid> &claims) {
+    constraintid ResClaim::build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, std::vector<VeriPB::constraintid> &claims) {
         // if (claims.size() < 2) {
         //     throw std::runtime_error("At least two claims are required to build a proof by contradiction.");
         // }
@@ -255,7 +255,7 @@ namespace converter {
         return pl.end_proof_by_contradiction();
     }
 
-    void Claim::initialize_vars(int32_t pivot, const std::vector<int32_t>& literals_1, const std::vector<int32_t>& literals_2, std::function<VeriPB::Lit(int32_t)> variable_supplier) {
+    void ResClaim::initialize_vars(int32_t pivot, const std::vector<int32_t>& literals_1, const std::vector<int32_t>& literals_2, std::function<VeriPB::Lit(int32_t)> variable_supplier) {
         vars.reserve(literals_1.size() + literals_2.size());
         literals.reserve(literals_1.size() + literals_2.size() - 1);
 

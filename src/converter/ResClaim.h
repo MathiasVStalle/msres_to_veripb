@@ -1,5 +1,5 @@
-#ifndef CLAIM_H
-#define CLAIM_H
+#ifndef RES_CLAIM_H
+#define RES_CLAIM_H
 
 #include <vector>
 #include <tuple>
@@ -16,7 +16,7 @@
 using namespace VeriPB;
 
 namespace converter {
-    class Claim {
+    class ResClaim {
         private:
             const std::function<bool(VeriPB::Lit)> &tautology_predicate;
             const std::function<bool(VeriPB::Lit)> &hard_clause_predicate;
@@ -43,7 +43,7 @@ namespace converter {
             std::unordered_set<Var, VarHash, VarEqual> common_vars;
 
         public:
-            Claim(
+            ResClaim(
                 const cnf::ResRule &rule,
                 const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses,
                 const std::function<VeriPB::Lit(int32_t)> &variable_supplier,
