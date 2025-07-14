@@ -64,7 +64,8 @@ namespace converter {
 
         cnneg = pl.end_proof_by_contradiction();
 
-        constraintid id = pl.get_reified_constraint_left_implication(variable(get_unactive_original_blocking_var()));
+
+        constraintid id = pl.get_reified_constraint_left_implication(variable(get_inactive_original_blocking_var()));
         weaken(pl, id, vars_without_pivot, offset, offset + get_active_blocking_vars().size() - 1);
 
         cpder.start_from_constraint(-2);

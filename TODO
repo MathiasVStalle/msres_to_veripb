@@ -1,8 +1,7 @@
 Hard clauses (Parser)
 Hard clauses (Proof)
-Unit clauses (Proof)
-Tautologies and duplicate literals
 Split rule (Proof)
 Changing multiset to vector in Clause for compatability with MSBuilder
 Equals operator Clause should only check that the sets of literals are equal
 Cleanup Claim classes of the resolution rule
+Retrieve tautologies by the Prooflogger

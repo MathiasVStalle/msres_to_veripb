@@ -8,8 +8,9 @@ namespace converter {
         const std::function<VeriPB::Lit(int32_t)> &variable_supplier,
         const std::function<bool(VeriPB::Lit)> &tautology_predicate,
         const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier,
+        const std::function<bool(VeriPB::Lit)> &hard_clause_predicate,
         bool negated_pivot
-    ) : negated_pivot(negated_pivot), tautology_predicate(tautology_predicate), tautology_supplier(tautology_supplier) {
+    ) : negated_pivot(negated_pivot), tautology_predicate(tautology_predicate), tautology_supplier(tautology_supplier), hard_clause_predicate(hard_clause_predicate) {
         if (clauses.size() < 3) {
             throw std::runtime_error("Claim must have at least two clauses.");
         }
@@ -93,7 +94,7 @@ namespace converter {
         return active_original_blocking_var;
     }
 
-    const Lit &Claim::get_unactive_original_blocking_var() const {
+    const Lit &Claim::get_inactive_original_blocking_var() const {
         return inactive_original_blocking_var;
     }
 

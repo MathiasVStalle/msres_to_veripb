@@ -62,7 +62,12 @@ namespace converter {
             weaken_all_except(pl, constraint, get_vars(), get_vars().size() - 1); // TODO: Add weakening restriction
         }
 
-        constraintid result = add_all_prev_from_literal(pl, get_inactive_blocking_vars().size() + 1, neg(get_unactive_original_blocking_var())); // Also add the constraint that adds the pivot variable
+        constraintid result;
+        if (!is_hard_clause(get_active_original_blocking_var())) {
+            result = add_all_prev_from_literal(pl, get_inactive_blocking_vars().size() + 1, neg(get_inactive_original_blocking_var()));
+        } else {
+            result = add_all_prev(pl, get_inactive_blocking_vars().size() + 1);
+        }
 
         pl.write_comment("Claim 1");
         pl.write_comment("");

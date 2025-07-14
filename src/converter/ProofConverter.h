@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "ProofConstraint.h"
 #include "Hash.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
@@ -19,7 +18,6 @@
 #include "MaxSATProoflogger.h"
 
 namespace converter {
-    // TODO: Cleanup of the ProofConverter calss
     class ProofConverter
     {
         private:
@@ -33,8 +31,9 @@ namespace converter {
             std::unordered_map<uint32_t, VeriPB::Lit> vars;                                                     // Maps variable ID to the literal
             std::unordered_map<const cnf::Clause*, VeriPB::Lit, ClausePtrHash, ClausePtrEqual> blocking_vars;   // Maps clause to the blocking variable
 
-            std::unordered_map<VeriPB::Lit, VeriPB::constraintid, LitHash, LitEqual> tautologies;               // Maps blocking literal to the unit literal
-        
+            std::unordered_map<VeriPB::Lit, VeriPB::constraintid, LitHash, LitEqual> tautologies;               // TODO: Make this a set
+            std::unordered_set<VeriPB::Lit, LitHash, LitEqual> hard_clauses;                                    // Set of hard clauses
+
         public:
             /**
              * Constructor for ProofConvertor.

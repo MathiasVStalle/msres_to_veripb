@@ -113,11 +113,12 @@ namespace converter {
         std::function<VeriPB::Lit(int32_t)> var_supplier = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
         std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.contains(lit); };
         std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
+        std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
 
-        ClaimTypeA c_1 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, false);
-        ClaimTypeA c_2 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, true);
-        ClaimTypeB c_3 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, false);
-        ClaimTypeB c_4 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, true);
+        ClaimTypeA c_1 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+        ClaimTypeA c_2 = ClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+        ClaimTypeB c_3 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+        ClaimTypeB c_4 = ClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
         
         // Generate the four claims
         constraintid claim_1 = c_1.write(*pl);
@@ -162,7 +163,7 @@ namespace converter {
             var_mgr.store_variable_name(var, "_b" + std::to_string(i));
             blocking_vars[&clause] = lit;
 
-            if (clause.is_unit_clause()) {
+            if (clause.is_unit_clause() && !clause.is_hard_clause()) {
                 int32_t unit_lit_int = *clause.get_literals().begin();
                 VeriPB::Lit unit_lit = vars[std::abs(unit_lit_int)];
                 unit_lit = (unit_lit_int < 0) ? neg(unit_lit) : unit_lit;
@@ -171,12 +172,20 @@ namespace converter {
             } else {
                 pl->store_reified_constraint_right_implication(var, cxn++);
             }
+
+            if (clause.is_hard_clause()) {
+                hard_clauses.insert(lit);
+            }
         }
 
         // Saving the reification in the other direction
         VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         for (int i = 1; i <= wcnf_clauses.size(); i++) {
             const cnf::Clause &clause = wcnf_clauses.at(i);
+
+            if (clause.is_hard_clause()) {
+                continue;
+            }
 
             C.clear();
             C.add_RHS(1);
