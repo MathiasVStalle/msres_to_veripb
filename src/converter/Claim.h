@@ -30,10 +30,10 @@ namespace converter {
             std::vector<Lit> blocking_vars;
 
             Lit active_original_blocking_var;
-            Lit unactive_original_blocking_var;
+            Lit inactive_original_blocking_var;
 
             std::vector<Lit> active_blocking_vars;
-            std::vector<Lit> unactive_blocking_vars;
+            std::vector<Lit> inactive_blocking_vars;
 
             std::vector<Lit> active_vars;
             std::vector<constraintid> active_constraints;

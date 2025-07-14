@@ -154,7 +154,7 @@ namespace converter {
         std::vector<std::pair<VeriPB::Lit, VeriPB::Lit>> unit_clauses;
 
         // Saving the reification of the original clauses
-        for (int i = 1; i <= wcnf_clauses.size(); i++) {
+        for (int i = 1, cxn = 1; i <= wcnf_clauses.size(); i++) {
             const cnf::Clause& clause = wcnf_clauses.at(i);
 
             VeriPB::Var var = var_mgr.new_variable_only_in_proof();
@@ -169,7 +169,7 @@ namespace converter {
 
                 unit_clauses.push_back(std::make_pair(lit, unit_lit));
             } else {
-                pl->store_reified_constraint_right_implication(var, i);
+                pl->store_reified_constraint_right_implication(var, cxn++);
             }
         }
 
@@ -200,28 +200,25 @@ namespace converter {
             }
         }
 
-        if (!unit_clauses.empty()) {
-            for (const auto &pair : unit_clauses) {
-                VeriPB::Lit blocking_lit = pair.first;
-                VeriPB::Lit unit_lit = pair.second;
+        for (const auto &pair : unit_clauses) {
+            VeriPB::Lit blocking_lit = pair.first;
+            VeriPB::Lit unit_lit = pair.second;
 
-                // Add the right implication for the unit clause
-                C.clear();
-                C.add_literal(unit_lit, 1);
-                C.add_RHS(1);
-                pl->reification_literal_right_implication(blocking_lit, C, true);
+            // Add the right implication for the unit clause
+            C.clear();
+            C.add_literal(unit_lit, 1);
+            C.add_RHS(1);
+            pl->reification_literal_right_implication(blocking_lit, C, true);
 
-                // Move to the coresets
-                pl->move_to_coreset_by_id(-1);
+            // Move to the coresets
+            pl->move_to_coreset_by_id(-1);
 
-
-                // Change the objective function to include the blocking variable instead of the unit literal
-                LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
-                LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-                c_old.add_literal(neg(unit_lit), 1);
-                c_new.add_literal(neg(blocking_lit), 1);
-                pl->write_objective_update_diff(c_old, c_new);
-            }
+            // Change the objective function to include the blocking variable instead of the unit literal
+            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+            c_old.add_literal(neg(unit_lit), 1);
+            c_new.add_literal(neg(blocking_lit), 1);
+            pl->write_objective_update_diff(c_old, c_new);
         }
     }
 

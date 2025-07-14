@@ -57,7 +57,8 @@ namespace cnf
         std::cout << std::endl;
     }
 
+    // TODO: Every time a clause is compaired, it makes a new unordered_set. Make this more efficient.
     bool Clause::operator==(const Clause& other) const {
-        return weight == other.weight && literals == other.literals;
+        return weight == other.weight && get_literals_set() == other.get_literals_set();
     }   
 }

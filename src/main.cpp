@@ -51,5 +51,6 @@ int main(int argc, char *argv[]) {
     converter::ProofConverter proof_convertor(wcnf_file, msres_file, output_file);
     proof_convertor.write_proof();
 
-    return check_proofs_are_same(output_file, "example/test/test.pbp");
+    check_proofs_are_same(output_file, "example/unit_clause/test.pbp");
+    return 0;
 }

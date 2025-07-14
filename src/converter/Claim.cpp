@@ -44,18 +44,18 @@ namespace converter {
         if (negated_pivot) {
            this->pivot_literal = vars.back();
            this->active_original_blocking_var = blocking_vars[0];
-           this->unactive_original_blocking_var = blocking_vars[1];
+           this->inactive_original_blocking_var = blocking_vars[1];
     
            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
-           this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
+           this->inactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
            this->active_vars = std::vector<Lit>(vars.begin(), vars.begin() + num_clauses_1);
         } else {
            this->pivot_literal = neg(vars.back());
            this->active_original_blocking_var = blocking_vars[1];
-           this->unactive_original_blocking_var = blocking_vars[0];
+           this->inactive_original_blocking_var = blocking_vars[0];
     
            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
-           this->unactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
+           this->inactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
            this->active_vars = std::vector<Lit>(vars.begin() + num_clauses_1, vars.end() - 1);
         }
 
@@ -94,7 +94,7 @@ namespace converter {
     }
 
     const Lit &Claim::get_unactive_original_blocking_var() const {
-        return unactive_original_blocking_var;
+        return inactive_original_blocking_var;
     }
 
     const std::vector<Lit> &Claim::get_active_blocking_vars() const {
@@ -102,7 +102,7 @@ namespace converter {
     }
 
     const std::vector<Lit> &Claim::get_inactive_blocking_vars() const {
-        return unactive_blocking_vars;
+        return inactive_blocking_vars;
     }
 
     const std::vector<constraintid> &Claim::get_active_constraints() const {
