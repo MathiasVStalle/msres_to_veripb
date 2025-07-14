@@ -10,7 +10,7 @@ namespace converter {
         const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier,
         const std::function<bool(VeriPB::Lit)> &hard_clause_predicate,
         bool negated_pivot
-    ) : Claim(negated_pivot), tautology_predicate(tautology_predicate), tautology_supplier(tautology_supplier), hard_clause_predicate(hard_clause_predicate) {
+    ) : Claim(negated_pivot, tautology_predicate, hard_clause_predicate, tautology_supplier) {
         if (clauses.size() < 3) {
             throw std::runtime_error("Claim must have at least two clauses.");
         }

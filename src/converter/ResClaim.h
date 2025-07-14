@@ -19,10 +19,6 @@ using namespace VeriPB;
 namespace converter {
     class ResClaim : public Claim {
         private:
-            const std::function<bool(VeriPB::Lit)> &tautology_predicate;
-            const std::function<bool(VeriPB::Lit)> &hard_clause_predicate;
-
-            const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier;
 
             // TODO: Name vars --> lit or change type Lit --> Var
             Lit pivot_literal;
@@ -80,18 +76,6 @@ namespace converter {
 
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, constraintid claim_1, constraintid claim_2);
             constraintid build_proof_by_contradiction(Prooflogger &pl, Constraint<Lit, uint32_t, uint32_t> &C, std::vector<VeriPB::constraintid> &claims);
-
-            bool is_tautology(const Lit &lit) const {
-                return tautology_predicate(lit);
-            }
-
-            bool is_hard_clause(const Lit &lit) const {
-                return hard_clause_predicate(lit);
-            }
-
-            constraintid get_tautology(const Lit &lit) const {
-                return tautology_supplier(lit);
-            }
 
         private:
             
