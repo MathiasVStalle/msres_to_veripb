@@ -125,7 +125,7 @@ namespace std {
         size_t operator()(const cnf::Clause& clause) const {
             size_t hash_value = 0;
             size_t prod = 1;
-            for (const auto& literal : clause.get_literals()) {
+            for (const auto& literal : clause.get_literals_set()) {
                 size_t h = std::hash<int32_t>()(literal);
                 hash_value += h;
                 prod *= (h | 1); // Make sure we don't multiply by zero

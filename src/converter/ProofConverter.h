@@ -29,7 +29,7 @@ namespace converter {
 
             std::unordered_map<uint32_t, const cnf::Clause> wcnf_clauses;                                       // Maps clause ID to the clause of the WCNF file
             std::unordered_map<uint32_t, VeriPB::Lit> vars;                                                     // Maps variable ID to the literal
-            std::unordered_map<const cnf::Clause*, VeriPB::Lit, ClausePtrHash, ClausePtrEqual> blocking_vars;   // Maps clause to the blocking variable
+            std::unordered_map<cnf::Clause, VeriPB::Lit> blocking_vars;                                         // Maps clause to the blocking variable
 
             std::unordered_map<VeriPB::Lit, VeriPB::constraintid, LitHash, LitEqual> tautologies;               // TODO: Make this a set
             std::unordered_set<VeriPB::Lit, LitHash, LitEqual> hard_clauses;                                    // Set of hard clauses

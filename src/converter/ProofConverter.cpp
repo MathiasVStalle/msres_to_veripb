@@ -74,7 +74,6 @@ namespace converter {
             pl->write_comment("");
         }
 
-
         pl->write_conclusion_NONE();
         pl->flush_proof();
         delete rule;
@@ -92,6 +91,12 @@ namespace converter {
         } else {
             throw std::runtime_error("Unknown rule type: " + std::string(typeid(*rule).name()));
         }
+
+        // Print all clauses from blocking_vars
+        for (const auto &[clause_ptr, blocking_var] : this->blocking_vars)
+        {
+            clause_ptr.print();
+        }
     }
 
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
@@ -105,12 +110,12 @@ namespace converter {
         cnf::Clause clause_2 = rule->get_clause_2();
 
         clauses = {
-            std::make_pair(blocking_vars[&clause_1], clause_1),
-            std::make_pair(blocking_vars[&clause_2], clause_2)
+            std::make_pair(blocking_vars[clause_1], clause_1),
+            std::make_pair(blocking_vars[clause_2], clause_2)
         };
         for (const auto &clause : new_clauses) {
             clauses.push_back(
-                std::make_pair(blocking_vars[&clause], clause)
+                std::make_pair(blocking_vars[clause], clause)
             );
         }
 
@@ -148,9 +153,9 @@ namespace converter {
 
         cnf::Clause clause = rule->get_clause();
         clauses = {
-            std::make_pair(blocking_vars[&clause], clause),
-            std::make_pair(blocking_vars[&new_clauses[0]], new_clauses[0]),
-            std::make_pair(blocking_vars[&new_clauses[1]], new_clauses[1])
+            std::make_pair(blocking_vars[clause], clause),
+            std::make_pair(blocking_vars[new_clauses[0]], new_clauses[0]),
+            std::make_pair(blocking_vars[new_clauses[1]], new_clauses[1])
         };
 
         std::function<VeriPB::Lit(int32_t)> var_supplier = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
@@ -202,7 +207,7 @@ namespace converter {
             VeriPB::Var var = var_mgr.new_variable_only_in_proof();
             VeriPB::Lit lit = create_literal(var, false);
             var_mgr.store_variable_name(var, "_b" + std::to_string(i));
-            blocking_vars[&clause] = lit;
+            blocking_vars[clause] = lit;
 
             if (clause.is_unit_clause() && !clause.is_hard_clause()) {
                 int32_t unit_lit_int = *clause.get_literals().begin();
@@ -243,7 +248,7 @@ namespace converter {
                 }
             }
 
-            pl->reification_literal_left_implication(blocking_vars[&clause], C, true);
+            pl->reification_literal_left_implication(blocking_vars[clause], C, true);
 
             // Move to the coresets
             if (clause.is_unit_clause()) {
@@ -281,7 +286,7 @@ namespace converter {
             // Add the new blocking variable
             VeriPB::Var var = var_mgr.new_variable_only_in_proof();
             VeriPB::Lit lit = create_literal(var, false);
-            blocking_vars[&clause] = lit;
+            blocking_vars[clause] = lit;
 
             if (clause.is_tautology()) {
                 tautologies[lit] = pl->redundance_based_strengthening_unit_clause(lit);
@@ -306,11 +311,11 @@ namespace converter {
     ) {
         // s1 + s2 >= s3 + s4 + ... + s_n
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
-        C.add_literal(neg(blocking_vars[&clause_1]), 1);
-        C.add_literal(neg(blocking_vars[&clause_2]), 1);
+        C.add_literal(neg(blocking_vars[clause_1]), 1);
+        C.add_literal(neg(blocking_vars[clause_2]), 1);
 
         for (auto& clause : new_clauses) {
-            C.add_literal(blocking_vars[&clause], 1);
+            C.add_literal(blocking_vars[clause], 1);
         }
         C.add_RHS(new_clauses.size());
 
@@ -320,10 +325,10 @@ namespace converter {
 
         // s1 + s2 <= s3 + s4 + ... + s_n
         C.clear();
-        C.add_literal(blocking_vars[&clause_1], 1);
-        C.add_literal(blocking_vars[&clause_2], 1);
+        C.add_literal(blocking_vars[clause_1], 1);
+        C.add_literal(blocking_vars[clause_2], 1);
         for (auto& clause : new_clauses) {
-            C.add_literal(neg(blocking_vars[&clause]), 1);
+            C.add_literal(neg(blocking_vars[clause]), 1);
         }
         C.add_RHS(2);
 
@@ -335,12 +340,12 @@ namespace converter {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
-        c_old.add_literal(neg(blocking_vars[&clause_1]), 1);
-        c_old.add_literal(neg(blocking_vars[&clause_2]), 1);
+        c_old.add_literal(neg(blocking_vars[clause_1]), 1);
+        c_old.add_literal(neg(blocking_vars[clause_2]), 1);
         for (auto& clause : new_clauses) {
             if (clause.is_hard_clause()) continue;
 
-            c_new.add_literal(neg(blocking_vars[&clause]), 1); // TODO: Don't add tautologies
+            c_new.add_literal(neg(blocking_vars[clause]), 1); // TODO: Don't add tautologies
         }
         pl->write_objective_update_diff(c_old, c_new);
     }
@@ -349,10 +354,10 @@ namespace converter {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
-        c_old.add_literal(neg(blocking_vars[&clause_1]), 1);
+        c_old.add_literal(neg(blocking_vars[clause_1]), 1);
 
-        c_new.add_literal(neg(blocking_vars[&clause_2]), 1);
-        c_new.add_literal(neg(blocking_vars[&clause_3]), 1);
+        c_new.add_literal(neg(blocking_vars[clause_2]), 1);
+        c_new.add_literal(neg(blocking_vars[clause_3]), 1);
         pl->write_objective_update_diff(c_old, c_new);
     }
 
