@@ -20,7 +20,7 @@ namespace cnf
 
             virtual const Clause& operator[](const std::size_t index) const = 0;
 
-            const int32_t get_pivot() const {
+            int32_t get_pivot() const {
                 return pivot;
             }
 
