@@ -70,6 +70,11 @@ namespace converter {
              */
             void write_res_rule(const cnf::ResRule *rule);
 
+            /**
+             * Writes the split rule to the proof logger.
+             * 
+             * @param rule The split rule to write to the proof logger.
+             */
             void write_split_rule(const cnf::SplitRule *rule);
 
             /**
@@ -86,10 +91,8 @@ namespace converter {
 
             /**
              * Applies the given rule and writes the new clauses to the proof logger.
-             * 
-             * @param rule The rule to apply.
              */
-            void write_new_clauses(const cnf::Rule *rule, const std::vector<cnf::Clause> &new_clauses);
+            void write_new_clauses(const std::vector<cnf::Clause> &new_clauses);
 
             /**
              * Assembles a proof for the given claims and clauses.
@@ -113,6 +116,7 @@ namespace converter {
             );
 
             void change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses);
+            void change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const cnf::Clause &clause_3);
 
             void clause_to_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);
             void clause_to_neg_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);

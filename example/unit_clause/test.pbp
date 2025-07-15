@@ -1,0 +1,153 @@
+pseudo-Boolean proof version 2.0
+f
+* _b1 <- 1 x1 1 x2 1 x3 >= 1
+red -3 _b1 1 x1 1 x2 1 x3 <= 0; _b1 1
+* _b2 <- 1 ~x1 >= 1
+red -1 _b2 1 ~x1 <= 0; _b2 1
+core id  -1
+* _b2 -> 1 ~x1 >= 1
+red 1 ~_b2 1 ~x1 >= 1; _b2 0
+core id  -1
+obju diff -1 x1 1 ~_b2;
+* _p3 -> 1 x2 1 x3 >= 1
+red 1 ~_p3 1 x2 1 x3 >= 1; _p3 0
+* _p3 <- 1 x2 1 x3 >= 1
+red -2 _p3 1 x2 1 x3 <= 0; _p3 1
+* _p4 -> 1 ~x1 1 ~x3 >= 1
+red 1 ~_p4 1 ~x1 1 ~x3 >= 1; _p4 0
+* _p4 <- 1 ~x1 1 ~x3 >= 1
+red -2 _p4 1 ~x1 1 ~x3 <= 0; _p4 1
+* _p5 -> 1 ~x1 1 x3 1 ~x2 >= 1
+red 1 ~_p5 1 ~x1 1 x3 1 ~x2 >= 1; _p5 0
+* _p5 <- 1 ~x1 1 x3 1 ~x2 >= 1
+red -3 _p5 1 ~x1 1 x3 1 ~x2 <= 0; _p5 1
+p 8 x1 w s
+p 10 x3 w x1 w s
+p _p3 -1 + -2 + s
+* Initial constraint
+* 
+p 6 x2 w s
+p 10 x2 w x1 w s
+p _p4 -1 + -2 + s
+* Subclaim 0
+* 
+p 6 x3 w s
+p 8 x2 w x1 w s
+p _p5 -1 + -2 + s
+* Subclaim 1
+* 
+* Proof by contradiction1
+* 
+red 1 _p3 1 _p4 1 _p5 1 x3 >= 2; ; begin 
+	proofgoal #1
+p 13 -1 + s
+p 19 -2 + s
+p -1 -2 + s
+	end -1
+end
+p -1 x3 +
+* Proof by contradiction0
+* 
+red 1 _p3 1 _p4 1 _p5 >= 2; ; begin 
+	proofgoal #1
+p 26 -1 + s
+p 16 -2 + s
+p -1 -2 + s
+	end -1
+end
+p 4 -1 +
+* Conjunctive subclaims
+* 
+red 1 ~x1 1 ~_b2 1 _p3 1 _p4 1 _p5 >= 3; ; begin 
+	proofgoal #1
+p 35 33 + s
+p -1 s
+	end -1
+end
+p ~x1 0 * -1 +
+p ~_b1 -1 + s
+* Claim 1
+* 
+* __Claim 1__
+p _p3 s
+* Initial constraint
+* 
+p 1 -1 +
+* Conjunctive subclaims
+* 
+p 6 x2 w s
+p -1 s
+p -1 ~_b1 + x1 +
+p 6 x3 w s
+p -1 s
+p -1 ~_b1 + x1 +
+red 1 x1 1 ~_b1 1 _p3 >= 1; ; begin 
+	proofgoal #1
+p 50 45 + s
+p 50 48 + s
+p 50 42 + s
+p -1 -2 + -3 + s
+	end -1
+end
+p x1 0 * -1 +
+p 8 x3 w x2 w s
+p 10 x3 w x2 w s
+p ~_b2 -1 + -2 + -3 + s
+* Claim 1
+* 
+* __Claim 2__
+p _b2 5 + 9 + s 7 + s
+p 3 x1 w s
+p ~x1 ~_p3 + ~_p4 + ~_p5 + 0 * -1 +
+* Step 2
+* 
+red 1 ~x1 1 _b2 1 ~_p3 1 ~_p4 1 ~_p5 >= 1; ; begin 
+	proofgoal #1
+p -1 0 * 62 + s
+p -2 60 + s
+p -2 -1 +
+	end -1
+end
+p 2 x3 w x2 w s
+p -2 -1 +
+* __Claim 3__
+p _b1 5 +
+p 2 x1 w s
+p x1 ~_p3 + 2 * -1 +
+* Step 2
+* 
+red 1 x1 1 _b1 1 ~_p3 >= 1; ; begin 
+	proofgoal #1
+p -1 2 * 73 + s
+p -2 71 + s
+p -2 -1 +
+	end -1
+end
+p 3 s
+p -2 -1 + ~_p4 + ~_p5 +
+* __Claim 4__
+* __Proof by contradiction__
+red 1 ~_b1 1 ~_b2 1 _p3 1 _p4 1 _p5 >= 3; ; begin 
+	proofgoal #1
+p -1 40 + s
+p -2 59 + s
+p -2 -1 +
+	end -1
+end
+core id  -1
+* __Proof by contradiction__
+red 1 _b1 1 _b2 1 ~_p3 1 ~_p4 1 ~_p5 >= 2; ; begin 
+	proofgoal #1
+p -1 70 + s
+p -2 81 + s
+p -2 -1 +
+	end -1
+end
+core id  -1
+obju diff -1 ~_b1 -1 ~_b2 1 ~_p3 1 ~_p4 1 ~_p5;
+* Rule: 
+* 
+* 
+output NONE
+conclusion NONE
+end pseudo-Boolean proof

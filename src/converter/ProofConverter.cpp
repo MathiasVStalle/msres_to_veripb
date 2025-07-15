@@ -8,6 +8,7 @@
 #include "ProofConverter.h"
 #include "ResClaimTypeA.h"
 #include "ResClaimTypeB.h"
+#include "SplitClaim.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
 #include "../cnf/ResRule.h"
@@ -85,15 +86,18 @@ namespace converter {
         if (dynamic_cast<const cnf::ResRule*>(rule)) {
             const cnf::ResRule* res_rule = dynamic_cast<const cnf::ResRule*>(rule);
             this->write_res_rule(res_rule);
+        } else if (dynamic_cast<const cnf::SplitRule*>(rule)) {
+            const cnf::SplitRule* split_rule = dynamic_cast<const cnf::SplitRule*>(rule);
+            this->write_split_rule(split_rule);
         } else {
-            throw std::runtime_error("Unknown rule type");
+            throw std::runtime_error("Unknown rule type: " + std::string(typeid(*rule).name()));
         }
     }
 
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
         std::vector<cnf::Clause> new_clauses = rule->apply();
-        this->write_new_clauses(rule, new_clauses);
+        this->write_new_clauses(new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
 
@@ -134,6 +138,42 @@ namespace converter {
         change_objective(clause_1, clause_2, new_clauses);
     }
 
+    // TODO: If the pivot doesn't exist if the prooflogger, add it
+    void ProofConverter::write_split_rule(const cnf::SplitRule* rule) {
+        // Add the new clause
+        std::vector<cnf::Clause> new_clauses = rule->apply();
+        this->write_new_clauses(new_clauses);
+
+        std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
+
+        cnf::Clause clause = rule->get_clause();
+        clauses = {
+            std::make_pair(blocking_vars[&clause], clause),
+            std::make_pair(blocking_vars[&new_clauses[0]], new_clauses[0]),
+            std::make_pair(blocking_vars[&new_clauses[1]], new_clauses[1])
+        };
+
+        std::function<VeriPB::Lit(int32_t)> var_supplier = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
+        std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.contains(lit); };
+        std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
+        std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
+
+        SplitClaim c_1 = SplitClaim(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+        SplitClaim c_2 = SplitClaim(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+        
+        // Generate the two claims
+        constraintid claim_1 = c_1.write(*pl);
+        pl->write_comment("__Claim 1__");
+        constraintid claim_2 = c_2.write(*pl);
+        pl->write_comment("__Claim 2__");
+
+        pl->move_to_coreset_by_id(claim_1);
+        pl->move_to_coreset_by_id(claim_2);
+
+        change_objective(clause, new_clauses[0], new_clauses[1]);
+    }
+
+
     void ProofConverter::initialize_vars() {
         // Initialize the variables from the original clauses
         for (const auto &[_, clause] : this->wcnf_clauses) {
@@ -151,6 +191,7 @@ namespace converter {
         }
     }
 
+    // TODO: Simplify this function
     void ProofConverter::reificate_original_clauses() {
         std::vector<std::pair<VeriPB::Lit, VeriPB::Lit>> unit_clauses;
 
@@ -232,7 +273,7 @@ namespace converter {
         }
     }
 
-    void ProofConverter::write_new_clauses(const cnf::Rule* rule, const std::vector<cnf::Clause>& new_clauses) {
+    void ProofConverter::write_new_clauses(const std::vector<cnf::Clause>& new_clauses) {
         VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         for (int i = 0; i < new_clauses.size(); i++) {
             const cnf::Clause& clause = new_clauses[i];
@@ -301,6 +342,17 @@ namespace converter {
 
             c_new.add_literal(neg(blocking_vars[&clause]), 1); // TODO: Don't add tautologies
         }
+        pl->write_objective_update_diff(c_old, c_new);
+    }
+
+    void ProofConverter::change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const cnf::Clause &clause_3) {
+        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+        LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+
+        c_old.add_literal(neg(blocking_vars[&clause_1]), 1);
+
+        c_new.add_literal(neg(blocking_vars[&clause_2]), 1);
+        c_new.add_literal(neg(blocking_vars[&clause_3]), 1);
         pl->write_objective_update_diff(c_old, c_new);
     }
 

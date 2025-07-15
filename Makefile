@@ -6,7 +6,7 @@ LDFLAGS = -lstdc++ -lm
 
 SRC_DIR ?= ./src
 BUILD_DIR ?= ./build
-TEST_DIR ?= ./example/duplicate
+TEST_DIR ?= ./example/split
 
 SOURCES := $(shell find $(SRC_DIR) -name '*.cpp')
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/$(SRC_DIR)/%.o, $(SOURCES))
