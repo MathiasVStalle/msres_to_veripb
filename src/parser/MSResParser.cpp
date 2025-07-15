@@ -34,7 +34,6 @@ namespace parser
         }
     }
 
-    // TODO: Be able to parse when a number is given as a float
     cnf::Rule* MSResParser::next_rule()
     {
         std::string line;
@@ -89,8 +88,8 @@ namespace parser
 
             // TODO: This should be fixed int the converter. When the pivot has a different sign than the one in the first clause, it doesn't work.
             if (
-                clause_1.get_literals().find(std::stoi(pivot_str)) == clause_1.get_literals().end() ||
-                clause_2.get_literals().find(-std::stoi(pivot_str)) == clause_2.get_literals().end()
+                std::find(clause_1.get_literals().begin(), clause_1.get_literals().end(), std::stoi(pivot_str)) == clause_1.get_literals().end() ||
+                std::find(clause_2.get_literals().begin(), clause_2.get_literals().end(), -std::stoi(pivot_str)) == clause_2.get_literals().end()
             ) {
                 std::swap(clause_1, clause_2);
             }
@@ -135,7 +134,6 @@ namespace parser
         return nullptr;
     }
 
-    // TODO: Hard clauses
     cnf::Clause MSResParser::parseClause(const std::string &line) {
         std::istringstream iss(line);
         std::string weight_str;
@@ -152,19 +150,18 @@ namespace parser
             }
         }
 
-        std::unordered_multiset<int32_t> literals;
+        std::vector<int32_t> literals;
         double literal;
         while (iss >> literal && literal != 0) {
             if (std::floor(literal) != literal) {
                 std::cerr << "Warning: Non-integer literal found in clause at line: " << this->line_number << std::endl;
             }
 
-            literals.insert(static_cast<int32_t>(literal));
+            literals.push_back(static_cast<int32_t>(literal));
         }
 
         return cnf::Clause(weight, literals);
     }
 
     // TODO: Error handling for invalid line types
-    // TODO: o and v lines
 }

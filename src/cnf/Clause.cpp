@@ -6,14 +6,14 @@
 
 namespace cnf
 {
-    Clause::Clause(const std::unordered_multiset<int32_t>& literals) : Clause(0, literals) {}
+    Clause::Clause(const std::vector<int32_t>& literals) : Clause(0, literals) {}
 
-    Clause::Clause(int32_t weight, const std::unordered_multiset<int32_t>& literals) : weight(weight), literals(literals) {
+    Clause::Clause(int32_t weight, const std::vector<int32_t>& literals) : weight(weight), literals(literals) {
         for (const auto& lit : literals) {
-            if (!tautology && literals.find(-lit) != literals.end()) {
+            if (std::find(literals.begin(), literals.end(), -lit) != literals.end()) {
                 tautology = true;
             }
-            if (!has_double && literals.find(lit) != literals.end()) {
+            if (std::find(literals.begin(), literals.end(), lit) != literals.end()) {
                 has_double = true;
                 duplicate_literals.insert(lit);
             }
@@ -29,7 +29,7 @@ namespace cnf
         return weight;
     }
 
-    const std::unordered_multiset<int32_t>& Clause::get_literals() const {
+    const std::vector<int32_t>& Clause::get_literals() const {
         return literals;
     }
 

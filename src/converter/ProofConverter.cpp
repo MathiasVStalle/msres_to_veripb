@@ -91,17 +91,18 @@ namespace converter {
         } else {
             throw std::runtime_error("Unknown rule type: " + std::string(typeid(*rule).name()));
         }
-
-        // Print all clauses from blocking_vars
-        for (const auto &[clause_ptr, blocking_var] : this->blocking_vars)
-        {
-            clause_ptr.print();
-        }
     }
 
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
         std::vector<cnf::Clause> new_clauses = rule->apply();
+        rule->get_clause_1().print();
+        rule->get_clause_2().print();
+        for (const auto &clause : new_clauses)
+        {
+            clause.print();
+        }
+        std::cout << std::endl;
         this->write_new_clauses(new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
@@ -147,6 +148,10 @@ namespace converter {
     void ProofConverter::write_split_rule(const cnf::SplitRule* rule) {
         // Add the new clause
         std::vector<cnf::Clause> new_clauses = rule->apply();
+        for (const auto &clause : new_clauses) {
+            clause.print();
+        }
+        std::cout << std::endl;
         this->write_new_clauses(new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;

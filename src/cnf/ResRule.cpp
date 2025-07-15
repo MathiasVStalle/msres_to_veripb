@@ -1,4 +1,3 @@
-#include <set>
 #include <vector>
 #include <iostream>
 #include <cstdint>
@@ -24,52 +23,62 @@ namespace cnf
     std::vector<Clause> ResRule::apply() const {
 
         // find the two literals that are the same in both but with different signs
-        std::unordered_multiset<int32_t> literals_1 = clause_1.get_literals();
-        std::unordered_multiset<int32_t> literals_2 = clause_2.get_literals();
+        std::vector<int32_t> literals_1 = clause_1.get_literals();
+        std::vector<int32_t> literals_2 = clause_2.get_literals();
         int32_t common_literal = this->get_pivot();
 
         // Remove the common literal from both clauses
-        std::unordered_multiset<int32_t> mod_literals_1 = literals_1;
-        std::unordered_multiset<int32_t> mod_literals_2 = literals_2;
-        mod_literals_1.erase(common_literal);
-        mod_literals_2.erase(-common_literal);
+        std::vector<int32_t> mod_literals_1 = literals_1;
+        std::vector<int32_t> mod_literals_2 = literals_2;
+
+        auto it = std::find(mod_literals_1.begin(), mod_literals_1.end(), common_literal);
+        if (it != mod_literals_1.end()) {
+            std::cout << "Found common literal: " << *it << std::endl;
+            mod_literals_1.erase(it);  // Only erases the *first* match
+        }
+
+        it = std::find(mod_literals_2.begin(), mod_literals_2.end(), -common_literal);
+        if (it != mod_literals_2.end()) {
+            std::cout << "Found common literal: " << *it << std::endl;
+            mod_literals_2.erase(it);  // Only erases the *first* match
+        }
 
         std::vector<Clause> new_clauses;
 
         // Build the first new clause
-        std::unordered_multiset<int32_t> new_literals = mod_literals_1;
-        new_literals.insert(mod_literals_2.begin(), mod_literals_2.end());
+        std::vector<int32_t> new_literals = mod_literals_1;
+        new_literals.insert(new_literals.end(), mod_literals_2.begin(), mod_literals_2.end());
         Clause new_clause(std::min(clause_1.get_weight(), clause_2.get_weight()), new_literals);
         new_clauses.push_back(new_clause);
 
         // Build the first half of the resolution clauses
-        std::set<int32_t> extention;
+        std::vector<int32_t> extention;
         for (const auto& lit : mod_literals_2) {
             new_literals = literals_1;
-            new_literals.insert(extention.begin(), extention.end());
-            new_literals.insert(-lit);
+            new_literals.insert(new_literals.end(), extention.begin(), extention.end());
+            new_literals.insert(new_literals.end(), -lit);
 
             int weight = std::min(clause_1.get_weight(), clause_2.get_weight());
 
             Clause new_clause(weight, new_literals);
             new_clauses.push_back(new_clause);
 
-            extention.insert(lit);
+            extention.push_back(lit);
         }
 
         // Build the second half of the resolution clauses
         extention.clear();
         for (const auto& lit : mod_literals_1) {
             new_literals = literals_2;
-            new_literals.insert(extention.begin(), extention.end());
-            new_literals.insert(-lit);
+            new_literals.insert(new_literals.end(), extention.begin(), extention.end());
+            new_literals.insert(new_literals.end(), -lit);
 
             int weight = std::min(clause_1.get_weight(), clause_2.get_weight());
 
             Clause new_clause(weight, new_literals);
             new_clauses.push_back(new_clause);
 
-            extention.insert(lit);
+            extention.push_back(lit);
         }
 
         return new_clauses;
@@ -99,16 +108,6 @@ namespace cnf
         } else {
             throw std::out_of_range("Index out of range");
         }
-    }
-
-    std::unordered_set<int32_t> ResRule::remove_tautologies(std::unordered_set<int32_t>& literals) const{
-        std::unordered_set<int32_t> new_literals;
-        for (const auto& lit : literals) {
-            if (literals.find(-lit) == literals.end()) {
-                new_literals.insert(lit);
-            }
-        }
-        return new_literals;
     }
 }
 

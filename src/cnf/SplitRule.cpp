@@ -16,11 +16,11 @@ namespace cnf
     SplitRule::~SplitRule() {}
 
     std::vector<Clause> SplitRule::apply() const {
-        std::unordered_multiset<int32_t> literals_1 = clause.get_literals();
-        std::unordered_multiset<int32_t> literals_2 = clause.get_literals();
+        std::vector<int32_t> literals_1 = clause.get_literals();
+        std::vector<int32_t> literals_2 = clause.get_literals();
 
-        literals_1.insert(get_pivot());
-        literals_2.insert(-get_pivot());
+        literals_1.insert(literals_1.end(), get_pivot());
+        literals_2.insert(literals_2.end(), -get_pivot());
 
         return {Clause(clause.get_weight(), literals_1), Clause(clause.get_weight(), literals_2)};
     }

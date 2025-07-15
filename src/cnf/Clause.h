@@ -2,6 +2,7 @@
 #define CNF_H
 
 #include <cstdint>
+#include <vector>
 #include <unordered_set>
 
 namespace cnf
@@ -11,7 +12,7 @@ namespace cnf
             bool tautology = false;
             bool has_double = false;
             int32_t weight;
-            std::unordered_multiset<int32_t> literals;
+            std::vector<int32_t> literals;
             std::unordered_set<int32_t> duplicate_literals;
 
         public:
@@ -21,7 +22,7 @@ namespace cnf
              *
              * @param literals The unordered_set of literals in the clause.
              */
-            Clause(const std::unordered_multiset<int32_t> &literals);
+            Clause(const std::vector<int32_t> &literals);
 
             /**
              * Constructor for a soft clause.
@@ -29,7 +30,7 @@ namespace cnf
              * @param weight The weight of the clause.
              * @param literals The unordered_set of literals in the clause.
              */
-            Clause(int32_t weight, const std::unordered_multiset<int32_t> &literals);
+            Clause(int32_t weight, const std::vector<int32_t> &literals);
 
             /**
              * Destructor for the Clause class.
@@ -55,7 +56,7 @@ namespace cnf
              *
              * @return The unordered_set of literals in the clause.
              */
-            const std::unordered_multiset<int32_t> &get_literals() const;
+            const std::vector<int32_t> &get_literals() const;
 
             /**
              * Get the set of literals in the clause as an unordered_set.

@@ -18,8 +18,6 @@ namespace cnf
             const uint32_t constraint_id_1;
             const uint32_t constraint_id_2;
 
-            std::unordered_set<int32_t> remove_tautologies(std::unordered_set<int32_t>& literals) const;
-
         public:
             /**
              * Constructor for ResRule.

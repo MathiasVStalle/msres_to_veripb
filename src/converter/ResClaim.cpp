@@ -18,17 +18,19 @@ namespace converter {
         int32_t pivot = rule.get_pivot();
 
         // Remove the pivot literal from the clauses
-        std::unordered_multiset<int32_t> literals_1 = clauses[0].second.get_literals();
-        std::unordered_multiset<int32_t> literals_2 = clauses[1].second.get_literals();
-        if (literals_1.erase(pivot) == 0 && literals_1.erase(-pivot) == 0)
-            throw std::runtime_error("Pivot literal not found in the first clause.");
-        if (literals_2.erase(pivot) == 0 && literals_2.erase(-pivot) == 0)
-            throw std::runtime_error("Pivot literal not found in the second clause.");
-        std::vector<int32_t> literals_1_vec(literals_1.begin(), literals_1.end());
-        std::vector<int32_t> literals_2_vec(literals_2.begin(), literals_2.end());
+        std::vector<int32_t> literals_1 = clauses[0].second.get_literals();
+        std::vector<int32_t> literals_2 = clauses[1].second.get_literals();
+        auto it = std::find(literals_1.begin(), literals_1.end(), pivot);
+        if (it != literals_1.end()) {
+            literals_1.erase(it);
+        }
+        it = std::find(literals_2.begin(), literals_2.end(), -pivot);
+        if (it != literals_2.end()) {
+            literals_2.erase(it);
+        }
 
         // Sort the literals to ensure consistent ordering (a_1 ... a_n, b_1 ... b_m, pivot)
-        initialize_vars(pivot, literals_1_vec, literals_2_vec, variable_supplier);
+        initialize_vars(pivot, literals_1, literals_2, variable_supplier);
         vars.push_back(variable_supplier(pivot));
 
 
@@ -63,10 +65,15 @@ namespace converter {
         // TODO: This can be optimized
         // Find every variable that is in both clauses
         for (const auto &lit : literals_1) {
-            if (literals_2.contains(lit)) {
+            if (std::find(literals_2.begin(), literals_2.end(), lit) != literals_2.end()) {
                 common_vars.insert(variable(variable_supplier(lit)));
             }
         }
+
+        for (const auto &lit : literals) {
+            std::cout << "Literal: " << lit.v.v << (lit.negated ? " (negated)" : "") << std::endl;
+        }
+        std::cout << std::endl;
     }
 
     const std::vector<Lit> &ResClaim::get_vars() const {

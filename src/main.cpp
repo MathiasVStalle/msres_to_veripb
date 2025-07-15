@@ -45,11 +45,9 @@ int main(int argc, char *argv[]) {
     std::string msres_file = argv[2];
     std::string output_file = argv[3];
     
-    std::cout << "Stop" << std::endl;
-    
     converter::ProofConverter proof_convertor(wcnf_file, msres_file, output_file);
     proof_convertor.write_proof();
 
-    check_proofs_are_same(output_file, "example/unit_clause/test.pbp");
+    check_proofs_are_same(output_file, "example/test/test.pbp");
     return 0;
 }

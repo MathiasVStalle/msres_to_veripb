@@ -46,10 +46,10 @@ namespace parser
                 }
             }
 
-            std::unordered_multiset<int32_t> literals;
+            std::vector<int32_t> literals;
             int literal;
             while (iss >> literal && literal != 0) {
-                literals.insert(literal);
+                literals.push_back(literal);
             }
 
             clauses.emplace_back(weight, literals);
