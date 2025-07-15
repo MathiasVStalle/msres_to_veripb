@@ -32,12 +32,11 @@ namespace converter {
         this->pl->set_comments(true);
     }
 
-    // TODO: Segmentation fault
     ProofConverter::~ProofConverter() {
-        // if (this->pl != nullptr) {
-        //     delete this->pl;
-        //     this->pl = nullptr;
-        // }
+        if (this->pl != nullptr) {
+            delete this->pl;
+            this->pl = nullptr;
+        }
     }
 
     void ProofConverter::write_proof() {
@@ -51,27 +50,24 @@ namespace converter {
         }
 
         // Write the proof header
-        this->var_mgr.set_number_original_variables(this->vars.size());
-        this->pl->write_proof_header();
-        this->pl->set_n_orig_constraints(n_original);
+        var_mgr.set_number_original_variables(vars.size());
+        pl->write_proof_header();
+        pl->set_n_orig_constraints(n_original);
 
-        //TODO: Reification clauses
-        this->reificate_original_clauses();
-        this->pl->flush_proof();
+        // Add the clauses from the WCNF file
+        reificate_original_clauses();
+        pl->flush_proof();
 
         // Write the proof
         cnf::Rule *rule;
-
         while (true) {
             rule = this->msres_parser.next_rule();
             
-            if (rule == nullptr) {
+            if (rule == nullptr)
                 break;
-            }
-            this->write_proof(rule);
-            pl->write_comment("Rule: ");
-            pl->write_comment("");
-            pl->write_comment("");
+
+            write_proof(rule);
+            pl->flush_proof();
         }
 
         pl->write_conclusion_NONE();
@@ -80,7 +76,6 @@ namespace converter {
     }
 
 
-    // TODO: SpltRule is not yet implemented
     void ProofConverter::write_proof(const cnf::Rule* rule) {
         if (dynamic_cast<const cnf::ResRule*>(rule)) {
             const cnf::ResRule* res_rule = dynamic_cast<const cnf::ResRule*>(rule);
@@ -98,8 +93,7 @@ namespace converter {
         std::vector<cnf::Clause> new_clauses = rule->apply();
         rule->get_clause_1().print();
         rule->get_clause_2().print();
-        for (const auto &clause : new_clauses)
-        {
+        for (const auto &clause : new_clauses) {
             clause.print();
         }
         std::cout << std::endl;
@@ -125,6 +119,15 @@ namespace converter {
         std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
         std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
 
+        // TODO: Implement
+        if (clause_1.is_hard_clause() && !clause_2.is_hard_clause()) {
+            
+        } else if (!clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
+            
+        } else if (clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
+            return;
+        }
+
         ResClaimTypeA c_1 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
         ResClaimTypeA c_2 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
         ResClaimTypeB c_3 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
@@ -146,12 +149,7 @@ namespace converter {
 
     // TODO: If the pivot doesn't exist if the prooflogger, add it
     void ProofConverter::write_split_rule(const cnf::SplitRule* rule) {
-        // Add the new clause
         std::vector<cnf::Clause> new_clauses = rule->apply();
-        for (const auto &clause : new_clauses) {
-            clause.print();
-        }
-        std::cout << std::endl;
         this->write_new_clauses(new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
@@ -170,16 +168,10 @@ namespace converter {
 
         SplitClaim c_1 = SplitClaim(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
         SplitClaim c_2 = SplitClaim(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
-        
-        // Generate the two claims
         constraintid claim_1 = c_1.write(*pl);
-        pl->write_comment("__Claim 1__");
         constraintid claim_2 = c_2.write(*pl);
-        pl->write_comment("__Claim 2__");
-
         pl->move_to_coreset_by_id(claim_1);
         pl->move_to_coreset_by_id(claim_2);
-
         change_objective(clause, new_clauses[0], new_clauses[1]);
     }
 
@@ -201,7 +193,7 @@ namespace converter {
         }
     }
 
-    // TODO: Simplify this function
+    // TODO: Simplify this function and add a clauses parameter
     void ProofConverter::reificate_original_clauses() {
         std::vector<std::pair<VeriPB::Lit, VeriPB::Lit>> unit_clauses;
 
@@ -305,13 +297,10 @@ namespace converter {
         }
     }
 
+    // TODO: Split this function into a smaller function that assembles two clauses into one contraint
     void ProofConverter::assemble_proof(
-        VeriPB::constraintid claim_1,
-        VeriPB::constraintid claim_2,
-        VeriPB::constraintid claim_3,
-        VeriPB::constraintid claim_4,
-        const cnf::Clause &clause_1,
-        const cnf::Clause &clause_2,
+        VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::constraintid claim_3, VeriPB::constraintid claim_4,
+        const cnf::Clause &clause_1, const cnf::Clause &clause_2,
         const std::vector<cnf::Clause> &new_clauses
     ) {
         // s1 + s2 >= s3 + s4 + ... + s_n
@@ -341,6 +330,7 @@ namespace converter {
         pl->move_to_coreset_by_id(-1);
     }
 
+    // TODO: Remove the clauses that are replaced from the blocking_vars map
     void ProofConverter::change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses) {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
@@ -384,7 +374,7 @@ namespace converter {
 
     void ProofConverter::clause_to_neg_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C) {
         C.clear();
-        C.add_RHS(clause.get_literals().size()); // TODO: Use get_literals_set() instead
+        C.add_RHS(clause.get_literals_set().size());
 
         for (const auto& literal : clause.get_literals_set()) {
             uint32_t var = std::abs(literal);

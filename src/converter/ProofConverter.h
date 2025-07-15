@@ -21,7 +21,7 @@ namespace converter {
     class ProofConverter
     {
         private:
-            std::string output_file;
+            std::string output_file; // TODO: This shouldn't be saved as a field
             parser::MSResParser msres_parser;
 
             VeriPB::VarManagerWithVarRewriting var_mgr;
@@ -106,21 +106,53 @@ namespace converter {
              * @param new_clauses The new clauses to be added to the proof by the applied rule.
              */
             void assemble_proof(
-                VeriPB::constraintid claim_1,
-                VeriPB::constraintid claim_2,
-                VeriPB::constraintid claim_3,
-                VeriPB::constraintid claim_4,
-                const cnf::Clause &clause_1,
-                const cnf::Clause &clause_2,
+                VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::constraintid claim_3, VeriPB::constraintid claim_4,
+                const cnf::Clause &clause_1, const cnf::Clause &clause_2,
                 const std::vector<cnf::Clause> &new_clauses
             );
 
+            /**
+             * Changes the objective in the proof logger based on the given clauses.
+             * 
+             * @param clause_1 The first clause that will be subtracted from the objective.
+             * @param clause_2 The second clause that will be subtracted from the objective.
+             * @param new_clauses The new clauses that will be added to the objective.
+             */
             void change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses);
+            
+            /**
+             * Changes the objective in the proof logger based on the given clauses.
+             * 
+             * @param clause_1 The clause that will be subtracted from the objective.
+             * @param clause_2 The first clause that will be added to the objective.
+             * @param clause_3 The second clause that will be added to the objective.
+             */
             void change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const cnf::Clause &clause_3);
 
+            /** 
+             * Creates a veripb constraint from a cnf clause.
+             * 
+             * @param clause The CNF clause to convert.
+             * @param C The VeriPB constraint to fill with the clause data.
+             */
             void clause_to_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);
+
+            /**
+             * Creates a negated veripb constraint from a cnf clause.
+             * 
+             * @param clause The CNF clause to convert.
+             * @param C The VeriPB constraint to fill with the clause data.
+             */
             void clause_to_neg_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);
 
+            /**
+             * Writes a proof by contradiction for the given claims and constraint.
+             * 
+             * @param claim_1 The first claim.
+             * @param claim_2 The second claim.
+             * @param C The constraint to proof by contradiction.
+             * @return The contraint ID of the proof by contradiction.
+             */
             VeriPB::constraintid proof_by_contradiction(VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C);
         };
 }
