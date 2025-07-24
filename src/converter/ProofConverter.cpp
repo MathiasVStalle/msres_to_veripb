@@ -8,6 +8,7 @@
 #include "ProofConverter.h"
 #include "ResClaimTypeA.h"
 #include "ResClaimTypeB.h"
+#include "ResClaimTypeC.h"
 #include "SplitClaim.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
@@ -91,12 +92,6 @@ namespace converter {
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
         // Add the new clause
         std::vector<cnf::Clause> new_clauses = rule->apply();
-        rule->get_clause_1().print();
-        rule->get_clause_2().print();
-        for (const auto &clause : new_clauses) {
-            clause.print();
-        }
-        std::cout << std::endl;
         this->write_new_clauses(new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
@@ -119,31 +114,39 @@ namespace converter {
         std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
         std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
 
-        // TODO: Implement
-        if (clause_1.is_hard_clause() && !clause_2.is_hard_clause()) {
-            
-        } else if (!clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
-            
-        } else if (clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
-            return;
-        }
-
         ResClaimTypeA c_1 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
         ResClaimTypeA c_2 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
-        ResClaimTypeB c_3 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
-        ResClaimTypeB c_4 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
         
         // Generate the four claims
         constraintid claim_1 = c_1.write(*pl);
         pl->write_comment("__Claim 1__");
         constraintid claim_2 = c_2.write(*pl);
         pl->write_comment("__Claim 2__");
-        constraintid claim_3 = c_3.write(*pl);
-        pl->write_comment("__Claim 3__");
-        constraintid claim_4 = c_4.write(*pl);
-        pl->write_comment("__Claim 4__");
 
-        assemble_proof(claim_1, claim_2, claim_3, claim_4, clause_1, clause_2, new_clauses);
+        constraintid claim_3;
+        constraintid claim_4;
+
+
+        // TODO: Clean up
+        if (clause_1.is_hard_clause()) {
+            ResClaimTypeC cl = ResClaimTypeC(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+            claim_3 = cl.write(*pl);
+            assemble_proof(claim_1, claim_2, claim_3, clause_1, clause_2, new_clauses);
+        } else if (clause_2.is_hard_clause()) {
+            ResClaimTypeC cl = ResClaimTypeC(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+            claim_3 = cl.write(*pl);
+            assemble_proof(claim_1, claim_2, claim_3, clause_1, clause_2, new_clauses);
+        } else {
+            ResClaimTypeB c_3 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+            ResClaimTypeB c_4 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+            
+            claim_3 = c_3.write(*pl);
+            pl->write_comment("__Claim 3__");
+            claim_4 = c_4.write(*pl);
+            pl->write_comment("__Claim 4__");
+
+            assemble_proof(claim_1, claim_2, claim_3, claim_4, clause_1, clause_2, new_clauses);
+        }
         change_objective(clause_1, clause_2, new_clauses);
     }
 
@@ -330,15 +333,49 @@ namespace converter {
         pl->move_to_coreset_by_id(-1);
     }
 
+    void ProofConverter::assemble_proof(
+        VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::constraintid claim_3,
+        const cnf::Clause &clause_1, const cnf::Clause &clause_2,
+        const std::vector<cnf::Clause> &new_clauses
+    ) {
+        // s1 + s2 >= s3 + s4 + ... + s_n
+        Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+        if (!clause_1.is_hard_clause()) {
+            C.add_literal(neg(blocking_vars[clause_1]), 1);
+        }
+        
+        if (!clause_2.is_hard_clause()) {
+            C.add_literal(neg(blocking_vars[clause_2]), 1);
+        }
+
+        for (auto& clause : new_clauses) {
+            C.add_literal(blocking_vars[clause], 1);
+        }
+        C.add_RHS(new_clauses.size());
+
+        CuttingPlanesDerivation cpder(pl, false);
+        VeriPB::constraintid cn = proof_by_contradiction(claim_1, claim_2, C);
+        pl->move_to_coreset_by_id(-1);
+
+        // s1 + s2 <= s3 + s4 + ... + s_n
+        pl->move_to_coreset_by_id(claim_3);
+    }
+
     // TODO: Remove the clauses that are replaced from the blocking_vars map
     void ProofConverter::change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses) {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
-        c_old.add_literal(neg(blocking_vars[clause_1]), 1);
-        c_old.add_literal(neg(blocking_vars[clause_2]), 1);
+        if (!clause_1.is_hard_clause()) {
+            c_old.add_literal(neg(blocking_vars[clause_1]), 1);
+        }
+
+        if (!clause_2.is_hard_clause()) {
+            c_old.add_literal(neg(blocking_vars[clause_2]), 1);
+        }
+
         for (auto& clause : new_clauses) {
-            if (clause.is_hard_clause()) continue;
+            // if (clause.is_hard_clause()) continue;
 
             c_new.add_literal(neg(blocking_vars[clause]), 1); // TODO: Don't add tautologies
         }

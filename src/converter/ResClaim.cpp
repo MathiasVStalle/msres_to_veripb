@@ -69,11 +69,6 @@ namespace converter {
                 common_vars.insert(variable(variable_supplier(lit)));
             }
         }
-
-        for (const auto &lit : literals) {
-            std::cout << "Literal: " << lit.v.v << (lit.negated ? " (negated)" : "") << std::endl;
-        }
-        std::cout << std::endl;
     }
 
     const std::vector<Lit> &ResClaim::get_vars() const {
@@ -158,6 +153,7 @@ namespace converter {
 
     // TODO: Move this to ClaimTypeB
     // TODO: Remove blockingliterals with active_blocking_literals
+    // TODO: Remove result
     constraintid ResClaim::add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals, std::unordered_set<Lit, LitHash, LitEqual> &result) {
         CuttingPlanesDerivation cpder(&pl, false);
 

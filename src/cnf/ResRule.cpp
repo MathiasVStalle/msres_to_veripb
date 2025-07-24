@@ -33,13 +33,11 @@ namespace cnf
 
         auto it = std::find(mod_literals_1.begin(), mod_literals_1.end(), common_literal);
         if (it != mod_literals_1.end()) {
-            std::cout << "Found common literal: " << *it << std::endl;
             mod_literals_1.erase(it);  // Only erases the *first* match
         }
 
         it = std::find(mod_literals_2.begin(), mod_literals_2.end(), -common_literal);
         if (it != mod_literals_2.end()) {
-            std::cout << "Found common literal: " << *it << std::endl;
             mod_literals_2.erase(it);  // Only erases the *first* match
         }
 

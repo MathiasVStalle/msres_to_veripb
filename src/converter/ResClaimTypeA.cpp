@@ -35,7 +35,9 @@ namespace converter {
         // Make contradicting constraint
         Constraint<Lit, uint32_t, uint32_t> C;
         C.add_literal(get_pivot_literal(), 1);
-        C.add_literal(neg(get_active_original_blocking_var()), 1);
+        if (!is_hard_clause(get_active_original_blocking_var())) {
+            C.add_literal(neg(get_active_original_blocking_var()), 1);
+        }
         for (auto &sn : get_active_blocking_vars()) {
             C.add_literal(sn, 1);
         }
@@ -63,7 +65,7 @@ namespace converter {
         }
 
         constraintid result;
-        if (!is_hard_clause(get_active_original_blocking_var())) {
+        if (!is_hard_clause(get_inactive_original_blocking_var())) {
             result = add_all_prev_from_literal(pl, get_inactive_blocking_vars().size() + 1, neg(get_inactive_original_blocking_var()));
         } else {
             result = add_all_prev(pl, get_inactive_blocking_vars().size() + 1);
@@ -215,7 +217,9 @@ namespace converter {
 
             // Add the missing literals
             cpder.start_from_constraint(-1);
-            cpder.add_literal_axiom(neg(get_active_original_blocking_var()));
+            if (!is_hard_clause(get_active_original_blocking_var())) {
+                cpder.add_literal_axiom(neg(get_active_original_blocking_var()));
+            }
             cpder.add_literal_axiom(get_pivot_literal());
             subclaims.push_back(cpder.end());
         }

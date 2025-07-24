@@ -4,7 +4,6 @@
 namespace converter {
 
     VeriPB::constraintid ResClaimTypeB::write(Prooflogger &pl) {
-        const int32_t RHS = get_blocking_vars().size() - 3;
         constraintid cn_1;
         constraintid cn_2;
         constraintid cnneg;

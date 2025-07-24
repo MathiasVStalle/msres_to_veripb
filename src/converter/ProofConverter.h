@@ -111,6 +111,13 @@ namespace converter {
                 const std::vector<cnf::Clause> &new_clauses
             );
 
+
+            void assemble_proof(
+                VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::constraintid claim_3,
+                const cnf::Clause &clause_1, const cnf::Clause &clause_2,
+                const std::vector<cnf::Clause> &new_clauses
+            );
+
             /**
              * Changes the objective in the proof logger based on the given clauses.
              * 
