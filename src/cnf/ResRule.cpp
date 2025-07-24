@@ -9,6 +9,10 @@
 
 namespace cnf
 {
+    int32_t min (int32_t a, int32_t b) {
+        return (a < b && a != 0) ? a : b;
+    }
+
     ResRule::ResRule(const uint32_t pivot, const Clause& clause_1, const Clause& clause_2) 
         : Rule(pivot), clause_1(clause_1), clause_2(clause_2), constraint_id_1(0), constraint_id_2(0) {}
 
@@ -46,7 +50,7 @@ namespace cnf
         // Build the first new clause
         std::vector<int32_t> new_literals = mod_literals_1;
         new_literals.insert(new_literals.end(), mod_literals_2.begin(), mod_literals_2.end());
-        Clause new_clause(std::min(clause_1.get_weight(), clause_2.get_weight()), new_literals);
+        Clause new_clause(min(clause_1.get_weight(), clause_2.get_weight()), new_literals);
         new_clauses.push_back(new_clause);
 
         // Build the first half of the resolution clauses
@@ -56,7 +60,7 @@ namespace cnf
             new_literals.insert(new_literals.end(), extention.begin(), extention.end());
             new_literals.insert(new_literals.end(), -lit);
 
-            int weight = std::min(clause_1.get_weight(), clause_2.get_weight());
+            int weight = min(clause_1.get_weight(), clause_2.get_weight());
 
             Clause new_clause(weight, new_literals);
             new_clauses.push_back(new_clause);
@@ -71,7 +75,7 @@ namespace cnf
             new_literals.insert(new_literals.end(), extention.begin(), extention.end());
             new_literals.insert(new_literals.end(), -lit);
 
-            int weight = std::min(clause_1.get_weight(), clause_2.get_weight());
+            int weight = min(clause_1.get_weight(), clause_2.get_weight());
 
             Clause new_clause(weight, new_literals);
             new_clauses.push_back(new_clause);

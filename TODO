@@ -1,6 +1,7 @@
-- Hard clauses (Proof)
 - Cleanup Claim classes of the resolution rule
 - Retrieve tautologies by the Prooflogger instead of the supplier in ResClaim
 - Use warning flags
 - Use clang-tidy
 - Fix TODOs in code
+- Remove ResClaimTypeC and combine it with ResClaimTypeB
+- Add the correct weights for the split rule
