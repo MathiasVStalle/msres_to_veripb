@@ -110,11 +110,10 @@ namespace converter {
 
         std::function<VeriPB::Lit(int32_t)> var_supplier = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
         std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.contains(lit); };
-        std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
         std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
 
-        ResClaimTypeA c_1 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
-        ResClaimTypeA c_2 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+        ResClaimTypeA c_1 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, false);
+        ResClaimTypeA c_2 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, true);
         
         // Generate the four claims
         constraintid claim_1 = c_1.write(*pl);
@@ -128,16 +127,16 @@ namespace converter {
 
         // TODO: Clean up
         if (clause_1.is_hard_clause()) {
-            ResClaimTypeB cl = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+            ResClaimTypeB cl = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, false);
             claim_3 = cl.write(*pl);
             assemble_proof(claim_1, claim_2, claim_3, clause_1, clause_2, new_clauses);
         } else if (clause_2.is_hard_clause()) {
-            ResClaimTypeB cl = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+            ResClaimTypeB cl = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, true);
             claim_3 = cl.write(*pl);
             assemble_proof(claim_1, claim_2, claim_3, clause_1, clause_2, new_clauses);
         } else {
-            ResClaimTypeB c_3 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
-            ResClaimTypeB c_4 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+            ResClaimTypeB c_3 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, false);
+            ResClaimTypeB c_4 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, true);
             
             claim_3 = c_3.write(*pl);
             pl->write_comment("__Claim 3__");
@@ -163,13 +162,11 @@ namespace converter {
             std::make_pair(blocking_vars[new_clauses[1]], new_clauses[1])
         };
 
-        std::function<VeriPB::Lit(int32_t)> var_supplier = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
         std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.contains(lit); };
-        std::function<VeriPB::constraintid(VeriPB::Lit)> tautology_supplier = [this](VeriPB::Lit lit) -> VeriPB::constraintid { return tautologies.at(lit); };
         std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
 
-        SplitClaim c_1 = SplitClaim(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
-        SplitClaim c_2 = SplitClaim(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+        SplitClaim c_1 = SplitClaim(clauses, tautology_predicate, hard_clause_predicate, false);
+        SplitClaim c_2 = SplitClaim(clauses, tautology_predicate, hard_clause_predicate, true);
         constraintid claim_1 = c_1.write(*pl);
         constraintid claim_2 = c_2.write(*pl);
         pl->move_to_coreset_by_id(claim_1);
@@ -289,6 +286,7 @@ namespace converter {
 
             if (clause.is_tautology()) {
                 tautologies[lit] = pl->redundance_based_strengthening_unit_clause(lit);
+                pl->store_reified_constraint_left_implication(var, tautologies[lit]);
                 continue;
             }
 

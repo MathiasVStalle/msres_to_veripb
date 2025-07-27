@@ -50,14 +50,15 @@ namespace converter {
 
         // TODO: This should be put in a separete function
         for (Lit sn : get_inactive_blocking_vars()) {
+            constraintid constraint = pl.get_reified_constraint_left_implication(variable(sn));
+
             if (is_tautology(sn)) {
-                cpder.start_from_constraint(get_tautology(sn));
+                cpder.start_from_constraint(constraint);
                 cpder.add_literal_axiom(get_pivot_literal());
                 cpder.end();
                 continue;
             }
 
-            constraintid constraint = pl.get_reified_constraint_left_implication(variable(sn));
             weaken_all_except(pl, constraint, get_vars(), get_vars().size() - 1); // TODO: Add weakening restriction
         }
 
@@ -74,6 +75,8 @@ namespace converter {
     }
 
     std::vector<constraintid> ResClaimTypeA::build_iterative_subclaims(Prooflogger &pl) {
+        CuttingPlanesDerivation cpder(&pl, false);
+
         std::vector<Lit> vars_without_pivot = get_vars();
         vars_without_pivot.pop_back(); // Remove the pivot variable
 
@@ -85,8 +88,7 @@ namespace converter {
         // Initial constraint
         for (uint32_t i = 0; i < get_active_blocking_vars().size() - 1; i++) {
             if (is_tautology(get_active_blocking_vars()[i + 1])) {
-                CuttingPlanesDerivation cpder(&pl, false);
-                cpder.start_from_constraint(get_tautology(get_active_blocking_vars()[i + 1]));
+                cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(get_active_blocking_vars()[i + 1])));
                 cpder.add_literal_axiom(get_literals()[i + offset]);
                 cpder.end();
             } else {
@@ -98,11 +100,10 @@ namespace converter {
         pl.write_comment("Initial constraint");
         pl.write_comment("");
 
-        // Reapeat for the reamining constraints
+        // Reapeat for the remaining constraints
         for (uint32_t i = 0; i < num_active_vars; i++) {
             if (is_tautology(get_active_blocking_vars()[0])) {
-                CuttingPlanesDerivation cpder(&pl, false);
-                cpder.start_from_constraint(get_tautology(get_active_blocking_vars()[0]));
+                cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(get_active_blocking_vars()[0])));
                 cpder.add_literal_axiom(neg(get_literals()[i + offset]));
                 cpder.end();
             } else {
@@ -115,8 +116,7 @@ namespace converter {
                 uint32_t n = (j <= i) ? j : i;
 
                 if (is_tautology(get_active_blocking_vars()[j + 1])) {
-                    CuttingPlanesDerivation cpder(&pl, false);
-                    cpder.start_from_constraint(get_tautology(get_active_blocking_vars()[j + 1]));
+                    cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(get_active_blocking_vars()[j + 1])));
                     VeriPB::Lit lit = (n == i) ? neg(get_literals()[n + offset]) : get_literals()[n + offset];
                     cpder.add_literal_axiom(lit);
                     cpder.end();
@@ -190,8 +190,7 @@ namespace converter {
 
         for (uint32_t i = 0; i < num_unactive_vars; i++) {
             if (is_tautology(get_active_blocking_vars()[0])) {
-                CuttingPlanesDerivation cpder(&pl, false);
-                cpder.start_from_constraint(get_tautology(get_active_blocking_vars()[0]));
+                cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(get_active_blocking_vars()[0])));
                 cpder.add_literal_axiom(neg(get_literals()[i + offset]));
                 cpder.end();
             } else {
@@ -200,8 +199,7 @@ namespace converter {
 
             for (uint32_t j = 1; j < active_constraints.size(); j++) {
                 if (is_tautology(get_active_blocking_vars()[j])) {
-                    CuttingPlanesDerivation cpder(&pl, false);
-                    cpder.start_from_constraint(get_tautology(get_active_blocking_vars()[j]));
+                    cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(get_active_blocking_vars()[j])));
                     cpder.add_literal_axiom(neg(get_literals()[i + offset]));
                     cpder.end();
                 } else {

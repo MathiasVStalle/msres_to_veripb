@@ -22,10 +22,9 @@ namespace converter {
                 const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses, 
                 const std::function<VeriPB::Lit(int32_t)> &variable_supplier, 
                 const std::function<bool(VeriPB::Lit)> &tautology_predicate,
-                const std::function<VeriPB::constraintid(VeriPB::Lit)> &tautology_supplier,
                 const std::function<bool(VeriPB::Lit)> &hard_clause_predicate,
                 bool negated_pivot
-            ) : ResClaim(rule, clauses, variable_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, negated_pivot) {}
+            ) : ResClaim(rule, clauses, variable_supplier, tautology_predicate, hard_clause_predicate, negated_pivot) {}
 
             constraintid write(Prooflogger &pl) override;
 
