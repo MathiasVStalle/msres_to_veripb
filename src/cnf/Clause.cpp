@@ -15,7 +15,6 @@ namespace cnf
             }
             if (std::find(literals.begin(), literals.end(), lit) != literals.end()) {
                 has_double = true;
-                duplicate_literals.insert(lit);
             }
         }
     }
@@ -23,7 +22,7 @@ namespace cnf
     Clause::~Clause() {}
 
     Clause::Clause(const Clause& other) : 
-    weight(other.weight), literals(other.literals), duplicate_literals(other.duplicate_literals), tautology(other.tautology), has_double(other.has_double) {}
+    weight(other.weight), literals(other.literals), tautology(other.tautology), has_double(other.has_double) {}
 
     int32_t Clause::get_weight() const {
         return weight;
@@ -33,8 +32,8 @@ namespace cnf
         return literals;
     }
 
-    const std::unordered_set<int32_t>& Clause::get_duplicate_literals() const {
-        return duplicate_literals;
+    const std::unordered_set<int32_t> Clause::get_literals_set() const {
+        return std::unordered_set<int32_t>(literals.begin(), literals.end());
     }
 
     bool Clause::is_unit_clause() const {

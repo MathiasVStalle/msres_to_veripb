@@ -13,7 +13,6 @@ namespace cnf
             bool has_double = false;
             int32_t weight;
             std::vector<int32_t> literals;
-            std::unordered_set<int32_t> duplicate_literals;
 
         public:
             /**
@@ -63,16 +62,8 @@ namespace cnf
              *
              * @return The unordered_set of literals in the clause.
              */
-            const std::unordered_set<int32_t> get_literals_set() const {
-                return std::unordered_set<int32_t>(literals.begin(), literals.end());
-            }
+            const std::unordered_set<int32_t> get_literals_set() const;
 
-            /**
-             * Get the set of duplicate literals in the clause.
-             *
-             * @return The unordered_set of duplicate literals in the clause.
-             */
-            const std::unordered_set<int32_t> &get_duplicate_literals() const;
             /** 
              * Check if the clause is a unit clause.
              * 
