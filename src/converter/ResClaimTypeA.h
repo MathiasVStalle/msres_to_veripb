@@ -13,7 +13,8 @@ using namespace VeriPB;
 
 namespace converter {
     class ResClaimTypeA final : public ResClaim {
-        
+        private:
+            std::vector<constraintid> active_constraints; // TODO: Remove
 
         public:
             ResClaimTypeA(

@@ -3,7 +3,7 @@
 
 namespace converter {
     VeriPB::constraintid ResClaimTypeA::write(Prooflogger &pl) {
-        const int32_t RHS = get_blocking_vars().size() - 4;
+        const int32_t RHS = get_active_blocking_vars().size() + get_inactive_blocking_vars().size() - 2;
 
         std::vector<Lit> vars_without_pivot = get_vars();
         vars_without_pivot.pop_back(); // Remove the pivot variable
@@ -12,12 +12,9 @@ namespace converter {
         constraintid completed;
         std::vector<constraintid> subclaims;
 
-        std::vector<constraintid> active_constraints;
         for (const Lit &sn : get_active_blocking_vars()) {
             active_constraints.push_back(pl.get_reified_constraint_left_implication(variable(sn)));
         }
-        set_active_constraints(active_constraints);
-
 
         subclaims = build_iterative_subclaims(pl);
         pl.flush_proof();
@@ -83,7 +80,7 @@ namespace converter {
         std::vector<constraintid> result;
 
         uint32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
-        uint32_t num_active_vars = get_active_constraints().size() - 1;
+        uint32_t num_active_vars = active_constraints.size() - 1;
 
         // Initial constraint
         for (uint32_t i = 0; i < get_active_blocking_vars().size() - 1; i++) {
@@ -93,7 +90,7 @@ namespace converter {
                 cpder.add_literal_axiom(get_literals()[i + offset]);
                 cpder.end();
             } else {
-                weaken_all_except(pl, get_active_constraints()[i + 1], get_vars(), i + offset, (num_active_vars - 1) + offset);
+                weaken_all_except(pl, active_constraints[i + 1], get_vars(), i + offset, (num_active_vars - 1) + offset);
             }
         }
         constraintid initial = add_all_prev_from_literal(pl, num_active_vars, get_active_blocking_vars()[0]);
@@ -109,7 +106,7 @@ namespace converter {
                 cpder.add_literal_axiom(neg(get_literals()[i + offset]));
                 cpder.end();
             } else {
-                weaken_all_except(pl, get_active_constraints()[0], vars_without_pivot, i + offset);
+                weaken_all_except(pl, active_constraints[0], vars_without_pivot, i + offset);
             }
 
             for (uint32_t j = 0; j < num_active_vars; j++) {
@@ -124,7 +121,7 @@ namespace converter {
                     cpder.add_literal_axiom(lit);
                     cpder.end();
                 } else {
-                    weaken_all_except(pl, get_active_constraints()[j + 1], get_vars(), n + offset);
+                    weaken_all_except(pl, active_constraints[j + 1], get_vars(), n + offset);
                 }
             }
 
@@ -198,10 +195,10 @@ namespace converter {
                 cpder.add_literal_axiom(neg(get_literals()[i + offset]));
                 cpder.end();
             } else {
-                weaken_all_except(pl, get_active_constraints()[0], vars_without_pivot, i + offset);
+                weaken_all_except(pl, active_constraints[0], vars_without_pivot, i + offset);
             }
 
-            for (uint32_t j = 1; j < get_active_constraints().size(); j++) {
+            for (uint32_t j = 1; j < active_constraints.size(); j++) {
                 if (is_tautology(get_active_blocking_vars()[j])) {
                     CuttingPlanesDerivation cpder(&pl, false);
                     cpder.start_from_constraint(get_tautology(get_active_blocking_vars()[j]));
@@ -209,11 +206,11 @@ namespace converter {
                     cpder.end();
                 } else {
                     // TODO: Not all the a's are used, so this can be optimized
-                    weaken_all_except(pl, get_active_constraints()[j], get_vars(), i + offset);
+                    weaken_all_except(pl, active_constraints[j], get_vars(), i + offset);
                 }
             }
 
-            add_all_prev(pl, get_active_constraints().size());
+            add_all_prev(pl, active_constraints.size());
 
             // Add the missing literals
             cpder.start_from_constraint(-1);

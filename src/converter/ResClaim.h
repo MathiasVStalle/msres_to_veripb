@@ -24,19 +24,12 @@ namespace converter {
             Lit pivot_literal;
 
             std::vector<Lit> vars;                          // TODO: Remove and use literals if possible
-            std::vector<Lit> literals; 
-            std::vector<Lit> blocking_vars;                 // TODO: Remove
+            std::vector<Lit> literals;
 
             Lit active_original_blocking_var;
             Lit inactive_original_blocking_var;
-
             std::vector<Lit> active_blocking_vars;
             std::vector<Lit> inactive_blocking_vars;
-
-            std::vector<Lit> active_vars;                   // TODO: Remove if possible
-            std::vector<constraintid> active_constraints;   // TODO: Remove if possible
-            
-            std::unordered_set<Var, VarHash, VarEqual> common_vars;
 
         public:
             ResClaim(
@@ -51,17 +44,12 @@ namespace converter {
         protected:
 
             const std::vector<Lit>& get_vars() const;
-            const std::vector<Lit>& get_blocking_vars() const;
             const std::vector<Lit>& get_literals() const;
             const Lit& get_pivot_literal() const;
             const Lit& get_active_original_blocking_var() const;
             const Lit& get_inactive_original_blocking_var() const;
             const std::vector<Lit>& get_active_blocking_vars() const;
             const std::vector<Lit>& get_inactive_blocking_vars() const;
-            const std::vector<constraintid>& get_active_constraints() const;
-            const std::vector<Lit>& get_active_vars() const;
-
-            void set_active_constraints(const std::vector<constraintid> &active_constraints);
 
             // TODO: variables should not be given directly
             constraintid weaken(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end);

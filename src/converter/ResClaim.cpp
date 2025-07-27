@@ -34,6 +34,7 @@ namespace converter {
         vars.push_back(variable_supplier(pivot));
 
 
+        std::vector<Lit> blocking_vars;
         for (const auto &clause : clauses) {
             blocking_vars.push_back(clause.first);
         }
@@ -51,7 +52,6 @@ namespace converter {
     
            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
            this->inactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
-           this->active_vars = std::vector<Lit>(vars.begin(), vars.begin() + num_clauses_1);
         } else {
            this->pivot_literal = neg(vars.back());
            this->active_original_blocking_var = blocking_vars[1];
@@ -59,15 +59,6 @@ namespace converter {
     
            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
            this->inactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
-           this->active_vars = std::vector<Lit>(vars.begin() + num_clauses_1, vars.end() - 1);
-        }
-
-        // TODO: This can be optimized
-        // Find every variable that is in both clauses
-        for (const auto &lit : literals_1) {
-            if (std::find(literals_2.begin(), literals_2.end(), lit) != literals_2.end()) {
-                common_vars.insert(variable(variable_supplier(lit)));
-            }
         }
     }
 
@@ -77,10 +68,6 @@ namespace converter {
 
     const std::vector<Lit> &ResClaim::get_literals() const {
         return literals;
-    }
-
-    const std::vector<Lit> &ResClaim::get_blocking_vars() const {
-        return blocking_vars;
     }
 
     const Lit &ResClaim::get_pivot_literal() const {
@@ -102,15 +89,6 @@ namespace converter {
     const std::vector<Lit> &ResClaim::get_inactive_blocking_vars() const {
         return inactive_blocking_vars;
     }
-
-    const std::vector<constraintid> &ResClaim::get_active_constraints() const {
-        return active_constraints;
-    }
-
-    void ResClaim::set_active_constraints(const std::vector<constraintid> &active_constraints) {
-        this->active_constraints = active_constraints;
-    }
-
 
     constraintid ResClaim::weaken(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end) {
         CuttingPlanesDerivation cpder(&pl, false);

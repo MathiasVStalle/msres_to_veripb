@@ -8,7 +8,6 @@
 #include "ProofConverter.h"
 #include "ResClaimTypeA.h"
 #include "ResClaimTypeB.h"
-#include "ResClaimTypeC.h"
 #include "SplitClaim.h"
 #include "../cnf/Clause.h"
 #include "../cnf/Rule.h"
@@ -375,8 +374,6 @@ namespace converter {
         }
 
         for (auto& clause : new_clauses) {
-            // if (clause.is_hard_clause()) continue;
-
             c_new.add_literal(neg(blocking_vars[clause]), 1); // TODO: Don't add tautologies
         }
         pl->write_objective_update_diff(c_old, c_new);
