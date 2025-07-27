@@ -14,11 +14,22 @@ namespace converter {
         std::vector<Lit> vars_without_pivot = get_vars();
         vars_without_pivot.pop_back(); // Remove the pivot variable
 
-        std::unordered_set<Lit, LitHash, LitEqual> literals_to_add;
-        cn_1 = add_all_and_saturate(pl, get_active_blocking_vars(), literals_to_add);
+        cn_1 = add_all_and_saturate(pl, get_active_blocking_vars());
 
-        // TODO: Hard clause
         cpder.start_from_constraint(pl.get_reified_constraint_left_implication(variable(get_active_original_blocking_var())));
+        
+        if (is_hard_clause(get_inactive_original_blocking_var())) {
+            cpder.add_constraint(cn_1);
+            cpder.saturate();
+
+            // Add the missing literals
+            for (const Lit &sn : get_inactive_blocking_vars()) {
+                cpder.add_literal_axiom(neg(sn));
+            }
+
+            return cpder.end();
+        }
+
         cpder.weaken(variable(get_pivot_literal()));
         cpder.saturate();
         cpder.end();
@@ -75,4 +86,28 @@ namespace converter {
         return cpder.end();
     }
 
+    // TODO: Move this to ClaimTypeB
+    // TODO: Remove blockingliterals with active_blocking_literals
+    // TODO: Remove result
+    constraintid ResClaimTypeB::add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals) {
+        CuttingPlanesDerivation cpder(&pl, false);
+
+        int32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
+
+        cpder.start_from_literal_axiom(get_active_original_blocking_var());
+
+        if (!is_tautology(blocking_literals[0])) {
+            cpder.add_constraint(pl.get_reified_constraint_right_implication(variable(blocking_literals[0])));
+        }
+        
+        for (size_t i = blocking_literals.size() - 1; i > 0; i--) {
+            if (is_tautology(blocking_literals[i])) {
+                continue;
+            }
+
+            cpder.add_constraint(pl.get_reified_constraint_right_implication(variable(blocking_literals[i])));
+            cpder.saturate();
+        }
+        return cpder.end();
+    }
 }

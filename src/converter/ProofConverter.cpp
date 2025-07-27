@@ -129,11 +129,11 @@ namespace converter {
 
         // TODO: Clean up
         if (clause_1.is_hard_clause()) {
-            ResClaimTypeC cl = ResClaimTypeC(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
+            ResClaimTypeB cl = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, false);
             claim_3 = cl.write(*pl);
             assemble_proof(claim_1, claim_2, claim_3, clause_1, clause_2, new_clauses);
         } else if (clause_2.is_hard_clause()) {
-            ResClaimTypeC cl = ResClaimTypeC(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
+            ResClaimTypeB cl = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, true);
             claim_3 = cl.write(*pl);
             assemble_proof(claim_1, claim_2, claim_3, clause_1, clause_2, new_clauses);
         } else {

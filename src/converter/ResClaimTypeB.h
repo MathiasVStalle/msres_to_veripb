@@ -25,6 +25,9 @@ namespace converter {
             ) : ResClaim(rule, clauses, variable_supplier, tautology_predicate, tautology_supplier, hard_clause_predicate, negated_pivot) {}
 
             constraintid write(Prooflogger &pl) override;
+
+        private:
+            constraintid add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals);
     };
 }
 

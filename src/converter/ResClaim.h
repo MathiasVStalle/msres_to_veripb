@@ -69,7 +69,6 @@ namespace converter {
             constraintid weaken_all_except(Prooflogger &pl, constraintid id, const std::vector<Lit> &variables, uint32_t begin, uint32_t end);
 
             constraintid add_all(Prooflogger &pl, const std::vector<constraintid> &constraints);
-            constraintid add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals, std::unordered_set<Lit, LitHash, LitEqual> &result);
             constraintid add_all_from_literal(Prooflogger &pl, const std::vector<constraintid> &constraints, const Lit lit);
             constraintid add_all_prev(Prooflogger &pl, uint32_t range);
             constraintid add_all_prev_from_literal(Prooflogger &pl, uint32_t range, const Lit lit);

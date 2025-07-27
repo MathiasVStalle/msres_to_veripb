@@ -151,34 +151,6 @@ namespace converter {
         return cpder.end();
     }
 
-    // TODO: Move this to ClaimTypeB
-    // TODO: Remove blockingliterals with active_blocking_literals
-    // TODO: Remove result
-    constraintid ResClaim::add_all_and_saturate(Prooflogger &pl, const std::vector<Lit> &blocking_literals, std::unordered_set<Lit, LitHash, LitEqual> &result) {
-        CuttingPlanesDerivation cpder(&pl, false);
-
-        int32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
-
-        cpder.start_from_literal_axiom(get_active_original_blocking_var());
-
-        if (!is_tautology(blocking_literals[0])) {
-            cpder.add_constraint(pl.get_reified_constraint_right_implication(variable(blocking_literals[0])));
-        } else {
-            result.insert(get_literals()[offset + get_active_blocking_vars().size() - 2]); // TODO: Check that this is needed
-        }
-        
-        for (size_t i = blocking_literals.size() - 1; i > 0; i--) {
-            if (is_tautology(blocking_literals[i])) {
-                result.insert(get_literals()[offset + i - 1]); // TODO: Check that this is needed
-                continue;
-            }
-
-            cpder.add_constraint(pl.get_reified_constraint_right_implication(variable(blocking_literals[i])));
-            cpder.saturate();
-        }
-        return cpder.end();
-    }
-
     constraintid ResClaim::add_all_from_literal(Prooflogger &pl, const std::vector<constraintid> &constraints, const Lit lit) {
         CuttingPlanesDerivation cpder(&pl, false);
         cpder.start_from_literal_axiom(lit);
