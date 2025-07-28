@@ -68,9 +68,6 @@ namespace converter {
         } else {
             result = add_all_prev(pl, get_inactive_blocking_vars().size() + 1);
         }
-
-        pl.write_comment("Claim 1");
-        pl.write_comment("");
         return result;
     }
 
@@ -96,9 +93,6 @@ namespace converter {
             }
         }
         constraintid initial = add_all_prev_from_literal(pl, num_active_vars, get_active_blocking_vars()[0]);
-
-        pl.write_comment("Initial constraint");
-        pl.write_comment("");
 
         // Reapeat for the remaining constraints
         for (uint32_t i = 0; i < num_active_vars; i++) {
@@ -128,9 +122,6 @@ namespace converter {
             Lit sn = get_active_blocking_vars()[i + 1];
             constraintid curr_constraint = add_all_prev_from_literal(pl, num_active_vars, sn);
             result.push_back(curr_constraint);
-
-            pl.write_comment("Subclaim " + std::to_string(i));
-            pl.write_comment("");
         }
 
         result.push_back(initial);
@@ -156,9 +147,6 @@ namespace converter {
             }
             C.add_RHS(subclaims.size() - 1);
 
-            // Start the proof
-            pl.write_comment("Proof by contradiction" + std::to_string(i));
-            pl.write_comment("");
             build_proof_by_contradiction(pl, C, subclaim_1, subclaim_2);
 
             // Add the missing literal to the result for the next iteration
@@ -175,8 +163,6 @@ namespace converter {
     }
 
     std::vector<VeriPB::constraintid> ResClaimTypeA::build_conjunctive_subclaims(Prooflogger &pl) {
-        pl.write_comment("Conjunctive subclaims");
-        pl.write_comment("");
         CuttingPlanesDerivation cpder(&pl, false);
 
         uint32_t num_active_vars = get_active_blocking_vars().size() - 1;
