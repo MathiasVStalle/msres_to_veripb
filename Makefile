@@ -6,7 +6,7 @@ LDFLAGS = -lstdc++ -lm
 
 SRC_DIR ?= ./src
 BUILD_DIR ?= ./build
-TEST_DIR ?= ./example/split
+TEST_DIR ?= ./example/test
 
 SOURCES := $(shell find $(SRC_DIR) -name '*.cpp')
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/$(SRC_DIR)/%.o, $(SOURCES))
@@ -17,10 +17,6 @@ TARGET 	:= $(NAME)
 
 .PHONY: all
 all: ./$(TARGET)
-
-.PHONY: run
-run: all
-	./$(TARGET)
 
 .PHONY: test
 test: all
