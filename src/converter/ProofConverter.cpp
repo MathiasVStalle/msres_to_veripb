@@ -68,6 +68,8 @@ namespace converter {
 
             write_proof(rule);
             pl->flush_proof();
+
+            delete rule;
         }
 
         pl->write_conclusion_NONE();
