@@ -42,8 +42,6 @@ namespace converter {
         cpder.multiply((int32_t) get_inactive_blocking_vars().size());
         cpder.add_constraint(-1);
         cn_2 = cpder.end();
-        pl.write_comment("Step 2");
-        pl.write_comment("");
         
 
         // Build contradicting constraint

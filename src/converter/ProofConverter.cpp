@@ -119,9 +119,7 @@ namespace converter {
         
         // Generate the four claims
         constraintid claim_1 = c_1.write(*pl);
-        pl->write_comment("__Claim 1__");
         constraintid claim_2 = c_2.write(*pl);
-        pl->write_comment("__Claim 2__");
 
         constraintid claim_3;
         constraintid claim_4;
@@ -141,9 +139,7 @@ namespace converter {
             ResClaimTypeB c_4 = ResClaimTypeB(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, true);
             
             claim_3 = c_3.write(*pl);
-            pl->write_comment("__Claim 3__");
             claim_4 = c_4.write(*pl);
-            pl->write_comment("__Claim 4__");
 
             assemble_proof(claim_1, claim_2, claim_3, claim_4, clause_1, clause_2, new_clauses);
         }
@@ -423,8 +419,6 @@ namespace converter {
     }
 
     VeriPB::constraintid ProofConverter::proof_by_contradiction(VeriPB::constraintid claim_1, VeriPB::constraintid claim_2, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C) {
-        
-        pl->write_comment("__Proof by contradiction__");
         CuttingPlanesDerivation cpder(pl, false);
         pl->start_proof_by_contradiction(C);
 
