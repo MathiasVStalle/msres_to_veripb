@@ -80,7 +80,7 @@ namespace converter {
 
         uint32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
         uint32_t num_active_vars = active_constraints.size() - 1;
-
+        
         // Initial constraint
         for (uint32_t i = 0; i < get_active_blocking_vars().size() - 1; i++) {
             if (is_tautology(get_active_blocking_vars()[i + 1])) {

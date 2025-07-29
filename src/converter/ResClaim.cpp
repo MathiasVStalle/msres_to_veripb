@@ -45,14 +45,14 @@ namespace converter {
         this->active_blocking_vars = { new_blocking_vars[0] };
 
         if (negated_pivot) {
-           this->pivot_literal = vars.back();
+           this->pivot_literal = pivot < 0 ? neg(variable_supplier(pivot)) : variable_supplier(pivot);
            this->active_original_blocking_var = blocking_vars[0];
            this->inactive_original_blocking_var = blocking_vars[1];
     
            this->active_blocking_vars.insert(this->active_blocking_vars.end(), new_blocking_vars.begin() + 1, new_blocking_vars.end() - num_clauses_1);
            this->inactive_blocking_vars = std::vector<Lit>(new_blocking_vars.begin() + num_clauses_2 + 1, new_blocking_vars.end());
         } else {
-           this->pivot_literal = neg(vars.back());
+           this->pivot_literal = pivot < 0 ? variable_supplier(pivot) : neg(variable_supplier(pivot));
            this->active_original_blocking_var = blocking_vars[1];
            this->inactive_original_blocking_var = blocking_vars[0];
     

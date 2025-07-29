@@ -61,7 +61,8 @@ namespace cnf
         // Build the first half of the resolution clauses
         std::vector<int32_t> extention;
         for (const auto& lit : mod_literals_2) {
-            new_literals = literals_1;
+            new_literals = { common_literal };
+            new_literals.insert(new_literals.end(), mod_literals_1.begin(), mod_literals_1.end());
             new_literals.insert(new_literals.end(), extention.begin(), extention.end());
             new_literals.insert(new_literals.end(), -lit);
 
@@ -76,7 +77,8 @@ namespace cnf
         // Build the second half of the resolution clauses
         extention.clear();
         for (const auto& lit : mod_literals_1) {
-            new_literals = literals_2;
+            new_literals = { -common_literal };
+            new_literals.insert(new_literals.end(), mod_literals_2.begin(), mod_literals_2.end());
             new_literals.insert(new_literals.end(), extention.begin(), extention.end());
             new_literals.insert(new_literals.end(), -lit);
 
