@@ -20,7 +20,6 @@ namespace converter {
 
         public:
             
-            // TODO: Simplify the constructor
             // TODO: Negated pivot shouln't be named negated_pivot
             SplitClaim(
                 const std::vector<std::pair<VeriPB::Lit, cnf::Clause>> &clauses,

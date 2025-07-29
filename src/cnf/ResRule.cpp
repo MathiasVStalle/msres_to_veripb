@@ -21,9 +21,7 @@ namespace cnf
 
     ResRule::~ResRule() {}
 
-    // TODO: What to do when there are more than two common literals?
     // TODO: Weighted clauses.
-    // TODO: Should this return a pointer?
     std::vector<Clause> ResRule::apply() const {
 
         // find the two literals that are the same in both but with different signs
@@ -46,6 +44,9 @@ namespace cnf
         }
 
         std::vector<Clause> new_clauses;
+        if (!clause_1.is_hard_clause() && !clause_2.is_hard_clause()) {
+            new_clauses.reserve(1 + mod_literals_1.size() + mod_literals_2.size());
+        }
 
         // Build the first new clause (normal resolution)
         std::vector<int32_t> new_literals = mod_literals_1;

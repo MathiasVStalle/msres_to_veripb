@@ -108,7 +108,7 @@ namespace converter {
         cpder.start_from_constraint(id);
 
         // TODO: This can be optimized
-        std::unordered_set <Lit, LitHash, LitEqual> vars_set(variables.begin() + begin, variables.begin() + end + 1);
+        std::unordered_set<Lit, LitHash, LitEqual> vars_set(variables.begin() + begin, variables.begin() + end + 1);
         for (int i = 0; i < variables.size(); i++) {
             if ((i < begin || i > end) && !(get_vars()[begin].v.v == variables[i].v.v)) {
                 cpder.weaken(variable(variables[i]));

@@ -426,17 +426,18 @@ namespace converter {
         pl->move_to_coreset_by_id(claim_3);
     }
 
-    // TODO: Remove the clauses that are replaced from the blocking_vars map
     void ProofConverter::change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses) {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
         if (!clause_1.is_hard_clause()) {
             c_old.add_literal(neg(blocking_vars[clause_1]), 1);
+            blocking_vars.erase(clause_1); // TODO: Change by weight
         }
 
         if (!clause_2.is_hard_clause()) {
             c_old.add_literal(neg(blocking_vars[clause_2]), 1);
+            blocking_vars.erase(clause_2); // TODO: Change by weight
         }
 
         for (auto& clause : new_clauses) {
@@ -450,6 +451,7 @@ namespace converter {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
         c_old.add_literal(neg(blocking_vars[clause_1]), 1);
+        blocking_vars.erase(clause_1); // TODO: Change by weight
 
         c_new.add_literal(neg(blocking_vars[clause_2]), 1);
         c_new.add_literal(neg(blocking_vars[clause_3]), 1);

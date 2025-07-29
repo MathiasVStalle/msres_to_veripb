@@ -76,6 +76,7 @@ namespace converter {
         vars_without_pivot.pop_back(); // Remove the pivot variable
 
         std::vector<constraintid> result;
+        result.reserve(get_active_blocking_vars().size());
 
         uint32_t offset = is_negated_pivot() ? get_inactive_blocking_vars().size() : 0;
         uint32_t num_active_vars = active_constraints.size() - 1;
@@ -171,6 +172,7 @@ namespace converter {
         vars_without_pivot.pop_back(); // Remove the pivot variable
 
         std::vector<VeriPB::constraintid> subclaims;
+        subclaims.reserve(num_unactive_vars);
 
         for (uint32_t i = 0; i < num_unactive_vars; i++) {
             if (is_tautology(get_active_blocking_vars()[0])) {

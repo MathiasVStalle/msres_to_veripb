@@ -86,7 +86,7 @@ namespace parser
             cnf::Clause clause_1 = parseClause(clause_1_str);
             cnf::Clause clause_2 = parseClause(clause_2_str);
 
-            // TODO: This should be fixed int the converter. When the pivot has a different sign than the one in the first clause, it doesn't work.
+            // TODO: This should be fixed in the converter. When the pivot has a different sign than the one in the first clause, it doesn't work.
             if (
                 std::find(clause_1.get_literals().begin(), clause_1.get_literals().end(), std::stoi(pivot_str)) == clause_1.get_literals().end() ||
                 std::find(clause_2.get_literals().begin(), clause_2.get_literals().end(), -std::stoi(pivot_str)) == clause_2.get_literals().end()
