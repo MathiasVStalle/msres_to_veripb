@@ -47,11 +47,15 @@ namespace cnf
 
         std::vector<Clause> new_clauses;
 
-        // Build the first new clause
+        // Build the first new clause (normal resolution)
         std::vector<int32_t> new_literals = mod_literals_1;
         new_literals.insert(new_literals.end(), mod_literals_2.begin(), mod_literals_2.end());
         Clause new_clause(min(clause_1.get_weight(), clause_2.get_weight()), new_literals);
         new_clauses.push_back(new_clause);
+
+        if (clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
+            return new_clauses;
+        }
 
         // Build the first half of the resolution clauses
         std::vector<int32_t> extention;

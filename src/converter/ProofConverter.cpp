@@ -17,6 +17,7 @@
 
 using namespace VeriPB;
 
+// TODO: Cleanup and avoid making use of 'global' variables in the helper functions
 namespace converter {
 
     ProofConverter::ProofConverter(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
@@ -42,6 +43,7 @@ namespace converter {
     void ProofConverter::write_proof() {
         initialize_vars();
 
+        // Calculate the number of original constraints
         uint32_t n_original = this->wcnf_clauses.size();
         for (const auto &[_, clause] : this->wcnf_clauses) {
             if (clause.is_unit_clause()) {
@@ -58,6 +60,9 @@ namespace converter {
         reificate_original_clauses();
         pl->flush_proof();
 
+        // Clear wcnf_clauses as they are no longer needed
+        wcnf_clauses.clear();
+
         // Write the proof
         cnf::Rule *rule;
         while (true) {
@@ -68,7 +73,6 @@ namespace converter {
 
             write_proof(rule);
             pl->flush_proof();
-
             delete rule;
         }
 
@@ -91,14 +95,34 @@ namespace converter {
     }
 
     void ProofConverter::write_res_rule(const cnf::ResRule* rule) {
+        cnf::Clause clause_1 = rule->get_clause_1();
+        cnf::Clause clause_2 = rule->get_clause_2();
+
         // Add the new clause
         std::vector<cnf::Clause> new_clauses = rule->apply();
+
+        // TODO: Clean up
+        // If the two clauses are hard, the normal resolution rule is applied
+        if (clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
+            Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
+            clause_to_constraint(new_clauses[0], C);
+            constraintid c_1 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_1]));
+            constraintid c_2 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_2]));
+            constraintid c_3 = proof_by_contradiction(c_1, c_2, C);
+
+            Var var = var_mgr.new_variable_only_in_proof();
+            Lit lit = create_literal(var, false);
+            blocking_vars[new_clauses[0]] = lit;
+            pl->store_reified_constraint_right_implication(var, c_3);
+
+            hard_clauses.insert(lit);
+            return;
+        }
+
         this->write_new_clauses(new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
-
-        cnf::Clause clause_1 = rule->get_clause_1();
-        cnf::Clause clause_2 = rule->get_clause_2();
+        clauses.reserve(new_clauses.size() + 2);
 
         clauses = {
             std::make_pair(blocking_vars[clause_1], clause_1),
@@ -146,13 +170,57 @@ namespace converter {
         change_objective(clause_1, clause_2, new_clauses);
     }
 
-    // TODO: If the pivot doesn't exist if the prooflogger, add it
     void ProofConverter::write_split_rule(const cnf::SplitRule* rule) {
         std::vector<cnf::Clause> new_clauses = rule->apply();
+
+        uint32_t pivot = std::abs(rule->get_pivot());
+        if (vars.find(pivot) == vars.end()) {
+            VeriPB::Var new_var{.v = pivot, .only_known_in_proof = false};
+            VeriPB::Lit new_lit{.v = new_var, .negated = false};
+            vars[pivot] = new_lit;
+            var_mgr.store_variable_name(new_var, "x" + std::to_string(pivot));
+        }
+
+        // TODO: Cleanup this block and put it in a separate function
+        if (rule->get_clause().is_hard_clause()) {
+            CuttingPlanesDerivation cpder(pl, false);
+            Constraint<VeriPB::Lit, uint32_t, uint32_t> C_1;
+            Constraint<VeriPB::Lit, uint32_t, uint32_t> C_2;
+            clause_to_constraint(new_clauses[0], C_1);
+            clause_to_constraint(new_clauses[1], C_2);
+
+            constraintid c_1 = pl->get_reified_constraint_right_implication(variable(blocking_vars[rule->get_clause()]));
+
+            pl->start_proof_by_contradiction(C_1);
+            cpder.start_from_constraint(-1);
+            cpder.add_constraint(c_1);
+            cpder.saturate();
+            constraintid c_2 = cpder.end();
+
+            pl->start_proof_by_contradiction(C_2);
+            cpder.start_from_constraint(-1);
+            cpder.add_constraint(c_1);
+            cpder.saturate();
+            constraintid c_3 = cpder.end();
+
+            Var var_1 = var_mgr.new_variable_only_in_proof();
+            Lit lit_1 = create_literal(var_1, false);
+            blocking_vars[new_clauses[0]] = lit_1;
+            pl->store_reified_constraint_right_implication(var_1, c_3);
+
+            Var var_2 = var_mgr.new_variable_only_in_proof();
+            Lit lit_2 = create_literal(var_2, false);
+            blocking_vars[new_clauses[1]] = lit_2;
+            pl->store_reified_constraint_right_implication(var_2, c_2);
+
+            hard_clauses.insert(lit_1);
+            hard_clauses.insert(lit_2);
+            return;
+        }
+
         this->write_new_clauses(new_clauses);
 
         std::vector<std::pair<VeriPB::Lit, cnf::Clause>> clauses;
-
         cnf::Clause clause = rule->get_clause();
         clauses = {
             std::make_pair(blocking_vars[clause], clause),
@@ -167,6 +235,7 @@ namespace converter {
         SplitClaim c_2 = SplitClaim(clauses, tautology_predicate, hard_clause_predicate, true);
         constraintid claim_1 = c_1.write(*pl);
         constraintid claim_2 = c_2.write(*pl);
+
         pl->move_to_coreset_by_id(claim_1);
         pl->move_to_coreset_by_id(claim_2);
         change_objective(clause, new_clauses[0], new_clauses[1]);
@@ -283,8 +352,9 @@ namespace converter {
             blocking_vars[clause] = lit;
 
             if (clause.is_tautology()) {
-                tautologies[lit] = pl->redundance_based_strengthening_unit_clause(lit);
-                pl->store_reified_constraint_left_implication(var, tautologies[lit]);
+                tautologies.insert(lit);
+                VeriPB::constraintid cxn = pl->redundance_based_strengthening_unit_clause(lit);
+                pl->store_reified_constraint_left_implication(var, cxn);
                 continue;
             }
 
