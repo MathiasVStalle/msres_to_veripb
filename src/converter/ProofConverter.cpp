@@ -451,7 +451,8 @@ namespace converter {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
 
         c_old.add_literal(neg(blocking_vars[clause_1]), 1);
-        blocking_vars.erase(clause_1); // TODO: Change by weight
+        if (!clause_1.is_hard_clause())
+            blocking_vars.erase(clause_1); // TODO: Change by weight
 
         c_new.add_literal(neg(blocking_vars[clause_2]), 1);
         c_new.add_literal(neg(blocking_vars[clause_3]), 1);
