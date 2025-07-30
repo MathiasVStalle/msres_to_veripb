@@ -98,11 +98,9 @@ namespace converter {
         cnf::Clause clause_1 = rule->get_clause_1();
         cnf::Clause clause_2 = rule->get_clause_2();
 
-        // Add the new clause
-        std::vector<cnf::Clause> new_clauses = rule->apply();
-
         // TODO: Clean up
-        if (clause_1.is_unit_clause() && clause_2.is_unit_clause()) {
+        if (clause_1.is_unit_clause() && clause_2.is_unit_clause())
+        {
             constraintid c_1 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_1]));
             constraintid c_2 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_2]));
 
@@ -115,17 +113,17 @@ namespace converter {
             // if (clause_1.is_hard_clause()) {
             //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
             //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-            // 
+            //
             //     c_old.add_literal(neg(blocking_vars[clause_2]), 1);
             //     c_new.add_constant(1);
             //     pl->write_objective_update_diff(c_old, c_new);
             //     return;
             // }
-            // 
+            //
             // if (clause_2.is_hard_clause()) {
             //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
             //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-            // 
+            //
             //     c_old.add_literal(neg(blocking_vars[clause_1]), 1);
             //     c_new.add_constant(1);
             //     pl->write_objective_update_diff(c_old, c_new);
@@ -148,6 +146,9 @@ namespace converter {
             pl->write_objective_update_diff(c_old, c_new);
             return;
         }
+
+        // Add the new clause
+        std::vector<cnf::Clause> new_clauses = rule->apply();
 
         // TODO: Clean up
         // If the two clauses are hard, the normal resolution rule is applied
