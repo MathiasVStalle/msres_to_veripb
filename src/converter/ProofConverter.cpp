@@ -102,8 +102,58 @@ namespace converter {
         std::vector<cnf::Clause> new_clauses = rule->apply();
 
         // TODO: Clean up
+        if (clause_1.is_unit_clause() && clause_2.is_unit_clause()) {
+            constraintid c_1 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_1]));
+            constraintid c_2 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_2]));
+
+            CuttingPlanesDerivation cpder(pl, false);
+            cpder.start_from_constraint(c_1);
+            cpder.add_constraint(c_2);
+            constraintid cc_1 = cpder.end();
+            pl->move_to_coreset_by_id(cc_1);
+
+            // if (clause_1.is_hard_clause()) {
+            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+            // 
+            //     c_old.add_literal(neg(blocking_vars[clause_2]), 1);
+            //     c_new.add_constant(1);
+            //     pl->write_objective_update_diff(c_old, c_new);
+            //     return;
+            // }
+            // 
+            // if (clause_2.is_hard_clause()) {
+            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+            // 
+            //     c_old.add_literal(neg(blocking_vars[clause_1]), 1);
+            //     c_new.add_constant(1);
+            //     pl->write_objective_update_diff(c_old, c_new);
+            //     return;
+            // }
+
+            constraintid c_3 = pl->get_reified_constraint_left_implication(variable(blocking_vars[clause_1]));
+            constraintid c_4 = pl->get_reified_constraint_left_implication(variable(blocking_vars[clause_2]));
+
+            cpder.start_from_constraint(c_3);
+            cpder.add_constraint(c_4);
+            constraintid cc_2 = cpder.end();
+            pl->move_to_coreset_by_id(cc_2);
+
+            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+
+            c_old.add_literal(neg(blocking_vars[clause_1]), 1);
+            c_new.add_literal(blocking_vars[clause_2], 1);
+            pl->write_objective_update_diff(c_old, c_new);
+            return;
+        }
+
+        // TODO: Clean up
         // If the two clauses are hard, the normal resolution rule is applied
         if (clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
+            if (clause_1.is_unit_clause() && clause_2.is_unit_clause()) return;
+
             Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
             clause_to_constraint(new_clauses[0], C);
             constraintid c_1 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_1]));
