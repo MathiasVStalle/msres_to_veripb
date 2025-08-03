@@ -10,7 +10,9 @@
 namespace cnf
 {
     int32_t min (int32_t a, int32_t b) {
-        return (a < b && a != 0) ? a : b;
+        if (a == 0) return b;
+        if (b == 0) return a;
+        return (a < b) ? a : b;
     }
 
     ResRule::ResRule(const uint32_t pivot, const Clause& clause_1, const Clause& clause_2) 

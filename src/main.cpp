@@ -28,5 +28,6 @@ int main(int argc, char *argv[]) {
     proof_convertor.write_proof();
 
     std::cout << "Proof written to " << output_file << std::endl;
+    std::cout << "succeeded" << std::endl;
     return 0;
 }

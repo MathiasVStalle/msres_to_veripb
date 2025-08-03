@@ -3,7 +3,7 @@
 
 namespace converter {
     VeriPB::constraintid ResClaimTypeA::write(Prooflogger &pl) {
-        const int32_t RHS = get_active_blocking_vars().size() + get_inactive_blocking_vars().size() - 2;
+        const int32_t RHS = get_active_blocking_vars().size() + get_inactive_blocking_vars().size();
 
         std::vector<Lit> vars_without_pivot = get_vars();
         vars_without_pivot.pop_back(); // Remove the pivot variable

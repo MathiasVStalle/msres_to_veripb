@@ -19,6 +19,14 @@ using namespace VeriPB;
 
 // TODO: Cleanup and avoid making use of 'global' variables in the helper functions
 namespace converter {
+    uint32_t min(uint32_t a, uint32_t b)
+    {
+        if (a == 0)
+            return b;
+        if (b == 0)
+            return a;
+        return (a < b) ? a : b;
+    }
 
     ProofConverter::ProofConverter(const std::string wcnf_file, const std::string msres_file, const std::string output_file)
         : msres_parser(msres_file), output_file(output_file) {
@@ -46,7 +54,7 @@ namespace converter {
         // Calculate the number of original constraints
         uint32_t n_original = this->wcnf_clauses.size();
         for (const auto &[_, clause] : this->wcnf_clauses) {
-            if (clause.is_unit_clause()) {
+            if (clause.is_unit_clause() && !clause.is_hard_clause()) {
                 n_original--;
             }
         }
@@ -101,48 +109,40 @@ namespace converter {
         // TODO: Clean up
         if (clause_1.is_unit_clause() && clause_2.is_unit_clause())
         {
+            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
+            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+            uint32_t new_weight = min(clause_1.get_weight(), clause_2.get_weight());
+
             constraintid c_1 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_1]));
             constraintid c_2 = pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_2]));
 
             CuttingPlanesDerivation cpder(pl, false);
             cpder.start_from_constraint(c_1);
             cpder.add_constraint(c_2);
+            cpder.multiply(new_weight);
             constraintid cc_1 = cpder.end();
             pl->move_to_coreset_by_id(cc_1);
 
-            // if (clause_1.is_hard_clause()) {
-            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
-            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-            //
-            //     c_old.add_literal(neg(blocking_vars[clause_2]), 1);
-            //     c_new.add_constant(1);
-            //     pl->write_objective_update_diff(c_old, c_new);
-            //     return;
-            // }
-            //
-            // if (clause_2.is_hard_clause()) {
-            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
-            //     LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-            //
-            //     c_old.add_literal(neg(blocking_vars[clause_1]), 1);
-            //     c_new.add_constant(1);
-            //     pl->write_objective_update_diff(c_old, c_new);
-            //     return;
-            // }
+            if (!clause_1.is_hard_clause() && !clause_2.is_hard_clause()) {
+                constraintid c_3 = pl->get_reified_constraint_left_implication(variable(blocking_vars[clause_1]));
+                constraintid c_4 = pl->get_reified_constraint_left_implication(variable(blocking_vars[clause_2]));
 
-            constraintid c_3 = pl->get_reified_constraint_left_implication(variable(blocking_vars[clause_1]));
-            constraintid c_4 = pl->get_reified_constraint_left_implication(variable(blocking_vars[clause_2]));
+                cpder.start_from_constraint(c_3);
+                cpder.add_constraint(c_4);
+                cpder.multiply(new_weight);
+                constraintid cc_2 = cpder.end();
+                pl->move_to_coreset_by_id(cc_2);
 
-            cpder.start_from_constraint(c_3);
-            cpder.add_constraint(c_4);
-            constraintid cc_2 = cpder.end();
-            pl->move_to_coreset_by_id(cc_2);
-
-            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
-            LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
-
-            c_old.add_literal(neg(blocking_vars[clause_1]), 1);
-            c_new.add_literal(blocking_vars[clause_2], 1);
+                c_old.add_literal(neg(blocking_vars[clause_1]), new_weight);
+                c_new.add_literal(blocking_vars[clause_2], new_weight);
+            } else if (clause_1.is_hard_clause()) {
+                c_old.add_literal(neg(blocking_vars[clause_2]), new_weight);
+                c_new.add_constant(new_weight);
+            } else {
+                c_old.add_literal(neg(blocking_vars[clause_1]), new_weight);
+                c_new.add_constant(new_weight);
+            }
+            
             pl->write_objective_update_diff(c_old, c_new);
             return;
         }
@@ -154,6 +154,8 @@ namespace converter {
         // If the two clauses are hard, the normal resolution rule is applied
         if (clause_1.is_hard_clause() && clause_2.is_hard_clause()) {
             if (clause_1.is_unit_clause() && clause_2.is_unit_clause()) return;
+            pl->write_comment(std::to_string(blocking_vars[clause_1].v.v) + " and " + std::to_string(blocking_vars[clause_2].v.v));
+            pl->write_comment(std::to_string(pl->get_reified_constraint_right_implication(variable(blocking_vars[clause_2]))));
 
             Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
             clause_to_constraint(new_clauses[0], C);
@@ -186,8 +188,8 @@ namespace converter {
         }
 
         std::function<VeriPB::Lit(int32_t)> var_supplier = [this](int32_t x) -> VeriPB::Lit { return vars[std::abs(x)]; };
-        std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.contains(lit); };
-        std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
+        std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.find(lit) != tautologies.end(); };
+        std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.find(lit) != hard_clauses.end(); };
 
         ResClaimTypeA c_1 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, false);
         ResClaimTypeA c_2 = ResClaimTypeA(*rule, clauses, var_supplier, tautology_predicate, hard_clause_predicate, true);
@@ -279,13 +281,21 @@ namespace converter {
             std::make_pair(blocking_vars[new_clauses[1]], new_clauses[1])
         };
 
-        std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.contains(lit); };
-        std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.contains(lit); };
+        std::function<bool(VeriPB::Lit)> tautology_predicate = [this](VeriPB::Lit lit) -> bool { return tautologies.find(lit) != tautologies.end(); };
+        std::function<bool(VeriPB::Lit)> hard_clause_predicate = [this](VeriPB::Lit lit) -> bool { return hard_clauses.find(lit) != hard_clauses.end(); };
 
         SplitClaim c_1 = SplitClaim(clauses, tautology_predicate, hard_clause_predicate, false);
         SplitClaim c_2 = SplitClaim(clauses, tautology_predicate, hard_clause_predicate, true);
-        constraintid claim_1 = c_1.write(*pl);
-        constraintid claim_2 = c_2.write(*pl);
+        CuttingPlanesDerivation cpder(pl, false);
+        uint32_t new_weight = clause.get_weight();
+        
+        c_1.write(*pl);
+        cpder.start_from_constraint(-1, new_weight);
+        constraintid claim_1 = cpder.end();
+
+        c_2.write(*pl);
+        cpder.start_from_constraint(-1, new_weight);
+        constraintid claim_2 = cpder.end();
 
         pl->move_to_coreset_by_id(claim_1);
         pl->move_to_coreset_by_id(claim_2);
@@ -315,7 +325,7 @@ namespace converter {
         std::vector<std::pair<VeriPB::Lit, VeriPB::Lit>> unit_clauses;
 
         // Saving the reification of the original clauses
-        for (int i = 1, cxn = 1; i <= wcnf_clauses.size(); i++) {
+        for (constraintid i = 1, cxn = 1; i <= wcnf_clauses.size(); i++) {
             const cnf::Clause& clause = wcnf_clauses.at(i);
 
             VeriPB::Var var = var_mgr.new_variable_only_in_proof();
@@ -422,6 +432,8 @@ namespace converter {
         const cnf::Clause &clause_1, const cnf::Clause &clause_2,
         const std::vector<cnf::Clause> &new_clauses
     ) {
+        uint32_t new_weight = min(clause_1.get_weight(), clause_2.get_weight());
+
         // s1 + s2 >= s3 + s4 + ... + s_n
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         C.add_literal(neg(blocking_vars[clause_1]), 1);
@@ -433,7 +445,10 @@ namespace converter {
         C.add_RHS(new_clauses.size());
 
         CuttingPlanesDerivation cpder(pl, false);
-        VeriPB::constraintid cn = proof_by_contradiction(claim_1, claim_2, C);
+        proof_by_contradiction(claim_1, claim_2, C);
+        cpder.start_from_constraint(-1, new_weight);
+        cpder.end();
+
         pl->move_to_coreset_by_id(-1);
 
         // s1 + s2 <= s3 + s4 + ... + s_n
@@ -445,7 +460,10 @@ namespace converter {
         }
         C.add_RHS(2);
 
-        cn = proof_by_contradiction(claim_3, claim_4, C);
+        proof_by_contradiction(claim_3, claim_4, C);
+        cpder.start_from_constraint(-1, new_weight);
+        cpder.end();
+
         pl->move_to_coreset_by_id(-1);
     }
 
@@ -454,60 +472,90 @@ namespace converter {
         const cnf::Clause &clause_1, const cnf::Clause &clause_2,
         const std::vector<cnf::Clause> &new_clauses
     ) {
+        uint32_t new_weight = min(clause_1.get_weight(), clause_2.get_weight());
+
         // s1 + s2 >= s3 + s4 + ... + s_n
         Constraint<VeriPB::Lit, uint32_t, uint32_t> C;
         if (!clause_1.is_hard_clause()) {
-            C.add_literal(neg(blocking_vars[clause_1]), 1);
+            C.add_literal(neg(blocking_vars[clause_1]), new_weight);
         }
         
         if (!clause_2.is_hard_clause()) {
-            C.add_literal(neg(blocking_vars[clause_2]), 1);
+            C.add_literal(neg(blocking_vars[clause_2]), new_weight);
         }
 
         for (auto& clause : new_clauses) {
-            C.add_literal(blocking_vars[clause], 1);
+            C.add_literal(blocking_vars[clause], new_weight);
         }
         C.add_RHS(new_clauses.size());
 
         CuttingPlanesDerivation cpder(pl, false);
         VeriPB::constraintid cn = proof_by_contradiction(claim_1, claim_2, C);
+
+        cpder.start_from_constraint(cn, new_weight);
+        cpder.end();
+
         pl->move_to_coreset_by_id(-1);
 
+        cpder.start_from_constraint(claim_3, new_weight);
+        cpder.end();
+
         // s1 + s2 <= s3 + s4 + ... + s_n
-        pl->move_to_coreset_by_id(claim_3);
+        pl->move_to_coreset_by_id(-1);
     }
 
     void ProofConverter::change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const std::vector<cnf::Clause> &new_clauses) {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+        uint32_t new_weight = min(clause_1.get_weight(), clause_2.get_weight());
 
         if (!clause_1.is_hard_clause()) {
-            c_old.add_literal(neg(blocking_vars[clause_1]), 1);
-            blocking_vars.erase(clause_1); // TODO: Change by weight
+            c_old.add_literal(neg(blocking_vars[clause_1]), new_weight);
         }
 
         if (!clause_2.is_hard_clause()) {
-            c_old.add_literal(neg(blocking_vars[clause_2]), 1);
-            blocking_vars.erase(clause_2); // TODO: Change by weight
+            c_old.add_literal(neg(blocking_vars[clause_2]), new_weight);
         }
 
         for (auto& clause : new_clauses) {
-            c_new.add_literal(neg(blocking_vars[clause]), 1); // TODO: Don't add tautologies
+            c_new.add_literal(neg(blocking_vars[clause]), new_weight); // TODO: Don't add tautologies
         }
         pl->write_objective_update_diff(c_old, c_new);
+
+        // Remove the unnecessary clauses
+        if (!clause_1.is_hard_clause()) {
+            VeriPB::Lit lit = blocking_vars[clause_1];
+            blocking_vars.erase(clause_1); // TODO: Change by weight
+            uint32_t w = clause_1.get_weight() - new_weight;
+            if (w > 0) {
+                cnf::Clause c(clause_1, w);
+                blocking_vars[c] = lit;
+            }
+        }
+        if (!clause_2.is_hard_clause()) {
+            VeriPB::Lit lit = blocking_vars[clause_2];
+            blocking_vars.erase(clause_2); // TODO: Change by weight
+            uint32_t w = clause_2.get_weight() - new_weight;
+            if (w > 0) {
+                cnf::Clause c(clause_2, w);
+                blocking_vars[c] = lit;
+            }
+        }
     }
 
     void ProofConverter::change_objective(const cnf::Clause &clause_1, const cnf::Clause &clause_2, const cnf::Clause &clause_3) {
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_old;
         LinTermBoolVars<VeriPB::Lit, uint32_t, uint32_t> c_new;
+        uint32_t new_weight = clause_1.get_weight();
 
-        c_old.add_literal(neg(blocking_vars[clause_1]), 1);
+        c_old.add_literal(neg(blocking_vars[clause_1]), new_weight);
+
+        c_new.add_literal(neg(blocking_vars[clause_2]), new_weight);
+        c_new.add_literal(neg(blocking_vars[clause_3]), new_weight);
+        pl->write_objective_update_diff(c_old, c_new);
+
         if (!clause_1.is_hard_clause())
             blocking_vars.erase(clause_1); // TODO: Change by weight
-
-        c_new.add_literal(neg(blocking_vars[clause_2]), 1);
-        c_new.add_literal(neg(blocking_vars[clause_3]), 1);
-        pl->write_objective_update_diff(c_old, c_new);
     }
 
     void ProofConverter::clause_to_constraint(const cnf::Clause &clause, VeriPB::Constraint<VeriPB::Lit, uint32_t, uint32_t> &C) {

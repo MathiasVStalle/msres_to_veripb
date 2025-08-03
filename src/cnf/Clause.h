@@ -43,6 +43,8 @@ namespace cnf
              */
             Clause(const Clause& other);
 
+            Clause(const Clause& other, uint32_t weight);
+
             /**
              * Get the weight of the clause.
              * 
@@ -106,6 +108,19 @@ namespace cnf
              * @return True if the clauses are equal, false otherwise.
              */
             bool operator==(const Clause& other) const;
+
+            std::string to_string() const {
+                std::string result = "Clause: ";
+                if (weight > 0) {
+                    result += std::to_string(weight) + " ";
+                } else {
+                    result += "h ";
+                }
+                for (const auto& lit : literals) {
+                    result += std::to_string(lit) + " ";
+                }
+                return result;
+            }
     };
 }
 

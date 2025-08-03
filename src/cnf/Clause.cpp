@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <unordered_set>
 #include <iostream>
+#include <algorithm>
 
 #include "Clause.h"
 
@@ -23,6 +24,9 @@ namespace cnf
 
     Clause::Clause(const Clause& other) : 
     weight(other.weight), literals(other.literals), tautology(other.tautology), has_double(other.has_double) {}
+
+    Clause::Clause(const Clause& other, uint32_t weight) :
+    weight(weight), literals(other.literals), tautology(other.tautology), has_double(other.has_double) {}
 
     int32_t Clause::get_weight() const {
         return weight;
