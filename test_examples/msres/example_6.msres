@@ -1,4 +1,0 @@
-t msres < 1 1 2 3 4 5 6 7 | 1 8 9 10 11 12 -4 13 >
-o 1
-v 010
-c executionTime 0.000571 seconds
