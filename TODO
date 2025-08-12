@@ -1,5 +1,0 @@
-- Cleanup Claim classes of the resolution rule
-- Use warning flags
-- Use clang-tidy
-- Fix TODOs in code
-- Add the correct weights for the split rule
